@@ -73,7 +73,7 @@ export default function GalleryPage() {
 
   return (
     <>
-      <main className="relative min-h-screen pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] overflow-hidden" style={{ backgroundColor: '#1a1a1a' }}>
+      <main className="relative min-h-screen overflow-x-hidden pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]" style={{ backgroundColor: '#1a1a1a' }}>
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#FBEC89]/10 blur-3xl" />
           <div className="absolute top-[18rem] -left-20 h-64 w-64 rounded-full bg-mango-green/14 blur-3xl" />
@@ -92,14 +92,16 @@ export default function GalleryPage() {
               <div className="relative flex items-center justify-between">
                 <Link
                   href="/"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] transition-all hover:bg-white/[0.1] shadow-[0_10px_20px_rgba(0,0,0,0.16)]"
+                  prefetch
+                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/[0.06] transition-colors hover:bg-white/[0.12] active:scale-[0.97] touch-manipulation shadow-[0_10px_20px_rgba(0,0,0,0.16)]"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     if (typeof window !== 'undefined') {
                       sessionStorage.setItem('fromGallery', 'true')
                     }
                   }}
                 >
-                  <ArrowLeft className="w-5 h-5 text-slate-100" />
+                  <ArrowLeft className="h-5 w-5 shrink-0 text-slate-100" strokeWidth={2.25} aria-hidden />
                 </Link>
 
                 <div className="pointer-events-none absolute inset-x-0 text-center">

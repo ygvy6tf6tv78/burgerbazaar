@@ -116,14 +116,16 @@ export default function ReviewsPage() {
         <div className="max-w-md mx-auto pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] py-4 flex items-center gap-3">
           <Link
             href="/"
-            className="p-3 rounded-full transition-colors hover:bg-black/5"
+            prefetch
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-colors hover:bg-black/5 active:scale-[0.98] touch-manipulation"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
             onClick={() => {
               if (typeof window !== 'undefined') {
                 sessionStorage.setItem('fromReviews', 'true')
               }
             }}
           >
-            <ArrowLeft className="w-7 h-7 text-slate-800" />
+            <ArrowLeft className="h-6 w-6 text-slate-800" strokeWidth={2.25} aria-hidden />
           </Link>
           <h1 className="text-xl font-bold text-slate-800">Google Reviews</h1>
         </div>
