@@ -353,27 +353,33 @@ export default function CheckoutPage() {
               <label htmlFor="checkout-mobile" className="mb-1 block text-[12px] font-semibold text-slate-800">
                 Mobile number
               </label>
-              <div className="flex h-11 min-w-0 items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white focus-within:ring-2 focus-within:ring-slate-300/80">
-                <span className="flex shrink-0 items-center border-r border-slate-200 bg-slate-50 px-2.5 text-sm font-semibold text-slate-600">
-                  +91
+              <div className="flex h-11 min-w-0 items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-300/80">
+                <span
+                  className="flex shrink-0 items-center gap-1.5 border-r border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100/90 px-2 sm:px-2.5"
+                  aria-label="India, country code +91"
+                >
+                  <span className="select-none text-[18px] leading-none" aria-hidden title="India">
+                    🇮🇳
+                  </span>
+                  <span className="text-[13px] font-bold tabular-nums tracking-tight text-slate-800">+91</span>
                 </span>
                 <input
                   id="checkout-mobile"
                   value={mobileDigits}
                   onChange={(e) => setMobile(digitsOnly(e.target.value).slice(0, MOBILE_DIGITS))}
                   onFocus={(e) => focusScroll(e.target)}
-                  placeholder="9876543210"
+                  placeholder="98765 43210"
                   inputMode="numeric"
                   autoComplete="tel-national"
                   maxLength={MOBILE_DIGITS}
-                  className={`min-w-0 flex-1 bg-transparent px-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none ${fieldText}`}
+                  className={`min-w-0 flex-1 bg-white px-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none ${fieldText}`}
                 />
               </div>
             </div>
 
             <div className="mt-3 border-t border-slate-200 pt-3">
               <p className="mb-2 text-[12px] font-semibold text-slate-800">
-                Extra details <span className="font-normal text-slate-400">· optional</span>
+                Extra address details <span className="font-normal text-slate-400">· optional</span>
               </p>
               <div className="grid gap-2">
                 <input
