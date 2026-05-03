@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Minus, Plus, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, MapPin, Minus, Plus, AlertCircle, CheckCircle2, X } from 'lucide-react'
 import { type CartItem, generateWhatsAppCartMessage } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -11,9 +11,14 @@ import { distanceKm } from '../lib/distance'
 
 type DeliveryZone = 'unset' | 'inside' | 'outside'
 
+const MOBILE_DIGITS = 10
+
+function digitsOnly(s: string) {
+  return s.replace(/\D/g, '')
+}
+
 export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([])
-  const [name, setName] = useState('')
   const [mobile, setMobile] = useState('')
   const [mappedAddress, setMappedAddress] = useState('')
   const [flatHouse, setFlatHouse] = useState('')
@@ -22,9 +27,15 @@ export default function CheckoutPage() {
   const [userLng, setUserLng] = useState<number | null>(null)
   const [isLocating, setIsLocating] = useState(false)
   const [locationStatus, setLocationStatus] = useState('')
+  const [toast, setToast] = useState<string | null>(null)
+
+  const locationBlockRef = useRef<HTMLDivElement>(null)
+  const addressRef = useRef<HTMLTextAreaElement>(null)
+  const extraBlockRef = useRef<HTMLDivElement>(null)
 
   const delivery = shopConfig.delivery
   const radiusKm = delivery.radiusKm
+  const paymentPageUrl = `${shopConfig.url}?pay=1`
 
   const distanceFromRestaurant = useMemo(() => {
     if (userLat == null || userLng == null) return null
@@ -48,6 +59,12 @@ export default function CheckoutPage() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!toast) return
+    const t = window.setTimeout(() => setToast(null), 4500)
+    return () => window.clearTimeout(t)
+  }, [toast])
+
   const total = useMemo(() => {
     return cart.reduce((sum, item) => {
       const numeric = parseFloat(item.price.replace('₹', '').replace(',', '').split('/')[0].trim())
@@ -55,6 +72,8 @@ export default function CheckoutPage() {
     }, 0)
   }, [cart])
   const totalItems = useMemo(() => cart.reduce((sum, item) => sum + item.cartQuantity, 0), [cart])
+
+  const mobileDigits = useMemo(() => digitsOnly(mobile).slice(0, MOBILE_DIGITS), [mobile])
 
   const fullAddressBlock = useMemo(() => {
     const lines: string[] = []
@@ -69,19 +88,21 @@ export default function CheckoutPage() {
       setCart((prev) => prev.filter((i) => i.id !== id))
       return
     }
-    setCart((prev) => prev.map((i) => i.id === id ? { ...i, cartQuantity: qty } : i))
+    setCart((prev) => prev.map((i) => (i.id === id ? { ...i, cartQuantity: qty } : i)))
   }
 
   const orderNow = () => {
-    if (!name.trim() || !mobile.trim() || cart.length === 0) return
+    if (cart.length === 0) return
     if (!mappedAddress.trim() || userLat == null || userLng == null || deliveryZone !== 'inside') return
+    if (mobileDigits.length < MOBILE_DIGITS) return
     const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
     const e164 = phone.length === 10 ? `91${phone}` : phone
     const base = generateWhatsAppCartMessage(cart, total)
     const customer =
-      `\n\nCustomer Details:\nName: ${name}\nCall this number: ${mobile}\n\n${fullAddressBlock}` +
+      `\n\nCustomer Details:\nCall this number: +91 ${mobileDigits}\n\n${fullAddressBlock}` +
       `\n\n(Map distance ~${distanceFromRestaurant?.toFixed(1)} km from restaurant)` +
-      `\n\nPlease confirm this order.`
+      `\n\nPlease confirm this order.` +
+      `\n\n---\nFor customer: After order confirmation, please pay here:\n${paymentPageUrl}`
     window.open(getWhatsAppLink(e164, `${base}${customer}`), '_blank')
   }
 
@@ -140,28 +161,63 @@ export default function CheckoutPage() {
 
   const canPlaceOrder =
     cart.length > 0 &&
-    name.trim() &&
-    mobile.trim() &&
+    mobileDigits.length === MOBILE_DIGITS &&
     mappedAddress.trim() &&
     userLat != null &&
     userLng != null &&
     deliveryZone === 'inside'
 
-  /** Short hint on the bar when something’s still missing */
-  const barHint = useMemo(() => {
-    if (cart.length === 0) return 'Add items'
-    if (userLat == null || userLng == null) return 'Location'
-    if (deliveryZone === 'outside') return 'Outside zone'
-    if (!mappedAddress.trim()) return 'Address'
-    if (!name.trim()) return 'Name'
-    if (!mobile.trim()) return 'Mobile'
-    return 'Place order'
-  }, [cart.length, userLat, userLng, deliveryZone, mappedAddress, name, mobile])
+  const validationMessage = (): string | null => {
+    if (cart.length === 0) return 'Your cart is empty — add items from the menu first.'
+    if (userLat == null || userLng == null) {
+      return 'Tap “Use current location” above and allow location when your browser asks.'
+    }
+    if (deliveryZone === 'outside') return 'We don’t deliver to this pin — it’s outside our zone.'
+    if (!mappedAddress.trim()) return 'Add your delivery address in the box above.'
+    if (mobileDigits.length < MOBILE_DIGITS) return 'Enter your 10-digit mobile number under Extra details (with +91).'
+    return null
+  }
+
+  const scrollFieldIntoView = (el: HTMLElement | null) => {
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  }
+
+  const handlePrimaryAction = () => {
+    const msg = validationMessage()
+    if (msg) {
+      setToast(msg)
+      if (cart.length === 0) return
+      if (userLat == null || userLng == null) scrollFieldIntoView(locationBlockRef.current)
+      else if (!mappedAddress.trim()) scrollFieldIntoView(addressRef.current)
+      else if (mobileDigits.length < MOBILE_DIGITS) scrollFieldIntoView(extraBlockRef.current)
+      return
+    }
+    orderNow()
+  }
 
   return (
     <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden bg-[#F25269]">
+      {toast && (
+        <div
+          className="fixed left-0 right-0 top-0 z-[10001] flex justify-center px-3 pt-[max(0.5rem,env(safe-area-inset-top))]"
+          role="alert"
+        >
+          <div className="flex max-w-md items-start gap-2 rounded-b-2xl border border-slate-700/80 bg-slate-900 px-4 py-3 text-left text-[13px] leading-snug text-white shadow-xl">
+            <span className="min-w-0 flex-1">{toast}</span>
+            <button
+              type="button"
+              className="shrink-0 rounded-lg p-1 text-white/80 hover:bg-white/10 hover:text-white"
+              aria-label="Dismiss"
+              onClick={() => setToast(null)}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <main
-        className="min-h-screen w-full max-w-full pb-[calc(5.5rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]"
+        className="min-h-screen w-full max-w-full pb-[calc(6.25rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]"
         style={{
           background:
             'linear-gradient(to bottom, #fff8f9 0%, #fef5f7 58%, rgba(255, 248, 249, 0) 100%)',
@@ -171,7 +227,7 @@ export default function CheckoutPage() {
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
               href="/menu?mode=order"
-              className="-ml-1 inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-xl px-2 py-2 text-[15px] font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
+              className="-ml-1 inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-xl px-2 py-2 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
             >
               <ArrowLeft className="h-5 w-5 shrink-0" strokeWidth={2.25} aria-hidden />
               <span>Back</span>
@@ -187,7 +243,7 @@ export default function CheckoutPage() {
             </div>
             <div className="space-y-3">
               {cart.length === 0 ? (
-                <p className="rounded-2xl border border-dashed border-slate-300 p-3 text-sm text-slate-500">Your cart is empty.</p>
+                <p className="rounded-2xl border border-dashed border-slate-300 p-3 text-base text-slate-500">Your cart is empty.</p>
               ) : (
                 cart.map((item) => {
                   const unitPrice = parseFloat(item.price.replace('₹', '').replace(',', '').split('/')[0].trim())
@@ -195,7 +251,7 @@ export default function CheckoutPage() {
                   return (
                     <div key={item.id} className="flex items-start justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-2.5">
                       <div className="min-w-0">
-                        <p className="text-[15px] font-semibold leading-tight text-slate-900">{item.name}</p>
+                        <p className="text-base font-semibold leading-tight text-slate-900">{item.name}</p>
                         <p className="mt-0.5 text-xs text-slate-500">{item.price}</p>
                       </div>
                       <div className="shrink-0 text-right">
@@ -203,12 +259,12 @@ export default function CheckoutPage() {
                           <button type="button" onClick={() => updateQty(item.id, item.cartQuantity - 1)} className="flex h-5 w-5 items-center justify-center rounded-full text-[#E23744]">
                             <Minus className="h-3.5 w-3.5" />
                           </button>
-                          <span className="w-7 text-center text-sm font-bold text-[#E23744]">{item.cartQuantity}</span>
+                          <span className="w-7 text-center text-base font-bold text-[#E23744]">{item.cartQuantity}</span>
                           <button type="button" onClick={() => updateQty(item.id, item.cartQuantity + 1)} className="flex h-5 w-5 items-center justify-center rounded-full text-[#E23744]">
                             <Plus className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <p className="mt-1 text-sm font-semibold text-slate-800">₹{lineTotal.toFixed(0)}</p>
+                        <p className="mt-1 text-base font-semibold text-slate-800">₹{lineTotal.toFixed(0)}</p>
                       </div>
                     </div>
                   )
@@ -218,7 +274,7 @@ export default function CheckoutPage() {
 
             <Link
               href="/menu?mode=order"
-              className="mt-3 inline-flex min-h-[44px] items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-4 py-2.5 text-[14px] font-semibold text-[#E23744]"
+              className="mt-3 inline-flex min-h-[44px] items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-4 py-2.5 text-base font-semibold text-[#E23744]"
             >
               + Add more items
             </Link>
@@ -230,7 +286,7 @@ export default function CheckoutPage() {
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">Within {radiusKm} km</span>
             </div>
 
-            <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3">
+            <div ref={locationBlockRef} className="mt-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3">
               <p className="text-[12px] font-semibold text-slate-800">Location</p>
               <p className="mt-1 text-[12px] leading-snug text-slate-600">
                 {userLat != null && userLng != null ? (
@@ -241,7 +297,7 @@ export default function CheckoutPage() {
                     )}
                   </>
                 ) : (
-                  <span>Tap the button below.</span>
+                  <span>Tap the button below. If nothing happens, allow location for this site in your browser or phone settings.</span>
                 )}
               </p>
 
@@ -249,7 +305,7 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={useCurrentLocation}
                 disabled={isLocating}
-                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 shadow-sm transition-all hover:bg-slate-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-base font-semibold text-slate-800 shadow-sm transition-all hover:bg-slate-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <MapPin className="h-4 w-4 shrink-0 text-slate-600" />
                 {isLocating ? 'Getting location…' : 'Use current location'}
@@ -273,52 +329,59 @@ export default function CheckoutPage() {
             </div>
 
             <div className="mt-4">
-              <label className="mb-1.5 block text-[12px] font-semibold text-slate-800">Address</label>
+              <label htmlFor="checkout-address" className="mb-1.5 block text-[12px] font-semibold text-slate-800">
+                Address
+              </label>
               <textarea
+                id="checkout-address"
+                ref={addressRef}
                 value={mappedAddress}
                 onChange={(e) => setMappedAddress(e.target.value)}
+                onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
                 placeholder="From location, or type your area"
                 rows={3}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-base leading-snug text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
               />
             </div>
 
-            <div className="mt-4 border-t border-slate-200 pt-4">
-              <p className="mb-2 text-[12px] font-semibold text-slate-800">Extra details <span className="font-normal text-slate-400">· optional</span></p>
-              <div className="grid gap-2">
+            <div ref={extraBlockRef} className="mt-4 border-t border-slate-200 pt-4">
+              <p className="text-[12px] font-semibold text-slate-800">Extra details</p>
+              <p className="mt-0.5 text-[11px] text-slate-500">For better delivery</p>
+              <div className="mt-3 grid gap-2">
+                <div>
+                  <label htmlFor="checkout-mobile" className="mb-1.5 block text-[12px] font-semibold text-slate-800">
+                    Mobile number
+                  </label>
+                  <div className="flex h-12 items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white focus-within:ring-2 focus-within:ring-slate-300/80">
+                    <span className="flex shrink-0 items-center border-r border-slate-200 bg-slate-50 px-3 text-base font-semibold text-slate-600">
+                      +91
+                    </span>
+                    <input
+                      id="checkout-mobile"
+                      value={mobileDigits}
+                      onChange={(e) => setMobile(digitsOnly(e.target.value).slice(0, MOBILE_DIGITS))}
+                      onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
+                      placeholder="9876543210"
+                      inputMode="numeric"
+                      autoComplete="tel-national"
+                      maxLength={MOBILE_DIGITS}
+                      className="min-w-0 flex-1 bg-transparent px-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                    />
+                  </div>
+                </div>
                 <input
                   value={flatHouse}
                   onChange={(e) => setFlatHouse(e.target.value)}
-                  placeholder="Flat / floor (optional)"
-                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
+                  onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
+                  placeholder="Flat / floor"
+                  className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
                 />
                 <input
                   value={landmark}
                   onChange={(e) => setLandmark(e.target.value)}
-                  placeholder="Landmark (optional)"
-                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 grid gap-3 border-t border-slate-200 pt-4">
-              <div>
-                <label className="mb-1.5 block text-[12px] font-semibold text-slate-800">Your name</label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[12px] font-semibold text-slate-800">Mobile</label>
-                <input
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                  placeholder="Mobile number"
-                  inputMode="tel"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
+                  onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
+                  placeholder="Landmark"
+                  className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
                 />
               </div>
             </div>
@@ -328,7 +391,7 @@ export default function CheckoutPage() {
             )}
           </section>
         </div>
-        </main>
+      </main>
 
       <div
         className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[9999] flex justify-center"
@@ -339,44 +402,43 @@ export default function CheckoutPage() {
       >
         <button
           type="button"
-          onClick={() => {
-            if (canPlaceOrder) orderNow()
-          }}
-          aria-disabled={!canPlaceOrder}
-          className={`pointer-events-auto flex h-[60px] w-full max-w-[430px] items-center justify-between rounded-full border border-white/25 bg-[#F25269] px-4 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] ${
-            canPlaceOrder ? 'cursor-pointer active:scale-[0.99]' : 'cursor-not-allowed'
+          onClick={handlePrimaryAction}
+          className={`pointer-events-auto flex min-h-[72px] w-full max-w-[430px] items-center justify-between gap-2 rounded-full border border-white/25 bg-[#F25269] px-4 py-2.5 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] ${
+            canPlaceOrder ? 'cursor-pointer active:scale-[0.99]' : 'cursor-pointer'
           }`}
         >
-            <span className="flex min-w-0 flex-1 items-center gap-2.5">
-              <span className="flex shrink-0 -space-x-2">
-                <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
-                  <Image
-                    src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=120&q=60"
-                    alt=""
-                    width={28}
-                    height={28}
-                    className="h-full w-full object-cover"
-                    unoptimized
-                  />
-                </span>
-                <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
-                  <Image
-                    src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=120&q=60"
-                    alt=""
-                    width={28}
-                    height={28}
-                    className="h-full w-full object-cover"
-                    unoptimized
-                  />
-                </span>
+          <span className="flex min-w-0 flex-1 items-center gap-2.5">
+            <span className="flex shrink-0 -space-x-2">
+              <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
+                <Image
+                  src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=120&q=60"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-full w-full object-cover"
+                  unoptimized
+                />
               </span>
-              <span className="min-w-0 text-left text-[16px] font-semibold leading-tight text-white drop-shadow-sm">
-                {totalItems} {totalItems === 1 ? 'item' : 'items'} · ₹{total.toFixed(0)}
+              <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
+                <Image
+                  src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=120&q=60"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-full w-full object-cover"
+                  unoptimized
+                />
               </span>
             </span>
-            <span className="max-w-[46%] shrink-0 pl-1 text-right text-[14px] font-bold leading-tight text-white drop-shadow-sm">
-              {barHint}
+            <span className="min-w-0 text-left text-base font-semibold leading-tight text-white drop-shadow-sm">
+              {totalItems} {totalItems === 1 ? 'item' : 'items'} · ₹{total.toFixed(0)}
             </span>
+          </span>
+          <span className="shrink-0 text-right leading-tight">
+            <span className="block text-[10px] font-semibold uppercase tracking-wide text-white/90">Checkout</span>
+            <span className="mt-0.5 block text-[15px] font-bold text-white">Place order</span>
+            <span className="mt-0.5 block text-[10px] font-medium text-white/85">Pay by UPI</span>
+          </span>
         </button>
       </div>
     </div>

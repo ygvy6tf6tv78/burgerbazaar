@@ -73,6 +73,22 @@ export default function Hero() {
     }
   }, [])
 
+  // Deep link from WhatsApp etc.: ?pay=1 opens the payment face on the OneLink card
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('pay') !== '1') return
+    const t = setTimeout(() => {
+      setIsFlipping(true)
+      setCurrentFace('payment')
+      setTimeout(() => {
+        setIsFlipping(false)
+      }, 850)
+      window.history.replaceState(null, '', window.location.pathname + window.location.hash)
+    }, 450)
+    return () => clearTimeout(t)
+  }, [])
+
   // Header image carousel: cycle through 3 images very smoothly
   useEffect(() => {
     const interval = setInterval(() => {
