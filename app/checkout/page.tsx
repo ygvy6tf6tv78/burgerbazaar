@@ -38,7 +38,7 @@ export default function CheckoutPage() {
 
   const delivery = shopConfig.delivery
   const radiusKm = delivery.radiusKm
-  const paymentPageUrl = `${shopConfig.url}?pay=1`
+  const paymentPageUrl = `${shopConfig.url.replace(/\/$/, '')}/mango-pay`
 
   const distanceFromRestaurant = useMemo(() => {
     if (userLat == null || userLng == null) return null

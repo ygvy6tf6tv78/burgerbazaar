@@ -73,7 +73,7 @@ export default function Hero() {
     }
   }, [])
 
-  // Deep link from WhatsApp etc.: ?pay=1 opens the payment face on the OneLink card
+  // Legacy: ?pay=1 (prefer share link /mango-pay → home + openPayment)
   useEffect(() => {
     if (typeof window === 'undefined') return
     const params = new URLSearchParams(window.location.search)
