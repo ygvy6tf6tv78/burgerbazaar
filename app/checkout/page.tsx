@@ -50,17 +50,28 @@ export default function CheckoutPage() {
     return distanceFromRestaurant <= radiusKm ? 'inside' : 'outside'
   }, [userLat, userLng, distanceFromRestaurant, radiusKm])
 
+  const cartPersistReady = useRef(false)
+
   useEffect(() => {
     if (typeof window === 'undefined') return
     const raw = window.sessionStorage.getItem('mango_checkout_cart')
-    if (!raw) return
-    try {
-      const parsed = JSON.parse(raw) as CartItem[]
-      setCart(parsed)
-    } catch {
-      setCart([])
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as CartItem[]
+        if (Array.isArray(parsed)) setCart(parsed)
+      } catch {
+        setCart([])
+      }
     }
+    queueMicrotask(() => {
+      cartPersistReady.current = true
+    })
   }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !cartPersistReady.current) return
+    window.sessionStorage.setItem('mango_checkout_cart', JSON.stringify(cart))
+  }, [cart])
 
   useEffect(() => {
     if (!toast) return
@@ -319,9 +330,9 @@ export default function CheckoutPage() {
               </button>
 
               {deliveryZone === 'inside' && userLat != null && (
-                <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-emerald-200/80 bg-emerald-50 px-2.5 py-1.5 text-[11px] text-emerald-900">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                  We deliver here.
+                <div className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-emerald-200/90 bg-gradient-to-b from-emerald-50 to-emerald-100/80 px-3 py-2 text-center text-[11px] font-medium text-emerald-900 shadow-sm">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                  <span>We deliver here</span>
                 </div>
               )}
 

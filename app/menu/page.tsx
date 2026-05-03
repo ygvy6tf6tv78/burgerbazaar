@@ -79,6 +79,21 @@ function MenuPageInner() {
     if (isOrderMode) setIsLightMode(true)
   }, [isOrderMode])
 
+  // Restore cart from checkout (sessionStorage) when opening order mode so "Add more items" keeps quantities
+  useEffect(() => {
+    if (!isOrderMode || typeof window === 'undefined') return
+    const raw = window.sessionStorage.getItem('mango_checkout_cart')
+    if (!raw) return
+    try {
+      const parsed = JSON.parse(raw) as CartItem[]
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setCart(parsed)
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [isOrderMode])
+
   useEffect(() => {
     if (!isOrderMode) return
     const el = categoryRefs.current[activeCategory]
