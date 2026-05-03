@@ -319,12 +319,20 @@ export default function CheckoutPage() {
                         <p className="mt-0.5 text-xs text-slate-500">{item.price}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="inline-flex min-h-[44px] items-center rounded-xl border border-[#f3b5c0] bg-[#fff3f6] px-1">
-                          <button type="button" onClick={() => updateQty(item.id, item.cartQuantity - 1)} className="flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-full text-[#E23744] active:bg-[#F25269]/10">
+                        <div className="inline-flex h-9 items-center rounded-xl border border-[#f3b5c0] bg-[#fff3f6] px-2">
+                          <button
+                            type="button"
+                            onClick={() => updateQty(item.id, item.cartQuantity - 1)}
+                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#E23744] active:opacity-70"
+                          >
                             <Minus className="h-3.5 w-3.5" />
                           </button>
                           <span className="w-7 text-center text-sm font-bold text-[#E23744]">{item.cartQuantity}</span>
-                          <button type="button" onClick={() => updateQty(item.id, item.cartQuantity + 1)} className="flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-full text-[#E23744] active:bg-[#F25269]/10">
+                          <button
+                            type="button"
+                            onClick={() => updateQty(item.id, item.cartQuantity + 1)}
+                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#E23744] active:opacity-70"
+                          >
                             <Plus className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -339,7 +347,7 @@ export default function CheckoutPage() {
             <Link
               href="/menu?mode=order"
               onClick={() => writeHandoffToMenuFromCheckout(cart)}
-              className="mt-2.5 inline-flex min-h-[44px] touch-manipulation items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-2 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
+              className="mt-2.5 inline-flex touch-manipulation items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
             >
               + Add more items
             </Link>
