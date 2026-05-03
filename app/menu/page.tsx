@@ -33,19 +33,13 @@ const categoryKeys: MenuCategoryKey[] = [
 const MENU_PDF_URL = '/mango%20menu%2017-01-2025.pdf'
 const defaultOrderMessage = "Hi Mango, I'd like to order from the menu. Please share today's availability and rates."
 
-/** Scroll `element`'s top edge to near the top of `container` (same coordinate space as `container.scrollTop`). */
-function scrollElementTopIntoContainer(
-  element: HTMLElement,
-  container: HTMLElement,
-  paddingTop = 10,
-  behavior: ScrollBehavior = 'auto'
-) {
-  const cRect = container.getBoundingClientRect()
+/** Document scroll — same pattern as /reviews (no nested 100dvh scroller; avoids mobile “half cut” viewport). */
+function scrollElementTopOnPage(element: HTMLElement, paddingTop = 8, behavior: ScrollBehavior = 'auto') {
   const eRect = element.getBoundingClientRect()
-  const nextTop = container.scrollTop + (eRect.top - cRect.top) - paddingTop
-  const top = Math.max(0, nextTop)
+  const y = window.scrollY + eRect.top - paddingTop
+  const top = Math.max(0, y)
   if (!Number.isFinite(top)) return
-  container.scrollTo({ top, behavior })
+  window.scrollTo({ top, behavior })
 }
 
 function MenuPageInner() {
@@ -68,7 +62,6 @@ function MenuPageInner() {
   const orderSectionRefs = useRef<Partial<Record<MenuCategoryKey, HTMLElement | null>>>({})
   /** Accordion header row — scroll target so the category title bar lands under the header, not the section bottom. */
   const orderHeaderRefs = useRef<Partial<Record<MenuCategoryKey, HTMLButtonElement | null>>>({})
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const pendingOrderCategoryJump = useRef<MenuCategoryKey | null>(null)
   /** Only scroll order-mode category pills after first paint (skip land / enter). */
   const skipInitialOrderCategoryPillScroll = useRef(true)
@@ -177,12 +170,11 @@ function MenuPageInner() {
     const header = orderHeaderRefs.current[key]
     const section = orderSectionRefs.current[key]
     const target = header ?? section
-    const container = scrollContainerRef.current
-    if (target && container) {
-      scrollElementTopIntoContainer(target, container, 8, 'auto')
+    if (target) {
+      scrollElementTopOnPage(target, 8, 'auto')
       return
     }
-    target?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    section?.scrollIntoView({ behavior: 'auto', block: 'start' })
   }
 
   /** After accordion opens (~200ms transition), snap scroll to category header (instant, not smooth). */
@@ -238,11 +230,7 @@ function MenuPageInner() {
   }
 
   return (
-    <div className="relative max-w-[430px] mx-auto min-h-screen overflow-x-hidden">
-      <div
-        ref={scrollContainerRef}
-        className="h-[100dvh] min-h-0 overflow-y-auto overscroll-y-contain scrollbar-hide touch-pan-y [-webkit-overflow-scrolling:touch]"
-      >
+    <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden">
       <main
         className={`relative min-h-screen ${isOrderMode ? (cart.length > 0 ? 'pb-[calc(9rem+env(safe-area-inset-bottom))]' : 'pb-[calc(5.5rem+env(safe-area-inset-bottom))]') : 'pb-24'} transition-colors duration-300 w-full max-w-full pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))] ${
           isLightMode
@@ -739,7 +727,6 @@ function MenuPageInner() {
           </div>
         </div>
       </main>
-      </div>
 
       <AnimatePresence>
         {isOrderMode && showCategoryMenu && (
@@ -810,13 +797,17 @@ function MenuPageInner() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 24 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="pointer-events-none absolute left-3 right-3 z-[9999] bottom-[max(0.75rem,env(safe-area-inset-bottom))]"
+                className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[9999] flex justify-center"
+                style={{
+                  paddingLeft: 'max(1.25rem, env(safe-area-inset-left))',
+                  paddingRight: 'max(1.25rem, env(safe-area-inset-right))',
+                }}
               >
                 <motion.button
                   onClick={goToCheckout}
                   animate={cartBarPulse ? { scale: [1, 1.02, 1] } : { scale: 1 }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="pointer-events-auto w-full h-[60px] rounded-full text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] flex items-center justify-between px-4 border border-white/20"
+                  className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] flex items-center justify-between px-4 border border-white/20"
                   style={{ background: '#F25269' }}
                 >
                   <span className="flex items-center gap-2.5">
@@ -838,25 +829,33 @@ function MenuPageInner() {
 
           <AnimatePresence>
             {!showCategoryMenu && (
-              <motion.button
-                initial={{ opacity: 0, y: 16, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 16, scale: 0.96 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                onClick={() => setShowCategoryMenu(true)}
-                whileTap={{ scale: 0.97 }}
-                className={`absolute right-3 z-[10000] h-11 rounded-full shadow-[0_14px_30px_rgba(15,23,42,0.38)] text-white px-4 inline-flex items-center gap-2.5 border border-white/20 touch-manipulation ${
+              <div
+                className={`pointer-events-none fixed inset-x-0 z-[10000] mx-auto flex w-full max-w-[430px] justify-end ${
                   cart.length > 0
                     ? 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))]'
                     : 'bottom-[max(0.75rem,env(safe-area-inset-bottom))]'
                 }`}
-                style={{ background: 'linear-gradient(135deg, #334155, #0f172a)' }}
+                style={{
+                  paddingLeft: 'max(1.25rem, env(safe-area-inset-left))',
+                  paddingRight: 'max(1.25rem, env(safe-area-inset-right))',
+                }}
               >
-                <span className="w-6 h-6 rounded-full bg-white/20 inline-flex items-center justify-center">
-                  <List className="w-4 h-4" />
-                </span>
-                <span className="text-sm font-semibold tracking-wide">Menu</span>
-              </motion.button>
+                <motion.button
+                  initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 16, scale: 0.96 }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  onClick={() => setShowCategoryMenu(true)}
+                  whileTap={{ scale: 0.97 }}
+                  className="pointer-events-auto h-11 rounded-full shadow-[0_14px_30px_rgba(15,23,42,0.38)] text-white px-4 inline-flex items-center gap-2.5 border border-white/20 touch-manipulation"
+                  style={{ background: 'linear-gradient(135deg, #334155, #0f172a)' }}
+                >
+                  <span className="w-6 h-6 rounded-full bg-white/20 inline-flex items-center justify-center">
+                    <List className="w-4 h-4" />
+                  </span>
+                  <span className="text-sm font-semibold tracking-wide">Menu</span>
+                </motion.button>
+              </div>
             )}
           </AnimatePresence>
         </>

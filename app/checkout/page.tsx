@@ -159,10 +159,8 @@ export default function CheckoutPage() {
   }, [cart.length, userLat, userLng, deliveryZone, mappedAddress, name, mobile])
 
   return (
-    <div className="relative mx-auto min-h-screen max-w-[430px] overflow-x-hidden">
-      {/* Scroll layer — same pattern as /menu?mode=order; bottom bar sits outside this layer */}
-      <div className="h-[100dvh] min-h-0 overflow-y-auto overscroll-y-contain scrollbar-hide touch-pan-y [-webkit-overflow-scrolling:touch]">
-        <main className="min-h-screen w-full max-w-full bg-gradient-to-b from-[#fff8f9] via-[#f8f9fb] to-[#f3f4f7] pb-[calc(5.5rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]">
+    <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden">
+      <main className="min-h-screen w-full max-w-full bg-gradient-to-b from-[#fff8f9] via-[#f8f9fb] to-[#f3f4f7] pb-[calc(5.5rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]">
         <div className="mx-auto w-full max-w-md px-3 pt-3">
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
@@ -323,17 +321,21 @@ export default function CheckoutPage() {
           </section>
         </div>
         </main>
-      </div>
 
-      {/* Pinned inside phone frame — matches menu cart bar (absolute, not document fixed) */}
-      <div className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 z-[9999]">
+      <div
+        className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[9999] flex justify-center"
+        style={{
+          paddingLeft: 'max(1.25rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1.25rem, env(safe-area-inset-right))',
+        }}
+      >
         <button
           type="button"
           onClick={() => {
             if (canPlaceOrder) orderNow()
           }}
           aria-disabled={!canPlaceOrder}
-          className={`pointer-events-auto flex h-[60px] w-full items-center justify-between rounded-full border border-white/25 bg-[#F25269] px-4 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] ${
+          className={`pointer-events-auto flex h-[60px] w-full max-w-[430px] items-center justify-between rounded-full border border-white/25 bg-[#F25269] px-4 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] ${
             canPlaceOrder ? 'cursor-pointer active:scale-[0.99]' : 'cursor-not-allowed'
           }`}
         >
