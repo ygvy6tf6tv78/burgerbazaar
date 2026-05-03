@@ -281,7 +281,7 @@ export default function CheckoutPage() {
 
             <Link
               href="/menu?mode=order"
-              className="mt-3 inline-flex min-h-[40px] items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3.5 py-2 text-[14px] font-semibold text-[#E23744]"
+              className="mt-2.5 inline-flex items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
             >
               + Add more items
             </Link>
