@@ -9,6 +9,7 @@ import { ArrowLeft, Moon, Sun, ChevronsLeftRight, ShoppingCart, Plus, Minus, Che
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
+import { MANGO_CART_KEY, MANGO_HANDOFF_TO_MENU, writeHandoffToCheckout } from '../lib/cart-session'
 
 type MenuCategoryKey = keyof typeof menuCategories
 
@@ -79,18 +80,26 @@ function MenuPageInner() {
     if (isOrderMode) setIsLightMode(true)
   }, [isOrderMode])
 
-  // Restore cart from checkout (sessionStorage) when opening order mode so "Add more items" keeps quantities
+  // Restore cart only after checkout → “Add more items” (one-shot handoff). Refresh / first visit = empty cart.
   useEffect(() => {
     if (!isOrderMode || typeof window === 'undefined') return
-    const raw = window.sessionStorage.getItem('mango_checkout_cart')
-    if (!raw) return
+    const fromCheckout = window.sessionStorage.getItem(MANGO_HANDOFF_TO_MENU) === '1'
+    window.sessionStorage.removeItem(MANGO_HANDOFF_TO_MENU)
+    if (!fromCheckout) {
+      setCart([])
+      window.sessionStorage.removeItem(MANGO_CART_KEY)
+      return
+    }
+    const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
+    if (!raw) {
+      setCart([])
+      return
+    }
     try {
       const parsed = JSON.parse(raw) as CartItem[]
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        setCart(parsed)
-      }
+      setCart(Array.isArray(parsed) ? parsed : [])
     } catch {
-      /* ignore */
+      setCart([])
     }
   }, [isOrderMode])
 
@@ -226,9 +235,7 @@ function MenuPageInner() {
   }, [activeFilter, isOrderMode, filteredOrderCategories])
 
   const goToCheckout = () => {
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.setItem('mango_checkout_cart', JSON.stringify(cart))
-    }
+    writeHandoffToCheckout(cart)
     router.push('/checkout')
   }
 

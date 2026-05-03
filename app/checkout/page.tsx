@@ -8,6 +8,11 @@ import { type CartItem, generateWhatsAppCartMessage } from '../shops/honeys-fres
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
 import { distanceKm } from '../lib/distance'
+import {
+  MANGO_CART_KEY,
+  MANGO_HANDOFF_TO_CHECKOUT,
+  writeHandoffToMenuFromCheckout,
+} from '../lib/cart-session'
 
 type DeliveryZone = 'unset' | 'inside' | 'outside'
 
@@ -50,28 +55,27 @@ export default function CheckoutPage() {
     return distanceFromRestaurant <= radiusKm ? 'inside' : 'outside'
   }, [userLat, userLng, distanceFromRestaurant, radiusKm])
 
-  const cartPersistReady = useRef(false)
-
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const raw = window.sessionStorage.getItem('mango_checkout_cart')
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as CartItem[]
-        if (Array.isArray(parsed)) setCart(parsed)
-      } catch {
-        setCart([])
-      }
+    const fromMenu = window.sessionStorage.getItem(MANGO_HANDOFF_TO_CHECKOUT) === '1'
+    window.sessionStorage.removeItem(MANGO_HANDOFF_TO_CHECKOUT)
+    if (!fromMenu) {
+      setCart([])
+      window.sessionStorage.removeItem(MANGO_CART_KEY)
+      return
     }
-    queueMicrotask(() => {
-      cartPersistReady.current = true
-    })
+    const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
+    if (!raw) {
+      setCart([])
+      return
+    }
+    try {
+      const parsed = JSON.parse(raw) as CartItem[]
+      setCart(Array.isArray(parsed) ? parsed : [])
+    } catch {
+      setCart([])
+    }
   }, [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !cartPersistReady.current) return
-    window.sessionStorage.setItem('mango_checkout_cart', JSON.stringify(cart))
-  }, [cart])
 
   useEffect(() => {
     if (!toast) return
@@ -292,6 +296,7 @@ export default function CheckoutPage() {
 
             <Link
               href="/menu?mode=order"
+              onClick={() => writeHandoffToMenuFromCheckout(cart)}
               className="mt-2.5 inline-flex items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
             >
               + Add more items
