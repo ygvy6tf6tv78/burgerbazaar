@@ -9,7 +9,12 @@ import { ArrowLeft, Moon, Sun, ChevronsLeftRight, ShoppingCart, Plus, Minus, Che
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
-import { MANGO_CART_KEY, MANGO_HANDOFF_TO_MENU, writeHandoffToCheckout } from '../lib/cart-session'
+import {
+  MANGO_CART_KEY,
+  MANGO_HANDOFF_TO_MENU,
+  MANGO_CHECKOUT_SESSION,
+  writeHandoffToCheckout,
+} from '../lib/cart-session'
 
 type MenuCategoryKey = keyof typeof menuCategories
 
@@ -88,11 +93,13 @@ function MenuPageInner() {
     if (!fromCheckout) {
       setCart([])
       window.sessionStorage.removeItem(MANGO_CART_KEY)
+      window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
       return
     }
     const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
     if (!raw) {
       setCart([])
+      window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
       return
     }
     try {
@@ -101,6 +108,7 @@ function MenuPageInner() {
     } catch {
       setCart([])
     }
+    window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
   }, [isOrderMode])
 
   useEffect(() => {

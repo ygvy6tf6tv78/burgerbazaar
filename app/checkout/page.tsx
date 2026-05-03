@@ -11,6 +11,8 @@ import { distanceKm } from '../lib/distance'
 import {
   MANGO_CART_KEY,
   MANGO_HANDOFF_TO_CHECKOUT,
+  MANGO_CHECKOUT_SESSION,
+  clearCheckoutSession,
   writeHandoffToMenuFromCheckout,
 } from '../lib/cart-session'
 
@@ -26,6 +28,7 @@ function digitsOnly(s: string) {
 const fieldText = 'text-[16px] leading-snug'
 
 export default function CheckoutPage() {
+  const [checkoutStorageReady, setCheckoutStorageReady] = useState(false)
   const [cart, setCart] = useState<CartItem[]>([])
   const [mobile, setMobile] = useState('')
   const [mappedAddress, setMappedAddress] = useState('')
@@ -57,25 +60,35 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const fromMenu = window.sessionStorage.getItem(MANGO_HANDOFF_TO_CHECKOUT) === '1'
+    const handoff = window.sessionStorage.getItem(MANGO_HANDOFF_TO_CHECKOUT) === '1'
     window.sessionStorage.removeItem(MANGO_HANDOFF_TO_CHECKOUT)
-    if (!fromMenu) {
-      setCart([])
+    const sessionActive = window.sessionStorage.getItem(MANGO_CHECKOUT_SESSION) === '1'
+
+    let next: CartItem[] = []
+    if (handoff || sessionActive) {
+      const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw) as CartItem[]
+          if (Array.isArray(parsed)) next = parsed
+        } catch {
+          next = []
+        }
+      }
+      window.sessionStorage.setItem(MANGO_CHECKOUT_SESSION, '1')
+    } else {
       window.sessionStorage.removeItem(MANGO_CART_KEY)
-      return
+      window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
     }
-    const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
-    if (!raw) {
-      setCart([])
-      return
-    }
-    try {
-      const parsed = JSON.parse(raw) as CartItem[]
-      setCart(Array.isArray(parsed) ? parsed : [])
-    } catch {
-      setCart([])
-    }
+    setCart(next)
+    setCheckoutStorageReady(true)
   }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !checkoutStorageReady) return
+    window.sessionStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
+    window.sessionStorage.setItem(MANGO_CHECKOUT_SESSION, '1')
+  }, [cart, checkoutStorageReady])
 
   useEffect(() => {
     if (!toast) return
@@ -122,11 +135,22 @@ export default function CheckoutPage() {
       `\n\nPlease confirm this order.` +
       `\n\n---\nFor customer: After order confirmation, please pay here:\n${paymentPageUrl}`
     window.open(getWhatsAppLink(e164, `${base}${customer}`), '_blank')
+    clearCheckoutSession()
+    setCart([])
   }
 
   const useCurrentLocation = () => {
-    if (typeof window === 'undefined' || !navigator.geolocation) {
-      setLocationStatus('Location is not supported on this device.')
+    if (typeof window === 'undefined') return
+
+    if (!window.isSecureContext) {
+      setLocationStatus(
+        'Location ke liye HTTPS link zaroori hai. mango.onelink.cards khulkar try karein — localhost HTTP par GPS kaam nahi karta.'
+      )
+      return
+    }
+
+    if (!navigator.geolocation) {
+      setLocationStatus('Is browser / phone par location API band hai. Chrome ya Safari update karke try karein.')
       return
     }
 
@@ -169,11 +193,28 @@ export default function CheckoutPage() {
           setIsLocating(false)
         }
       },
-      () => {
+      (err: GeolocationPositionError) => {
         setIsLocating(false)
-        setLocationStatus('Location blocked — allow access to continue.')
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocationStatus(
+            'Location permission OFF hai. Steps: (1) Chrome ⋮ → Settings → Site settings → Location → Allow. ' +
+              '(2) Ya phone Settings → Apps → Chrome → Permissions → Location → Allow. ' +
+              'Phir neeche “Use current location” dubara dabayein.'
+          )
+          setToast(
+            'Location band hai — Chrome / phone Settings se Allow karein, phir yahi button dubara dabayein.'
+          )
+        } else if (err.code === err.TIMEOUT) {
+          setLocationStatus(
+            'Location time out — khuli jagah / balcony try karein, GPS on hai check karein, button dubara dabayein.'
+          )
+        } else {
+          setLocationStatus(
+            'Location abhi nahi mili. GPS / Location services ON karein aur dubara try karein.'
+          )
+        }
       },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 22000, maximumAge: 120000 }
     )
   }
 
@@ -249,7 +290,8 @@ export default function CheckoutPage() {
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
               href="/menu?mode=order"
-              className="-ml-1 inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-xl px-2 py-2 text-[15px] font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
+              onClick={() => clearCheckoutSession()}
+              className="-ml-1 inline-flex min-h-[48px] min-w-[48px] touch-manipulation items-center gap-2 rounded-xl px-2 py-2 text-[15px] font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
             >
               <ArrowLeft className="h-5 w-5 shrink-0" strokeWidth={2.25} aria-hidden />
               <span>Back</span>
@@ -277,12 +319,12 @@ export default function CheckoutPage() {
                         <p className="mt-0.5 text-xs text-slate-500">{item.price}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="inline-flex h-9 items-center rounded-xl border border-[#f3b5c0] bg-[#fff3f6] px-2">
-                          <button type="button" onClick={() => updateQty(item.id, item.cartQuantity - 1)} className="flex h-5 w-5 items-center justify-center rounded-full text-[#E23744]">
+                        <div className="inline-flex min-h-[44px] items-center rounded-xl border border-[#f3b5c0] bg-[#fff3f6] px-1">
+                          <button type="button" onClick={() => updateQty(item.id, item.cartQuantity - 1)} className="flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-full text-[#E23744] active:bg-[#F25269]/10">
                             <Minus className="h-3.5 w-3.5" />
                           </button>
                           <span className="w-7 text-center text-sm font-bold text-[#E23744]">{item.cartQuantity}</span>
-                          <button type="button" onClick={() => updateQty(item.id, item.cartQuantity + 1)} className="flex h-5 w-5 items-center justify-center rounded-full text-[#E23744]">
+                          <button type="button" onClick={() => updateQty(item.id, item.cartQuantity + 1)} className="flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-full text-[#E23744] active:bg-[#F25269]/10">
                             <Plus className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -297,7 +339,7 @@ export default function CheckoutPage() {
             <Link
               href="/menu?mode=order"
               onClick={() => writeHandoffToMenuFromCheckout(cart)}
-              className="mt-2.5 inline-flex items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
+              className="mt-2.5 inline-flex min-h-[44px] touch-manipulation items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-2 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
             >
               + Add more items
             </Link>
@@ -328,7 +370,7 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={useCurrentLocation}
                 disabled={isLocating}
-                className="mt-2 flex h-11 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 shadow-sm transition-all hover:bg-slate-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                className="relative z-10 mt-2 flex min-h-[52px] w-full min-w-0 touch-manipulation items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-800 shadow-sm transition-all hover:bg-slate-50 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <MapPin className="h-4 w-4 shrink-0 text-slate-600" />
                 <span className="truncate">{isLocating ? 'Getting location…' : 'Use current location'}</span>
@@ -432,7 +474,7 @@ export default function CheckoutPage() {
         <button
           type="button"
           onClick={handlePrimaryAction}
-          className={`pointer-events-auto flex h-[60px] w-full max-w-[430px] items-center justify-between rounded-full border border-white/25 bg-[#F25269] px-4 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] ${
+          className={`pointer-events-auto flex min-h-[60px] w-full max-w-[430px] touch-manipulation items-center justify-between rounded-full border border-white/25 bg-[#F25269] px-4 py-2 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] active:bg-[#e0435a] ${
             canPlaceOrder ? 'cursor-pointer active:scale-[0.99]' : 'cursor-pointer'
           }`}
         >
