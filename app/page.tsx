@@ -77,19 +77,20 @@ export default function Home() {
         )}
       </AnimatePresence>
       {!showLoading && (
+        <>
+          {/* Fixed viewport glows — avoids repainting huge blurs on every scroll tick */}
+          <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+            <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#FBEC89]/10 blur-3xl" />
+            <div className="absolute top-[28vh] -left-20 h-64 w-64 rounded-full bg-mango-green/14 blur-3xl" />
+            <div className="absolute bottom-[15vh] right-[-5rem] h-72 w-72 rounded-full bg-[#FBEC89]/10 blur-3xl" />
+          </div>
         <motion.main
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-          className="min-h-screen pb-16 relative z-10 overflow-hidden pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]"
+          className="min-h-screen pb-16 relative z-10 overflow-x-hidden pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]"
           style={{ backgroundColor: '#1a1a1a' }}
         >
-          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#FBEC89]/10 blur-3xl" />
-            <div className="absolute top-[22rem] -left-20 h-64 w-64 rounded-full bg-mango-green/15 blur-3xl" />
-            <div className="absolute bottom-[18rem] right-[-5rem] h-72 w-72 rounded-full bg-[#FBEC89]/10 blur-3xl" />
-          </div>
-
           <div className="relative z-10">
             <Hero />
             <About />
@@ -103,6 +104,7 @@ export default function Home() {
             <BackToTop />
           </div>
         </motion.main>
+        </>
       )}
     </>
   )

@@ -261,12 +261,13 @@ export default function Hero() {
                 animate={{
                   scale: 1,
                   opacity: 1,
-                  y: [0, -5, 0],
+                  y: [0, -4, 0],
                 }}
                 transition={{
                   scale: { duration: 0.4, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] },
                   opacity: { duration: 0.4, delay: 0.1 },
-                  y: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', repeatType: 'reverse' },
+                  /* Lighter motion = less main-thread work while scrolling the page */
+                  y: { duration: 5, repeat: Infinity, ease: 'easeInOut', repeatType: 'reverse' },
                 }}
               >
                 <div className="w-32 h-32 rounded-full flex items-center justify-center overflow-hidden bg-white p-1.5 border-2 border-slate-200/70 shadow-lg">
@@ -370,7 +371,7 @@ export default function Hero() {
 
             {/* Content – scrollable; nothing touches edges; responsive padding & safe areas */}
             <div
-              className="relative flex-1 flex flex-col items-center min-h-0 text-white overflow-y-auto overflow-x-hidden"
+              className="relative flex-1 flex flex-col items-center min-h-0 text-white overflow-y-auto overflow-x-hidden overscroll-y-contain [-webkit-overflow-scrolling:touch] touch-pan-y"
               style={{
                 paddingLeft: 'max(1rem, env(safe-area-inset-left) + 4px)',
                 paddingRight: 'max(1rem, env(safe-area-inset-right) + 4px)',

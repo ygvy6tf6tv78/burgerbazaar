@@ -212,12 +212,12 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           )}
         </div>
 
-        {/* Row 2: View Menu, Order Now */}
+        {/* Row 2: View Menu (menu icon), Order Now (cart — primary CTA) */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           <Link
             href="/menu"
             onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
+            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
             style={{
               color: '#0F172A',
               boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
@@ -235,31 +235,33 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <ShoppingCart className="w-4 h-4" style={{ color: '#475569', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }} />
+            <UtensilsCrossed className="w-4 h-4 shrink-0 text-slate-600" strokeWidth={2.25} aria-hidden />
             <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
           </Link>
           <Link
             href="/menu?mode=order"
             onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/95 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
+            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
             style={{
               color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.9)',
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
               borderRadius: '16px',
               fontSize: '14px',
               WebkitTapHighlightColor: 'transparent',
               transform: 'translateY(-1px)'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,1)'
+              e.currentTarget.style.boxShadow =
+                '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
               e.currentTarget.style.transform = 'translateY(-2px)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
+              e.currentTarget.style.boxShadow =
+                '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <ShoppingCart className="w-4 h-4" style={{ color: '#111827', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08))' }} />
+            <ShoppingCart className="w-4 h-4 shrink-0 text-[#E23744]" strokeWidth={2.25} aria-hidden />
             <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Order Now</span>
           </Link>
         </div>

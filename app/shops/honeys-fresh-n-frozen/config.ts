@@ -134,6 +134,14 @@ export const shopConfig = {
     shortDescription: "Located in the heart of Bahu Plaza, Mango is a pure vegetarian restaurant serving authentic North Indian and Chinese flavours. We focus on clean preparation, quality ingredients, and a welcoming dining experience for families and friends.",
   },
   menuUrl: "/menu",
+
+  /** Delivery area: distance from this pin (Mango @ Bahu Plaza). Update lat/lng from Google Maps if needed. */
+  delivery: {
+    restaurantLat: 32.7249,
+    restaurantLng: 74.8568,
+    radiusKm: 5,
+    label: "Mango, Bahu Plaza, Jammu",
+  },
   
   // Payment Configuration
   payment: {

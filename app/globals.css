@@ -21,10 +21,11 @@
 }
 
 @layer base {
-  * {
-    scroll-behavior: smooth;
+  /* Let the browser handle momentum scrolling (avoid universal smooth / translateZ hacks). */
+  html {
+    scroll-behavior: auto;
   }
-  
+
   body {
     @apply text-slate-100;
     background:
@@ -35,16 +36,6 @@
     position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    will-change: scroll-position;
-  }
-  
-  /* Optimize animations */
-  * {
-    -webkit-transform: translateZ(0);
-    -moz-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    -o-transform: translateZ(0);
-    transform: translateZ(0);
   }
   
   body::before {
@@ -235,6 +226,16 @@
 }
 
 .no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Same behavior — used across menu / feeds (Tailwind arbitrary class was missing) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

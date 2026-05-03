@@ -33,13 +33,27 @@ const categoryKeys: MenuCategoryKey[] = [
 const MENU_PDF_URL = '/mango%20menu%2017-01-2025.pdf'
 const defaultOrderMessage = "Hi Mango, I'd like to order from the menu. Please share today's availability and rates."
 
+/** Scroll `element`'s top edge to near the top of `container` (same coordinate space as `container.scrollTop`). */
+function scrollElementTopIntoContainer(
+  element: HTMLElement,
+  container: HTMLElement,
+  paddingTop = 10,
+  behavior: ScrollBehavior = 'auto'
+) {
+  const cRect = container.getBoundingClientRect()
+  const eRect = element.getBoundingClientRect()
+  const nextTop = container.scrollTop + (eRect.top - cRect.top) - paddingTop
+  const top = Math.max(0, nextTop)
+  if (!Number.isFinite(top)) return
+  container.scrollTo({ top, behavior })
+}
+
 function MenuPageInner() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const catParam = searchParams.get('cat') as MenuCategoryKey | null
   const mode = searchParams.get('mode')
   const isOrderMode = mode === 'order'
-  const useWhiteOrderTheme = isOrderMode
   const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'burgerPizza'
   const [activeCategory, setActiveCategory] = useState<MenuCategoryKey>(initialCat)
   const [isLightMode, setIsLightMode] = useState(true)
@@ -49,10 +63,17 @@ function MenuPageInner() {
   const [cartBarPulse, setCartBarPulse] = useState(false)
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
   const [expandedOrderCategory, setExpandedOrderCategory] = useState<MenuCategoryKey | null>(initialCat)
-  const [activeFilter, setActiveFilter] = useState<'all' | 'bestsellers' | 'under150' | 'under300' | 'quickBites' | 'meals' | 'drinks' | 'desserts' | 'combos'>('all')
+  const [activeFilter, setActiveFilter] = useState<'all' | 'under150' | 'under300' | 'quickBites' | 'meals' | 'drinks' | 'desserts' | 'combos'>('all')
   const categoryRefs = useRef<Partial<Record<MenuCategoryKey, HTMLButtonElement | null>>>({})
   const orderSectionRefs = useRef<Partial<Record<MenuCategoryKey, HTMLElement | null>>>({})
+  /** Accordion header row — scroll target so the category title bar lands under the header, not the section bottom. */
+  const orderHeaderRefs = useRef<Partial<Record<MenuCategoryKey, HTMLButtonElement | null>>>({})
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const pendingOrderCategoryJump = useRef<MenuCategoryKey | null>(null)
+  /** Only scroll order-mode category pills after first paint (skip land / enter). */
+  const skipInitialOrderCategoryPillScroll = useRef(true)
+  /** Scroll after filter change only, not on first load. */
+  const prevOrderActiveFilter = useRef<string | null>(null)
 
   useEffect(() => {
     if (catParam && categoryKeys.includes(catParam)) {
@@ -62,10 +83,19 @@ function MenuPageInner() {
   }, [catParam])
 
   useEffect(() => {
+    if (isOrderMode) setIsLightMode(true)
+  }, [isOrderMode])
+
+  useEffect(() => {
+    if (!isOrderMode) return
     const el = categoryRefs.current[activeCategory]
     if (!el) return
+    if (skipInitialOrderCategoryPillScroll.current) {
+      skipInitialOrderCategoryPillScroll.current = false
+      return
+    }
     el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-  }, [activeCategory])
+  }, [activeCategory, isOrderMode])
 
   // Hint: show when user lands on menu page → auto-remove after 1 sec (or on scroll); next visit = show again
   useEffect(() => {
@@ -129,7 +159,6 @@ function MenuPageInner() {
         const items = cat.items.filter((item) => {
           const price = getItemNumericPrice(item.price)
           if (activeFilter === 'all') return true
-          if (activeFilter === 'bestsellers') return Boolean((item as MenuItem & { bestseller?: boolean }).bestseller)
           if (activeFilter === 'under150') return price > 0 && price <= 150
           if (activeFilter === 'under300') return price > 0 && price <= 300
           if (activeFilter === 'quickBites') return ['burgerPizza', 'sandwichSalad', 'momos', 'pastaMaggiFries', 'wraps', 'starters'].includes(key)
@@ -144,16 +173,51 @@ function MenuPageInner() {
       .filter((entry) => entry.items.length > 0)
   }, [activeFilter])
 
+  const scrollToCategorySection = (key: MenuCategoryKey) => {
+    const header = orderHeaderRefs.current[key]
+    const section = orderSectionRefs.current[key]
+    const target = header ?? section
+    const container = scrollContainerRef.current
+    if (target && container) {
+      scrollElementTopIntoContainer(target, container, 8, 'auto')
+      return
+    }
+    target?.scrollIntoView({ behavior: 'auto', block: 'start' })
+  }
+
+  /** After accordion opens (~200ms transition), snap scroll to category header (instant, not smooth). */
+  const scheduleScrollToOrderSection = (key: MenuCategoryKey) => {
+    window.requestAnimationFrame(() => {
+      window.setTimeout(() => scrollToCategorySection(key), 200)
+    })
+  }
+
   useEffect(() => {
     if (!isOrderMode) return
+    const pending = pendingOrderCategoryJump.current
+    if (pending) {
+      pendingOrderCategoryJump.current = null
+      setActiveCategory(pending)
+      setExpandedOrderCategory(pending)
+      window.setTimeout(() => scrollToCategorySection(pending), 200)
+      return
+    }
     const first = filteredOrderCategories[0]
     if (!first) {
       setExpandedOrderCategory(null)
+      prevOrderActiveFilter.current = activeFilter
       return
     }
     setExpandedOrderCategory(first.key)
     setActiveCategory(first.key)
+    const filterChanged =
+      prevOrderActiveFilter.current !== null && prevOrderActiveFilter.current !== activeFilter
+    prevOrderActiveFilter.current = activeFilter
+    if (filterChanged) {
+      window.setTimeout(() => scrollToCategorySection(first.key), 200)
+    }
   }, [activeFilter, isOrderMode, filteredOrderCategories])
+
   const goToCheckout = () => {
     if (typeof window !== 'undefined') {
       window.sessionStorage.setItem('mango_checkout_cart', JSON.stringify(cart))
@@ -161,37 +225,27 @@ function MenuPageInner() {
     router.push('/checkout')
   }
 
-  const moveCategory = (direction: 'next' | 'prev') => {
-    const idx = categoryKeys.indexOf(activeCategory)
-    if (idx < 0) return
-    const nextIdx = direction === 'next'
-      ? Math.min(categoryKeys.length - 1, idx + 1)
-      : Math.max(0, idx - 1)
-    setActiveCategory(categoryKeys[nextIdx])
-    setExpandedOrderCategory(categoryKeys[nextIdx])
-  }
-
-  const scrollToCategorySection = (key: MenuCategoryKey) => {
-    const section = orderSectionRefs.current[key]
-    const container = scrollContainerRef.current
-    if (section && container) {
-      container.scrollTo({
-        top: Math.max(0, section.offsetTop - 12),
-        behavior: 'smooth',
-      })
+  const jumpToOrderCategory = (key: MenuCategoryKey) => {
+    const hasSection = filteredOrderCategories.some((e) => e.key === key)
+    if (!hasSection) {
+      pendingOrderCategoryJump.current = key
+      setActiveFilter('all')
       return
     }
-    section?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setActiveCategory(key)
+    setExpandedOrderCategory(key)
+    scheduleScrollToOrderSection(key)
   }
 
   return (
-    <div className="relative max-w-[430px] mx-auto min-h-screen overflow-hidden">
-      <div ref={scrollContainerRef} className="h-screen overflow-y-auto">
+    <div className="relative max-w-[430px] mx-auto min-h-screen overflow-x-hidden">
+      <div
+        ref={scrollContainerRef}
+        className="h-[100dvh] min-h-0 overflow-y-auto overscroll-y-contain scrollbar-hide touch-pan-y [-webkit-overflow-scrolling:touch]"
+      >
       <main
-        className={`relative min-h-screen ${isOrderMode ? (cart.length > 0 ? 'pb-[160px]' : 'pb-[90px]') : 'pb-24'} transition-colors duration-300 w-full max-w-full pl-[max(0.5rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] ${
-          useWhiteOrderTheme
-            ? 'bg-gradient-to-b from-white via-[#fcfcfd] to-[#f7f8fa] text-slate-900'
-            : isLightMode
+        className={`relative min-h-screen ${isOrderMode ? (cart.length > 0 ? 'pb-[calc(9rem+env(safe-area-inset-bottom))]' : 'pb-[calc(5.5rem+env(safe-area-inset-bottom))]') : 'pb-24'} transition-colors duration-300 w-full max-w-full pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))] ${
+          isLightMode
             ? 'bg-gradient-to-b from-[#fff8e8] via-slate-50 to-[#fef2d7] text-slate-900'
             : 'bg-gradient-to-b from-slate-950 via-[#08110f] to-slate-950 text-white'
         }`}
@@ -203,39 +257,22 @@ function MenuPageInner() {
         </div>
 
         <div
-          className={`${isOrderMode ? 'relative' : 'sticky top-0'} z-20 backdrop-blur-xl transition-colors duration-300 ${
-            useWhiteOrderTheme ? 'bg-white/90' : isLightMode ? 'bg-[#fff8e8]/85' : 'bg-slate-950/72'
-          }`}
+          className={`relative z-20 transition-colors duration-300 ${isLightMode ? 'bg-[#fff8e8]' : 'bg-slate-950'}`}
           style={{
             paddingTop: 'max(0.4rem, env(safe-area-inset-top))',
           }}
         >
-          <div className={`w-full max-w-md mx-auto px-3 sm:px-4 ${isOrderMode ? 'pb-2' : 'pb-3'}`}>
+          <div className={`w-full max-w-md mx-auto px-2 sm:px-3 ${isOrderMode ? 'pb-2' : 'pb-3'}`}>
             <div
-              className={`${isOrderMode ? 'rounded-[20px] px-3 sm:px-4 py-2' : 'rounded-[28px] px-3 sm:px-4 py-3'} border transition-colors duration-300 ${
-                useWhiteOrderTheme
-                  ? 'border-slate-200 bg-white shadow-[0_14px_28px_rgba(15,23,42,0.08)]'
-                  : isLightMode
-                  ? 'border-amber-200/80 bg-white/[0.88] shadow-[0_18px_40px_rgba(148,163,184,0.16)]'
-                  : 'border-white/[0.08] bg-white/[0.05] shadow-[0_20px_44px_rgba(0,0,0,0.42)]'
+              className={`rounded-[28px] px-2.5 sm:px-3 py-3 border transition-colors duration-300 ${
+                isLightMode ? 'border-amber-200/70 bg-white shadow-sm' : 'border-white/[0.08] bg-white/[0.06] shadow-sm'
               }`}
-              style={isOrderMode
-                ? {
-                    background: 'linear-gradient(135deg, rgba(209,250,229,0.72), rgba(167,243,208,0.45))',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    borderColor: 'rgba(110,231,183,0.65)',
-                    boxShadow: '0 14px 28px rgba(16,185,129,0.10), inset 0 1px 0 rgba(255,255,255,0.7)',
-                  }
-                : undefined}
             >
               <div className="flex items-center justify-between relative">
                 <Link
                   href="/"
-                  className={`p-2 rounded-full transition-colors active:scale-95 z-10 ${
-                    isOrderMode
-                      ? 'bg-white/90 text-slate-900 shadow-[0_8px_18px_rgba(15,23,42,0.2)] hover:bg-white'
-                      : isLightMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'
+                  className={`z-10 inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-colors active:scale-95 ${
+                    isLightMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'
                   }`}
                   onClick={() => {
                     if (typeof window !== 'undefined') {
@@ -243,20 +280,22 @@ function MenuPageInner() {
                     }
                   }}
                 >
-                  <ArrowLeft
-                    className={`w-5 h-5 ${
-                      isOrderMode ? 'text-slate-900' : isLightMode ? 'text-slate-900' : 'text-white'
-                    }`}
-                  />
+                  <ArrowLeft className={`w-5 h-5 ${isLightMode ? 'text-slate-900' : 'text-white'}`} />
                 </Link>
                 <h1
-                  className={`absolute left-0 right-0 text-center ${isOrderMode ? 'text-[22px] sm:text-2xl' : 'text-xl sm:text-2xl'} font-bold tracking-tight pointer-events-none ${
-                    isOrderMode ? 'text-slate-900' : isLightMode ? 'text-slate-900' : 'text-white'
+                  className={`absolute left-0 right-0 text-center pointer-events-none px-12 ${
+                    isLightMode ? 'text-slate-900' : 'text-white'
                   }`}
                 >
-                  {isOrderMode ? 'Order Online' : 'Our Menu'}
+                  {isOrderMode ? (
+                    <span className="text-lg sm:text-xl font-bold tracking-tight leading-tight">Order Online</span>
+                  ) : (
+                    <span className="text-xl sm:text-2xl font-bold tracking-tight">Our Menu</span>
+                  )}
                 </h1>
-                {!isOrderMode && (
+                {isOrderMode ? (
+                  <div className="z-10 h-8 w-8 shrink-0" aria-hidden />
+                ) : (
                   <button
                     type="button"
                     onClick={() => setIsLightMode((v) => !v)}
@@ -330,28 +369,18 @@ function MenuPageInner() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                {!isOrderMode && <div className="mb-2 flex items-center justify-between px-1">
-                  <p className={`text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-500' : 'text-white/65'}`}>
+                {!isOrderMode && (
+                  <p className={`mb-2.5 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
                     Browse Categories
                   </p>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => moveCategory('prev')}
-                      className={`h-7 px-2 rounded-full text-[11px] font-semibold border transition-colors ${isLightMode ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100' : 'bg-white/[0.08] border-white/15 text-white/90'}`}
-                    >
-                      Prev
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveCategory('next')}
-                      className={`h-7 px-2 rounded-full text-[11px] font-semibold border transition-colors ${isLightMode ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100' : 'bg-white/[0.08] border-white/15 text-white/90'}`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>}
-                <div className={`${isOrderMode ? 'hidden' : 'flex'} gap-2 overflow-x-auto scrollbar-hide pb-0.5 -mx-1 px-1`}>
+                )}
+                {isOrderMode && (
+                  <p className={`mb-2.5 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
+                    Browse filters
+                  </p>
+                )}
+                {!isOrderMode && (
+                <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
                   {categoryKeys.map((key) => {
                     const cat = menuCategories[key]
                     const isActive = activeCategory === key
@@ -361,100 +390,157 @@ function MenuPageInner() {
                         ref={(el) => { categoryRefs.current[key] = el }}
                         onClick={() => setActiveCategory(key)}
                         whileTap={{ scale: 0.97 }}
-                        className={`flex items-center gap-2 px-3.5 py-2.5 rounded-2xl font-semibold whitespace-nowrap flex-shrink-0 text-sm transition-all ${
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
                           isActive
-                            ? 'bg-mango-green text-white shadow-[0_14px_28px_rgba(30,77,61,0.25)]'
+                            ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.28)] ring-1 ring-mango-green/30'
                             : isLightMode
-                              ? 'bg-white text-slate-900 hover:bg-slate-100 border border-slate-200 shadow-[0_10px_18px_rgba(148,163,184,0.12)]'
-                              : 'bg-white/[0.06] text-white/90 hover:bg-white/[0.1] border border-white/[0.08]'
+                              ? 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
+                              : 'bg-white/[0.08] text-white/92 border-white/[0.14] hover:bg-white/[0.12] shadow-[0_6px_18px_rgba(0,0,0,0.35)]'
                         }`}
                       >
-                        <span className="text-base">{cat.icon}</span>
-                        <span>{cat.name}</span>
+                        <span
+                          className={`relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ${
+                            isLightMode ? 'ring-black/10' : 'ring-white/25'
+                          }`}
+                        >
+                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
+                        </span>
+                        <span className="leading-tight">{cat.name}</span>
                       </motion.button>
                     )
                   })}
                 </div>
+                )}
+                {isOrderMode && (
+                  <>
+                    <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
+                      {[
+                        { id: 'all', label: 'All' },
+                        { id: 'under150', label: 'Under ₹150' },
+                        { id: 'under300', label: 'Under ₹300' },
+                        { id: 'quickBites', label: 'Quick Bites' },
+                        { id: 'meals', label: 'Meals' },
+                        { id: 'drinks', label: 'Drinks' },
+                        { id: 'desserts', label: 'Desserts' },
+                        { id: 'combos', label: 'Combos' },
+                      ].map((filter) => (
+                        <button
+                          key={filter.id}
+                          type="button"
+                          onClick={() => setActiveFilter(filter.id as typeof activeFilter)}
+                          className={`h-9 shrink-0 px-3.5 rounded-full text-sm font-semibold whitespace-nowrap border transition-colors touch-manipulation ${
+                            activeFilter === filter.id
+                              ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.22)]'
+                              : isLightMode
+                                ? 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-white'
+                                : 'bg-white/[0.08] text-white/90 border-white/[0.15] hover:bg-white/[0.12]'
+                          }`}
+                        >
+                          {filter.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mb-2.5 mt-4 px-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                      Browse Categories
+                    </p>
+                    <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
+                      {categoryKeys.map((key) => {
+                        const cat = menuCategories[key]
+                        const isActive = activeCategory === key
+                        return (
+                          <motion.button
+                            key={`order-cat-${key}`}
+                            ref={(el) => { categoryRefs.current[key] = el }}
+                            type="button"
+                            onClick={() => jumpToOrderCategory(key)}
+                            whileTap={{ scale: 0.97 }}
+                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
+                              isActive
+                                ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.28)] ring-1 ring-mango-green/30'
+                                : 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
+                            }`}
+                          >
+                            <span className="relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ring-black/10">
+                              <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
+                            </span>
+                            <span className="leading-tight">{cat.name}</span>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
 
         <div className="relative z-10">
-          {!isOrderMode && <div className="w-full max-w-md mx-auto px-3 sm:px-4 pt-4 pb-3">
-            <AnimatePresence mode="wait">
+          {!isOrderMode && (
+            <div className="w-full max-w-md mx-auto px-2 sm:px-3 pt-3 pb-2">
               <motion.div
                 key={activeCategory}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.2 }}
-                className={`relative h-40 rounded-[24px] overflow-hidden border transition-colors duration-300 ${
-                  useWhiteOrderTheme
-                    ? 'border-slate-200 bg-gradient-to-br from-white via-[#fdfdfd] to-[#f7f7f8] shadow-[0_16px_34px_rgba(15,23,42,0.08)]'
-                    : isLightMode
-                    ? 'border-rose-200 bg-gradient-to-br from-[#fff1f4] via-[#ffe6ec] to-[#ffd8e1] shadow-[0_22px_52px_rgba(242,82,105,0.2)]'
-                    : 'border-rose-300/20 bg-gradient-to-br from-[#2b0d13] via-[#3b111a] to-[#22090f] shadow-[0_22px_60px_rgba(0,0,0,0.75)]'
+                initial={{ opacity: 0.96 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 ${
+                  isLightMode
+                    ? 'border-slate-200/90 bg-slate-50/90'
+                    : 'border-white/[0.1] bg-white/[0.06]'
                 }`}
               >
-                <div className={`absolute inset-x-8 top-4 h-12 rounded-full blur-3xl ${useWhiteOrderTheme ? 'bg-slate-300/30' : isLightMode ? 'bg-rose-500/20' : 'bg-rose-400/20'}`} />
-                <div className={`absolute inset-[1px] rounded-[23px] border ${isLightMode ? 'border-white/70' : 'border-white/10'}`} />
-                <div className={`absolute inset-0 ${useWhiteOrderTheme ? 'bg-gradient-to-r from-slate-900/5 via-slate-700/5 to-transparent' : isLightMode ? 'bg-gradient-to-r from-rose-900/30 via-rose-800/10 to-transparent' : 'bg-gradient-to-t from-black/60 via-black/20 to-transparent'}`} />
-                <div className={`absolute top-4 right-4 premium-meta-pill ${useWhiteOrderTheme ? 'border border-slate-200 bg-white text-slate-700 shadow-[0_8px_16px_rgba(15,23,42,0.08)]' : isLightMode ? 'border border-rose-200 bg-white/88 text-rose-900 shadow-[0_10px_20px_rgba(242,82,105,0.18)]' : 'border border-rose-300/20 bg-black/30 text-rose-100'}`}>
-                  <span className="text-sm">{currentCategory.icon}</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <div className={`max-w-[17rem] rounded-2xl px-3 py-2.5 ${useWhiteOrderTheme ? 'bg-white border border-slate-200 shadow-[0_10px_20px_rgba(15,23,42,0.08)]' : isLightMode ? 'bg-white border border-rose-200 shadow-[0_14px_28px_rgba(242,82,105,0.18)]' : 'bg-black/30 border border-rose-300/20'}`}>
-                    <h2 className={`text-lg font-bold ${useWhiteOrderTheme ? 'text-slate-900' : isLightMode ? 'text-rose-900' : 'text-white drop-shadow-lg'}`}>{currentCategory.name}</h2>
-                    <p className={`text-xs mt-1 line-clamp-2 ${useWhiteOrderTheme ? 'text-slate-600' : isLightMode ? 'text-rose-700/80' : 'text-white/82'} `}>{currentCategory.shortDescription}</p>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className={`premium-meta-pill ${useWhiteOrderTheme ? 'border border-slate-200 bg-white text-slate-700 shadow-[0_6px_14px_rgba(15,23,42,0.08)]' : isLightMode ? 'border border-rose-200 bg-white/90 text-rose-900 shadow-[0_8px_18px_rgba(242,82,105,0.12)]' : 'border border-rose-300/20 bg-white/10 text-white/95'}`}>{currentItemCount} items</span>
-                    <span className={`premium-meta-pill ${useWhiteOrderTheme ? 'border border-slate-200 bg-white text-slate-700 shadow-[0_6px_14px_rgba(15,23,42,0.08)]' : isLightMode ? 'border border-rose-200 bg-white/90 text-rose-900 shadow-[0_8px_18px_rgba(242,82,105,0.12)]' : 'border border-rose-300/20 bg-white/10 text-white/95'}`}>Pure Veg</span>
-                  </div>
+                <span
+                  className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-xl ring-1 ${
+                    isLightMode ? 'bg-white/90 ring-black/10' : 'bg-white/10 ring-white/25'
+                  }`}
+                >
+                  <Image src={currentCategory.image} alt="" fill className="object-cover" sizes="40px" unoptimized />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className={`truncate text-[15px] font-semibold tracking-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
+                    {currentCategory.name}
+                  </p>
+                  <p className={`mt-0.5 text-[12px] ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
+                    {currentItemCount} {currentItemCount === 1 ? 'item' : 'items'}
+                    <span className="mx-1.5 opacity-40">·</span>
+                    Pure veg
+                  </p>
                 </div>
               </motion.div>
-            </AnimatePresence>
-          </div>}
+            </div>
+          )}
 
-          <div className="w-full max-w-md mx-auto px-3 sm:px-4 pt-3 pb-8">
+          <div className="w-full max-w-md mx-auto px-2 sm:px-3 pt-3 pb-8">
             {isOrderMode ? (
               <div className="space-y-2.5">
-                <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                  {[
-                    { id: 'all', label: 'All' },
-                    { id: 'bestsellers', label: 'Bestsellers' },
-                    { id: 'under150', label: 'Under ₹150' },
-                    { id: 'under300', label: 'Under ₹300' },
-                    { id: 'quickBites', label: 'Quick Bites' },
-                    { id: 'meals', label: 'Meals' },
-                    { id: 'drinks', label: 'Drinks' },
-                    { id: 'desserts', label: 'Desserts' },
-                    { id: 'combos', label: 'Combos' },
-                  ].map((filter) => (
-                    <button
-                      key={filter.id}
-                      type="button"
-                      onClick={() => setActiveFilter(filter.id as typeof activeFilter)}
-                      className={`h-9 px-3.5 rounded-full text-sm font-semibold whitespace-nowrap border transition-colors ${
-                        activeFilter === filter.id
-                          ? 'bg-[#1E4D3D] text-white border-[#1E4D3D]'
-                          : 'bg-white text-slate-700 border-slate-200'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
                 {filteredOrderCategories.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm font-medium text-slate-500">
+                  <div
+                    className={`rounded-2xl border border-dashed px-4 py-8 text-center text-sm font-medium ${
+                      isLightMode ? 'border-slate-300 bg-white text-slate-500' : 'border-white/20 bg-white/[0.06] text-white/65'
+                    }`}
+                  >
                     No items found in this filter.
                   </div>
                 ) : filteredOrderCategories.map(({ key, cat, items: filteredItems }) => {
                   const isOpen = expandedOrderCategory === key
                   return (
-                    <section ref={(el) => { orderSectionRefs.current[key] = el }} key={`order-section-${key}`} className="w-full rounded-2xl border border-slate-200 bg-white overflow-hidden">
+                    <section
+                      ref={(el) => { orderSectionRefs.current[key] = el }}
+                      key={`order-section-${key}`}
+                      className={`w-full overflow-hidden rounded-2xl border transition-all duration-200 ${
+                        isLightMode
+                          ? isOpen
+                            ? 'border-mango-green/25 bg-white shadow-[0_10px_28px_rgba(30,77,61,0.1)] ring-1 ring-mango-green/15'
+                            : 'border-slate-200/95 bg-white shadow-sm hover:border-slate-300'
+                          : isOpen
+                            ? 'border-white/20 bg-white/[0.08] shadow-lg ring-1 ring-white/10'
+                            : 'border-white/10 bg-white/[0.06] hover:bg-white/[0.08]'
+                      }`}
+                    >
                       <button
+                        ref={(el) => {
+                          orderHeaderRefs.current[key] = el
+                        }}
                         type="button"
                         onClick={() => {
                           if (isOpen) {
@@ -463,12 +549,38 @@ function MenuPageInner() {
                           }
                           setExpandedOrderCategory(key)
                           setActiveCategory(key)
-                          scrollToCategorySection(key)
+                          scheduleScrollToOrderSection(key)
                         }}
-                        className="w-full px-4 py-3.5 flex items-center justify-between text-left"
+                        className={`flex w-full items-center gap-3 px-4 py-3.5 text-left touch-manipulation active:bg-slate-50/80 ${
+                          isLightMode ? 'bg-slate-50/70 hover:bg-slate-50' : 'bg-white/[0.04] hover:bg-white/[0.07]'
+                        }`}
                       >
-                        <span className="text-[17px] font-semibold leading-tight text-slate-900">{cat.name}</span>
-                        {isOpen ? <ChevronUp className="w-5 h-5 text-slate-600" /> : <ChevronDown className="w-5 h-5 text-slate-600" />}
+                        <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100">
+                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="44px" unoptimized />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <span className={`block truncate text-[16px] font-semibold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
+                            {cat.name}
+                          </span>
+                          <span className={`mt-0.5 block text-[12px] ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
+                            {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
+                            <span className="opacity-40"> · </span>
+                            {isOpen ? 'Tap header to close' : 'Tap to view & add'}
+                          </span>
+                        </div>
+                        <span
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                            isLightMode
+                              ? isOpen
+                                ? 'bg-mango-green text-white'
+                                : 'bg-white text-slate-600 shadow-sm ring-1 ring-slate-200'
+                              : isOpen
+                                ? 'bg-white/25 text-white'
+                                : 'bg-white/10 text-white'
+                          }`}
+                        >
+                          {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                        </span>
                       </button>
 
                       <AnimatePresence initial={false}>
@@ -477,8 +589,8 @@ function MenuPageInner() {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.22, ease: 'easeOut' }}
-                            className="overflow-hidden border-t border-slate-100"
+                            transition={{ duration: 0.18, ease: 'easeOut' }}
+                            className={`overflow-hidden border-t ${isLightMode ? 'border-slate-100' : 'border-white/10'}`}
                           >
                             <div className="p-3 space-y-3">
                               {filteredItems.map((item, index) => {
@@ -490,18 +602,32 @@ function MenuPageInner() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: Math.min(index * 0.02, 0.15) }}
                                     className="group rounded-2xl overflow-hidden border transition-all duration-300 relative min-h-[160px]"
-                                    style={{
-                                      background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 56%, #fafafa 100%)',
-                                      border: '1px solid rgba(226, 232, 240, 0.95)',
-                                      boxShadow: '0 10px 20px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.96)',
-                                    }}
+                                    style={
+                                      isLightMode
+                                        ? {
+                                            background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 56%, #fafafa 100%)',
+                                            border: '1px solid rgba(226, 232, 240, 0.95)',
+                                            boxShadow: '0 10px 20px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.96)',
+                                          }
+                                        : {
+                                            background: 'linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            boxShadow: '0 12px 28px rgba(0,0,0,0.35)',
+                                          }
+                                    }
                                   >
                                     <div className="p-3.5 relative z-10">
-                                      <span className="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200">Veg</span>
-                                      <h3 className="text-[15px] font-bold leading-tight mt-2 text-slate-900">{item.name}</h3>
-                                      <p className="text-sm font-semibold mt-1 text-slate-700">{item.price}</p>
+                                      <span
+                                        className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
+                                          isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-400/35'
+                                        }`}
+                                      >
+                                        Veg
+                                      </span>
+                                      <h3 className={`text-[15px] font-bold leading-tight mt-2 ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
+                                      <p className={`text-sm font-semibold mt-1 ${isLightMode ? 'text-slate-700' : 'text-white/85'}`}>{item.price}</p>
                                       {item.quantity && item.quantity !== '1 portion' && (
-                                        <p className="text-xs mt-1 text-slate-500">{item.quantity}</p>
+                                        <p className={`text-xs mt-1 ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.quantity}</p>
                                       )}
                                       <div className="mt-3 flex justify-end">
                                         {inCartQty > 0 ? (
@@ -522,7 +648,11 @@ function MenuPageInner() {
                                             animate={lastAddedItemId === item.id ? { scale: [1, 1.05, 1] } : { scale: 1 }}
                                             transition={{ duration: 0.28, ease: 'easeOut' }}
                                             className="relative overflow-hidden h-10 min-w-[120px] rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 border-2"
-                                            style={{ borderColor: '#F25269', color: '#F25269', background: '#FFFFFF' }}
+                                            style={{
+                                              borderColor: '#F25269',
+                                              color: '#F25269',
+                                              background: isLightMode ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                                            }}
                                           >
                                             {lastAddedItemId === item.id && (
                                               <span className="absolute inset-0 rounded-xl bg-[#F25269]/10 animate-ping" />
@@ -565,24 +695,38 @@ function MenuPageInner() {
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(index * 0.02, 0.15) }}
                       className="group rounded-[24px] overflow-hidden border transition-all duration-300 relative flex flex-col min-h-[148px]"
-                      style={isLightMode
-                        ? {
-                            background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 52%, #fcfcfb 100%)',
-                            border: '1px solid rgba(226, 232, 240, 0.95)',
-                            boxShadow: '0 14px 28px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
-                          }
-                        : {
-                            background: 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04))',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            boxShadow: '0 18px 48px rgba(0,0,0,0.55)',
-                          }}
+                      style={
+                        isLightMode
+                          ? {
+                              background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 52%, #fcfcfb 100%)',
+                              border: '1px solid rgba(226, 232, 240, 0.95)',
+                              boxShadow: '0 14px 28px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
+                            }
+                          : {
+                              background: 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04))',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                              boxShadow: '0 18px 48px rgba(0,0,0,0.55)',
+                            }
+                      }
                     >
                       <div className="p-4 flex flex-col flex-1 min-h-0 gap-0 relative z-10">
                         <div className="flex items-center justify-between gap-2 shrink-0 flex-wrap">
-                          <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold border tracking-wide shrink-0 ${isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-300/50'}`}>Veg</span>
-                          <span className={`rounded-full px-2.5 py-1 text-xs font-bold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-amber-900 border-amber-200 shadow-[0_6px_14px_rgba(15,23,42,0.06)]' : 'bg-black/40 text-amber-100 border-amber-400/50'}`}>{item.price}</span>
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-[10px] font-semibold border tracking-wide shrink-0 ${isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-300/50'}`}
+                          >
+                            Veg
+                          </span>
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-xs font-bold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-amber-900 border-amber-200 shadow-[0_6px_14px_rgba(15,23,42,0.06)]' : 'bg-black/40 text-amber-100 border-amber-400/50'}`}
+                          >
+                            {item.price}
+                          </span>
                         </div>
-                        <h3 className={`text-[14px] sm:text-[15px] font-bold leading-snug line-clamp-3 flex-1 min-h-0 mt-3 overflow-hidden break-words ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}>{item.name}</h3>
+                        <h3
+                          className={`text-[14px] sm:text-[15px] font-bold leading-snug line-clamp-3 flex-1 min-h-0 mt-3 overflow-hidden break-words ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}
+                        >
+                          {item.name}
+                        </h3>
                         {item.quantity && item.quantity !== '1 portion' && (
                           <p className={`text-[11px] mt-1.5 truncate shrink-0 font-medium ${isLightMode ? 'text-slate-600' : 'text-white/55'}`}>{item.quantity}</p>
                         )}
@@ -626,7 +770,7 @@ function MenuPageInner() {
                 </button>
               </div>
 
-              <div className="max-h-[60vh] overflow-y-auto py-1.5">
+              <div className="max-h-[60vh] overflow-y-auto overflow-x-hidden py-1.5 scrollbar-hide touch-pan-y">
                 {categoryKeys.map((key) => {
                   const cat = menuCategories[key]
                   const isActive = activeCategory === key
@@ -637,8 +781,8 @@ function MenuPageInner() {
                       onClick={() => {
                         setActiveCategory(key)
                         setExpandedOrderCategory(key)
-                        scrollToCategorySection(key)
                         setShowCategoryMenu(false)
+                        window.setTimeout(() => scrollToCategorySection(key), 200)
                       }}
                       className="w-full px-4 py-3.5 text-left flex items-center justify-between border-b border-slate-100/90 last:border-b-0"
                     >
@@ -666,7 +810,7 @@ function MenuPageInner() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 24 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="absolute left-4 right-4 bottom-4 z-[9999] pointer-events-none"
+                className="pointer-events-none absolute left-3 right-3 z-[9999] bottom-[max(0.75rem,env(safe-area-inset-bottom))]"
               >
                 <motion.button
                   onClick={goToCheckout}
@@ -701,8 +845,10 @@ function MenuPageInner() {
                 transition={{ duration: 0.25, ease: 'easeOut' }}
                 onClick={() => setShowCategoryMenu(true)}
                 whileTap={{ scale: 0.97 }}
-                className={`absolute right-4 z-[10000] h-11 rounded-full shadow-[0_14px_30px_rgba(15,23,42,0.38)] text-white px-4 inline-flex items-center gap-2.5 border border-white/20 ${
-                  cart.length > 0 ? 'bottom-[96px]' : 'bottom-4'
+                className={`absolute right-3 z-[10000] h-11 rounded-full shadow-[0_14px_30px_rgba(15,23,42,0.38)] text-white px-4 inline-flex items-center gap-2.5 border border-white/20 touch-manipulation ${
+                  cart.length > 0
+                    ? 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))]'
+                    : 'bottom-[max(0.75rem,env(safe-area-inset-bottom))]'
                 }`}
                 style={{ background: 'linear-gradient(135deg, #334155, #0f172a)' }}
               >
