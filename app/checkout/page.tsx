@@ -160,7 +160,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden">
-      <main className="min-h-screen w-full max-w-full bg-gradient-to-b from-[#fff8f9] via-[#f8f9fb] to-[#f3f4f7] pb-[calc(5.5rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]">
+      <main className="min-h-screen w-full max-w-full bg-gradient-to-b from-[#fff8f9] via-[#fef5f7] to-[#fceef1] pb-[calc(5.5rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]">
         <div className="mx-auto w-full max-w-md px-3 pt-3">
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
@@ -218,13 +218,13 @@ export default function CheckoutPage() {
             </Link>
           </section>
 
-          <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
+          <section className="mt-3 rounded-3xl border border-[#f3b5c0]/55 bg-gradient-to-b from-white via-[#fffafb] to-[#fff3f6] p-4 shadow-[0_12px_28px_rgba(226,55,68,0.12)] ring-1 ring-[#F25269]/10">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-[15px] font-bold text-slate-900">Delivery</h2>
-              <span className="text-[11px] font-medium text-slate-500">Within {radiusKm} km</span>
+              <span className="rounded-full border border-[#f3b5c0]/50 bg-[#fff3f6]/90 px-2.5 py-0.5 text-[11px] font-semibold text-[#c53030]">Within {radiusKm} km</span>
             </div>
 
-            <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50/90 p-3">
+            <div className="mt-3 rounded-2xl border border-[#f3b5c0]/45 bg-[#fff3f6]/85 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
               <p className="text-[12px] font-semibold text-slate-800">Location</p>
               <p className="mt-1 text-[12px] leading-snug text-slate-600">
                 {userLat != null && userLng != null ? (
@@ -243,7 +243,7 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={useCurrentLocation}
                 disabled={isLocating}
-                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#F25269]/35 bg-white text-sm font-semibold text-[#F25269] shadow-sm transition-all hover:bg-rose-50/80 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#F25269]/40 bg-white text-sm font-semibold text-[#E23744] shadow-[0_8px_18px_rgba(226,55,68,0.14)] transition-all hover:bg-rose-50/95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <MapPin className="h-4 w-4 shrink-0" />
                 {isLocating ? 'Getting location…' : 'Use current location'}
@@ -273,36 +273,36 @@ export default function CheckoutPage() {
                 onChange={(e) => setMappedAddress(e.target.value)}
                 placeholder="From location, or type your area"
                 rows={3}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f6c7cf]"
+                className="w-full rounded-xl border border-[#f3b5c0]/70 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 shadow-[0_4px_14px_rgba(226,55,68,0.06)] focus:outline-none focus:ring-2 focus:ring-[#F25269]/25"
               />
             </div>
 
-            <div className="mt-4 border-t border-slate-100 pt-4">
+            <div className="mt-4 border-t border-[#f3b5c0]/35 pt-4">
               <p className="mb-2 text-[12px] font-semibold text-slate-800">Extra details <span className="font-normal text-slate-400">· optional</span></p>
               <div className="grid gap-2">
                 <input
                   value={flatHouse}
                   onChange={(e) => setFlatHouse(e.target.value)}
                   placeholder="Flat / floor (optional)"
-                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f6c7cf]"
+                  className="h-11 rounded-xl border border-[#f3b5c0]/60 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#F25269]/25"
                 />
                 <input
                   value={landmark}
                   onChange={(e) => setLandmark(e.target.value)}
                   placeholder="Landmark (optional)"
-                  className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f6c7cf]"
+                  className="h-11 rounded-xl border border-[#f3b5c0]/60 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#F25269]/25"
                 />
               </div>
             </div>
 
-            <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4">
+            <div className="mt-4 grid gap-3 border-t border-[#f3b5c0]/35 pt-4">
               <div>
                 <label className="mb-1.5 block text-[12px] font-semibold text-slate-800">Your name</label>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f6c7cf]"
+                  className="h-11 w-full rounded-xl border border-[#f3b5c0]/60 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#F25269]/25"
                 />
               </div>
               <div>
@@ -312,12 +312,14 @@ export default function CheckoutPage() {
                   onChange={(e) => setMobile(e.target.value)}
                   placeholder="Mobile number"
                   inputMode="tel"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f6c7cf]"
+                  className="h-11 w-full rounded-xl border border-[#f3b5c0]/60 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#F25269]/25"
                 />
               </div>
             </div>
 
-            {locationStatus && <p className="mt-3 text-xs leading-relaxed text-slate-600">{locationStatus}</p>}
+            {locationStatus && (
+              <p className="mt-3 rounded-xl border border-[#f3b5c0]/40 bg-white/70 px-3 py-2 text-xs leading-relaxed text-slate-600">{locationStatus}</p>
+            )}
           </section>
         </div>
         </main>
