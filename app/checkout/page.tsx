@@ -17,6 +17,9 @@ function digitsOnly(s: string) {
   return s.replace(/\D/g, '')
 }
 
+/** 16px on inputs stops iOS zoom-on-focus; keep compact h-11 like original layout */
+const fieldText = 'text-[16px] leading-snug'
+
 export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([])
   const [mobile, setMobile] = useState('')
@@ -31,7 +34,7 @@ export default function CheckoutPage() {
 
   const locationBlockRef = useRef<HTMLDivElement>(null)
   const addressRef = useRef<HTMLTextAreaElement>(null)
-  const extraBlockRef = useRef<HTMLDivElement>(null)
+  const mobileBlockRef = useRef<HTMLDivElement>(null)
 
   const delivery = shopConfig.delivery
   const radiusKm = delivery.radiusKm
@@ -170,11 +173,11 @@ export default function CheckoutPage() {
   const validationMessage = (): string | null => {
     if (cart.length === 0) return 'Your cart is empty — add items from the menu first.'
     if (userLat == null || userLng == null) {
-      return 'Tap “Use current location” above and allow location when your browser asks.'
+      return 'Tap “Use current location” and allow location when your browser asks.'
     }
     if (deliveryZone === 'outside') return 'We don’t deliver to this pin — it’s outside our zone.'
     if (!mappedAddress.trim()) return 'Add your delivery address in the box above.'
-    if (mobileDigits.length < MOBILE_DIGITS) return 'Enter your 10-digit mobile number under Extra details (with +91).'
+    if (mobileDigits.length < MOBILE_DIGITS) return 'Enter your 10-digit mobile number.'
     return null
   }
 
@@ -189,10 +192,14 @@ export default function CheckoutPage() {
       if (cart.length === 0) return
       if (userLat == null || userLng == null) scrollFieldIntoView(locationBlockRef.current)
       else if (!mappedAddress.trim()) scrollFieldIntoView(addressRef.current)
-      else if (mobileDigits.length < MOBILE_DIGITS) scrollFieldIntoView(extraBlockRef.current)
+      else if (mobileDigits.length < MOBILE_DIGITS) scrollFieldIntoView(mobileBlockRef.current)
       return
     }
     orderNow()
+  }
+
+  const focusScroll = (el: HTMLElement) => {
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' })
   }
 
   return (
@@ -217,7 +224,7 @@ export default function CheckoutPage() {
       )}
 
       <main
-        className="min-h-screen w-full max-w-full pb-[calc(6.25rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]"
+        className="min-h-screen w-full max-w-full pb-[calc(5.5rem+env(safe-area-inset-bottom))] pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))]"
         style={{
           background:
             'linear-gradient(to bottom, #fff8f9 0%, #fef5f7 58%, rgba(255, 248, 249, 0) 100%)',
@@ -227,7 +234,7 @@ export default function CheckoutPage() {
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
               href="/menu?mode=order"
-              className="-ml-1 inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-xl px-2 py-2 text-base font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
+              className="-ml-1 inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-xl px-2 py-2 text-[15px] font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
             >
               <ArrowLeft className="h-5 w-5 shrink-0" strokeWidth={2.25} aria-hidden />
               <span>Back</span>
@@ -243,7 +250,7 @@ export default function CheckoutPage() {
             </div>
             <div className="space-y-3">
               {cart.length === 0 ? (
-                <p className="rounded-2xl border border-dashed border-slate-300 p-3 text-base text-slate-500">Your cart is empty.</p>
+                <p className="rounded-2xl border border-dashed border-slate-300 p-3 text-sm text-slate-500">Your cart is empty.</p>
               ) : (
                 cart.map((item) => {
                   const unitPrice = parseFloat(item.price.replace('₹', '').replace(',', '').split('/')[0].trim())
@@ -251,7 +258,7 @@ export default function CheckoutPage() {
                   return (
                     <div key={item.id} className="flex items-start justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-2.5">
                       <div className="min-w-0">
-                        <p className="text-base font-semibold leading-tight text-slate-900">{item.name}</p>
+                        <p className="text-[15px] font-semibold leading-tight text-slate-900">{item.name}</p>
                         <p className="mt-0.5 text-xs text-slate-500">{item.price}</p>
                       </div>
                       <div className="shrink-0 text-right">
@@ -259,12 +266,12 @@ export default function CheckoutPage() {
                           <button type="button" onClick={() => updateQty(item.id, item.cartQuantity - 1)} className="flex h-5 w-5 items-center justify-center rounded-full text-[#E23744]">
                             <Minus className="h-3.5 w-3.5" />
                           </button>
-                          <span className="w-7 text-center text-base font-bold text-[#E23744]">{item.cartQuantity}</span>
+                          <span className="w-7 text-center text-sm font-bold text-[#E23744]">{item.cartQuantity}</span>
                           <button type="button" onClick={() => updateQty(item.id, item.cartQuantity + 1)} className="flex h-5 w-5 items-center justify-center rounded-full text-[#E23744]">
                             <Plus className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <p className="mt-1 text-base font-semibold text-slate-800">₹{lineTotal.toFixed(0)}</p>
+                        <p className="mt-1 text-sm font-semibold text-slate-800">₹{lineTotal.toFixed(0)}</p>
                       </div>
                     </div>
                   )
@@ -274,7 +281,7 @@ export default function CheckoutPage() {
 
             <Link
               href="/menu?mode=order"
-              className="mt-3 inline-flex min-h-[44px] items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-4 py-2.5 text-base font-semibold text-[#E23744]"
+              className="mt-3 inline-flex min-h-[40px] items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3.5 py-2 text-[14px] font-semibold text-[#E23744]"
             >
               + Add more items
             </Link>
@@ -286,9 +293,9 @@ export default function CheckoutPage() {
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">Within {radiusKm} km</span>
             </div>
 
-            <div ref={locationBlockRef} className="mt-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3">
+            <div ref={locationBlockRef} className="mt-2.5 rounded-2xl border border-slate-200 bg-slate-50/50 p-2.5">
               <p className="text-[12px] font-semibold text-slate-800">Location</p>
-              <p className="mt-1 text-[12px] leading-snug text-slate-600">
+              <p className="mt-0.5 text-[11px] leading-snug text-slate-600">
                 {userLat != null && userLng != null ? (
                   <>
                     Saved
@@ -297,7 +304,7 @@ export default function CheckoutPage() {
                     )}
                   </>
                 ) : (
-                  <span>Tap the button below. If nothing happens, allow location for this site in your browser or phone settings.</span>
+                  <span>Tap the button below.</span>
                 )}
               </p>
 
@@ -305,31 +312,29 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={useCurrentLocation}
                 disabled={isLocating}
-                className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-base font-semibold text-slate-800 shadow-sm transition-all hover:bg-slate-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-2 flex h-11 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 shadow-sm transition-all hover:bg-slate-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <MapPin className="h-4 w-4 shrink-0 text-slate-600" />
-                {isLocating ? 'Getting location…' : 'Use current location'}
+                <span className="truncate">{isLocating ? 'Getting location…' : 'Use current location'}</span>
               </button>
 
               {deliveryZone === 'inside' && userLat != null && (
-                <div className="mt-2 flex items-center gap-2 rounded-xl border border-emerald-200/80 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-900">
-                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-emerald-200/80 bg-emerald-50 px-2.5 py-1.5 text-[11px] text-emerald-900">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                   We deliver here.
                 </div>
               )}
 
               {deliveryZone === 'outside' && userLat != null && (
-                <div className="mt-2 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[12px] leading-snug text-amber-950">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span>
-                    Sorry — we don’t deliver here yet (only within {radiusKm} km of our restaurant).
-                  </span>
+                <div className="mt-1.5 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-[11px] leading-snug text-amber-950">
+                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>Sorry — outside our {radiusKm} km area.</span>
                 </div>
               )}
             </div>
 
-            <div className="mt-4">
-              <label htmlFor="checkout-address" className="mb-1.5 block text-[12px] font-semibold text-slate-800">
+            <div className="mt-3">
+              <label htmlFor="checkout-address" className="mb-1 block text-[12px] font-semibold text-slate-800">
                 Address
               </label>
               <textarea
@@ -337,57 +342,59 @@ export default function CheckoutPage() {
                 ref={addressRef}
                 value={mappedAddress}
                 onChange={(e) => setMappedAddress(e.target.value)}
-                onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
+                onFocus={(e) => focusScroll(e.target)}
                 placeholder="From location, or type your area"
                 rows={3}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-base leading-snug text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
+                className={`w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
               />
             </div>
 
-            <div ref={extraBlockRef} className="mt-4 border-t border-slate-200 pt-4">
-              <p className="text-[12px] font-semibold text-slate-800">Extra details</p>
-              <p className="mt-0.5 text-[11px] text-slate-500">For better delivery</p>
-              <div className="mt-3 grid gap-2">
-                <div>
-                  <label htmlFor="checkout-mobile" className="mb-1.5 block text-[12px] font-semibold text-slate-800">
-                    Mobile number
-                  </label>
-                  <div className="flex h-12 items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white focus-within:ring-2 focus-within:ring-slate-300/80">
-                    <span className="flex shrink-0 items-center border-r border-slate-200 bg-slate-50 px-3 text-base font-semibold text-slate-600">
-                      +91
-                    </span>
-                    <input
-                      id="checkout-mobile"
-                      value={mobileDigits}
-                      onChange={(e) => setMobile(digitsOnly(e.target.value).slice(0, MOBILE_DIGITS))}
-                      onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
-                      placeholder="9876543210"
-                      inputMode="numeric"
-                      autoComplete="tel-national"
-                      maxLength={MOBILE_DIGITS}
-                      className="min-w-0 flex-1 bg-transparent px-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
-                    />
-                  </div>
-                </div>
+            <div ref={mobileBlockRef} className="mt-3 border-t border-slate-200 pt-3">
+              <label htmlFor="checkout-mobile" className="mb-1 block text-[12px] font-semibold text-slate-800">
+                Mobile number
+              </label>
+              <div className="flex h-11 min-w-0 items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white focus-within:ring-2 focus-within:ring-slate-300/80">
+                <span className="flex shrink-0 items-center border-r border-slate-200 bg-slate-50 px-2.5 text-sm font-semibold text-slate-600">
+                  +91
+                </span>
+                <input
+                  id="checkout-mobile"
+                  value={mobileDigits}
+                  onChange={(e) => setMobile(digitsOnly(e.target.value).slice(0, MOBILE_DIGITS))}
+                  onFocus={(e) => focusScroll(e.target)}
+                  placeholder="9876543210"
+                  inputMode="numeric"
+                  autoComplete="tel-national"
+                  maxLength={MOBILE_DIGITS}
+                  className={`min-w-0 flex-1 bg-transparent px-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none ${fieldText}`}
+                />
+              </div>
+            </div>
+
+            <div className="mt-3 border-t border-slate-200 pt-3">
+              <p className="mb-2 text-[12px] font-semibold text-slate-800">
+                Extra details <span className="font-normal text-slate-400">· optional</span>
+              </p>
+              <div className="grid gap-2">
                 <input
                   value={flatHouse}
                   onChange={(e) => setFlatHouse(e.target.value)}
-                  onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
-                  placeholder="Flat / floor"
-                  className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
+                  onFocus={(e) => focusScroll(e.target)}
+                  placeholder="Flat / floor (optional)"
+                  className={`h-11 min-w-0 rounded-xl border border-slate-200 bg-white px-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
                 />
                 <input
                   value={landmark}
                   onChange={(e) => setLandmark(e.target.value)}
-                  onFocus={(e) => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
-                  placeholder="Landmark"
-                  className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80"
+                  onFocus={(e) => focusScroll(e.target)}
+                  placeholder="Landmark (optional)"
+                  className={`h-11 min-w-0 rounded-xl border border-slate-200 bg-white px-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
                 />
               </div>
             </div>
 
             {locationStatus && (
-              <p className="mt-3 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs leading-relaxed text-slate-600">{locationStatus}</p>
+              <p className="mt-2.5 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs leading-relaxed text-slate-600">{locationStatus}</p>
             )}
           </section>
         </div>
@@ -403,7 +410,7 @@ export default function CheckoutPage() {
         <button
           type="button"
           onClick={handlePrimaryAction}
-          className={`pointer-events-auto flex min-h-[72px] w-full max-w-[430px] items-center justify-between gap-2 rounded-full border border-white/25 bg-[#F25269] px-4 py-2.5 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] ${
+          className={`pointer-events-auto flex h-[60px] w-full max-w-[430px] items-center justify-between rounded-full border border-white/25 bg-[#F25269] px-4 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] ${
             canPlaceOrder ? 'cursor-pointer active:scale-[0.99]' : 'cursor-pointer'
           }`}
         >
@@ -430,14 +437,13 @@ export default function CheckoutPage() {
                 />
               </span>
             </span>
-            <span className="min-w-0 text-left text-base font-semibold leading-tight text-white drop-shadow-sm">
+            <span className="min-w-0 text-left text-[16px] font-semibold leading-tight text-white drop-shadow-sm">
               {totalItems} {totalItems === 1 ? 'item' : 'items'} · ₹{total.toFixed(0)}
             </span>
           </span>
-          <span className="shrink-0 text-right leading-tight">
-            <span className="block text-[10px] font-semibold uppercase tracking-wide text-white/90">Checkout</span>
-            <span className="mt-0.5 block text-[15px] font-bold text-white">Place order</span>
-            <span className="mt-0.5 block text-[10px] font-medium text-white/85">Pay by UPI</span>
+          <span className="shrink-0 pl-1 text-right leading-tight">
+            <span className="block text-[15px] font-bold text-white">Place order</span>
+            <span className="mt-0.5 block text-[11px] font-medium text-white/90">Pay by UPI</span>
           </span>
         </button>
       </div>
