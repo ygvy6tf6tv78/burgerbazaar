@@ -122,7 +122,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
   return (
     <>
       <div className="space-y-3 w-full max-w-full min-w-0" onClick={(e) => e.stopPropagation()}>
-        {/* Row 1: Call Now + Payment – equal width, responsive */}
+        {/* Row 1: Call Now + Order Online */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           <Button
             data-call-button
@@ -153,6 +153,91 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             <span className="text-sm font-bold relative z-10 truncate" style={{ fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' }}>{t('callNow')}</span>
           </Button>
 
+          <Link
+            href="/order"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 text-white font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%)',
+              boxShadow: '0 8px 20px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              fontSize: '14px',
+              WebkitTapHighlightColor: 'transparent',
+              transform: 'translateY(-1px)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 12px 28px rgba(37, 99, 235, 0.5), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
+              e.currentTarget.style.background = 'linear-gradient(135deg, #4A90F4 0%, #2E7CE8 50%, #2563EB 100%)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 8px 20px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              e.currentTarget.style.transform = 'translateY(-1px) scale(1)'
+              e.currentTarget.style.background = 'linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%)'
+            }}
+          >
+            <ShoppingCart className="w-4 h-4 shrink-0 text-white relative z-10" strokeWidth={2.25} aria-hidden />
+            <span className="text-sm font-bold truncate relative z-10" style={{ color: '#FFFFFF', fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' }}>Order Online</span>
+          </Link>
+        </div>
+
+        {/* Row 2: Dine-In / Takeaway + View Menu */}
+        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+          <Link
+            href="/order"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
+            style={{
+              color: '#0F172A',
+              boxShadow: '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+              borderRadius: '16px',
+              fontSize: '14px',
+              WebkitTapHighlightColor: 'transparent',
+              transform: 'translateY(-1px)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 10px 20px rgba(15, 118, 110, 0.28), 0 6px 12px rgba(15, 118, 110, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+          >
+            <ShoppingBag className="w-4 h-4 shrink-0 text-teal-700" strokeWidth={2.35} aria-hidden />
+            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Dine-In / Takeaway</span>
+          </Link>
+          <Link
+            href="/menu"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
+            style={{
+              color: '#0F172A',
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+              borderRadius: '16px',
+              fontSize: '14px',
+              WebkitTapHighlightColor: 'transparent',
+              transform: 'translateY(-1px)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+          >
+            <List className="w-4 h-4 shrink-0 text-slate-700" strokeWidth={2.5} aria-hidden />
+            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
+          </Link>
+        </div>
+
+        {/* Row 3: Payment + Instagram */}
+        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           {onOpenPayments && (
             <div className="min-w-0 relative">
               <span
@@ -210,91 +295,6 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               </Button>
             </div>
           )}
-        </div>
-
-        {/* Row 2: View Menu (menu icon), Order Now (cart — primary CTA) */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Link
-            href="/menu"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
-            style={{
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <List className="w-4 h-4 shrink-0 text-slate-700" strokeWidth={2.5} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
-          </Link>
-          <Link
-            href="/order"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
-            style={{
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <ShoppingCart className="w-4 h-4 shrink-0 text-[#E23744]" strokeWidth={2.25} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Order Online</span>
-          </Link>
-        </div>
-
-        {/* Row 3: Takeaway / Dine In + Instagram */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Link
-            href="/order"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
-            style={{
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 10px 20px rgba(15, 118, 110, 0.28), 0 6px 12px rgba(15, 118, 110, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <ShoppingBag className="w-4 h-4 shrink-0 text-teal-700" strokeWidth={2.35} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Takeaway / Dine</span>
-          </Link>
-
           <Button
             data-instagram-button
             onClick={(e) => {
