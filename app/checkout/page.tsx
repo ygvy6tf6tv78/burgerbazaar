@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Minus, Plus, AlertCircle, CheckCircle2, X } from 'lucide-react'
+import { ArrowLeft, ChevronDown, MapPin, Minus, Plus, AlertCircle, CheckCircle2, X } from 'lucide-react'
 import { type CartItem, generateWhatsAppCartMessage } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -12,12 +12,20 @@ import {
   MANGO_CART_KEY,
   MANGO_HANDOFF_TO_CHECKOUT,
   MANGO_CHECKOUT_SESSION,
+  readOrderType,
   clearCheckoutSession,
   writeHandoffToMenuFromCheckout,
+  type MangoOrderType,
 } from '../lib/cart-session'
 
 type DeliveryZone = 'unset' | 'inside' | 'outside'
+type TimeOption = '15 minutes' | '30 minutes' | '45 minutes' | '1 hour' | 'Custom time'
 
+const dineInArrivalOptions: TimeOption[] = ['15 minutes', '30 minutes', '45 minutes', '1 hour', 'Custom time']
+const takeawayPickupOptions = ['10 minutes', '15 minutes', '20 minutes', '30 minutes', '45 minutes', 'Custom time']
+const couponDiscounts: Record<string, number> = {
+  OLMANGO10: 10,
+}
 const MOBILE_DIGITS = 10
 
 function digitsOnly(s: string) {
@@ -30,7 +38,18 @@ const fieldText = 'text-[16px] leading-snug'
 export default function CheckoutPage() {
   const [checkoutStorageReady, setCheckoutStorageReady] = useState(false)
   const [cart, setCart] = useState<CartItem[]>([])
+  const [orderType, setOrderType] = useState<MangoOrderType>('online')
   const [mobile, setMobile] = useState('')
+  const [customerName, setCustomerName] = useState('')
+  const [arrivalTime, setArrivalTime] = useState('15 minutes')
+  const [arrivalCustomTime, setArrivalCustomTime] = useState('')
+  const [preferredSeating, setPreferredSeating] = useState('')
+  const [pickupTime, setPickupTime] = useState('10 minutes')
+  const [pickupCustomTime, setPickupCustomTime] = useState('')
+  const [orderNotes, setOrderNotes] = useState('')
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null)
+  const [couponMessage, setCouponMessage] = useState('')
   const [mappedAddress, setMappedAddress] = useState('')
   const [flatHouse, setFlatHouse] = useState('')
   const [landmark, setLandmark] = useState('')
@@ -47,6 +66,13 @@ export default function CheckoutPage() {
   const delivery = shopConfig.delivery
   const radiusKm = delivery.radiusKm
   const paymentPageUrl = `${shopConfig.url.replace(/\/$/, '')}/mango-pay`
+  const isOnlineOrder = orderType === 'online'
+  const isDineInOrder = orderType === 'dine-in'
+  const isTakeawayOrder = orderType === 'takeaway'
+  const orderHeading =
+    isDineInOrder ? 'Dine In Checkout' : isTakeawayOrder ? 'Takeaway Checkout' : 'Checkout'
+  const menuOrderHref =
+    orderType === 'online' ? '/menu?mode=order' : `/menu?mode=order&type=${orderType}`
 
   const distanceFromRestaurant = useMemo(() => {
     if (userLat == null || userLng == null) return null
@@ -63,6 +89,7 @@ export default function CheckoutPage() {
     const handoff = window.sessionStorage.getItem(MANGO_HANDOFF_TO_CHECKOUT) === '1'
     window.sessionStorage.removeItem(MANGO_HANDOFF_TO_CHECKOUT)
     const sessionActive = window.sessionStorage.getItem(MANGO_CHECKOUT_SESSION) === '1'
+    setOrderType(readOrderType())
 
     let next: CartItem[] = []
     if (handoff || sessionActive) {
@@ -103,8 +130,15 @@ export default function CheckoutPage() {
     }, 0)
   }, [cart])
   const totalItems = useMemo(() => cart.reduce((sum, item) => sum + item.cartQuantity, 0), [cart])
+  const discountAmount = useMemo(() => {
+    if (!appliedCoupon) return 0
+    return Math.round((total * appliedCoupon.discountPercent) / 100)
+  }, [appliedCoupon, total])
+  const payableTotal = Math.max(total - discountAmount, 0)
 
   const mobileDigits = useMemo(() => digitsOnly(mobile).slice(0, MOBILE_DIGITS), [mobile])
+  const arrivalDisplayTime = arrivalTime === 'Custom time' ? arrivalCustomTime.trim() : arrivalTime
+  const pickupDisplayTime = pickupTime === 'Custom time' ? pickupCustomTime.trim() : pickupTime
 
   const fullAddressBlock = useMemo(() => {
     const lines: string[] = []
@@ -122,19 +156,92 @@ export default function CheckoutPage() {
     setCart((prev) => prev.map((i) => (i.id === id ? { ...i, cartQuantity: qty } : i)))
   }
 
+  const formatOrderItems = () =>
+    cart
+      .map((item) => {
+        const unitPrice = parseFloat(item.price.replace('₹', '').replace(',', '').split('/')[0].trim())
+        const lineTotal = (isNaN(unitPrice) ? 0 : unitPrice) * item.cartQuantity
+        return `• ${item.name}\n  ${item.quantity} × ${item.cartQuantity} = ₹${lineTotal.toFixed(0)}`
+      })
+      .join('\n\n')
+
+  const applyCoupon = () => {
+    const normalized = couponCode.replace(/\s+/g, '').toUpperCase()
+    const discountPercent = couponDiscounts[normalized]
+    if (!discountPercent) {
+      setAppliedCoupon(null)
+      setCouponMessage('Invalid coupon code.')
+      return
+    }
+    setAppliedCoupon({ code: couponCode.trim().toUpperCase(), discountPercent })
+    setCouponMessage(`${discountPercent}% discount applied.`)
+  }
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null)
+    setCouponCode('')
+    setCouponMessage('')
+  }
+
+  const couponBlock = appliedCoupon
+    ? `\nCoupon: ${appliedCoupon.code} (${appliedCoupon.discountPercent}% off)\nDiscount: -₹${discountAmount.toFixed(0)}\nFinal Total: ₹${payableTotal.toFixed(0)}`
+    : ''
+
+  const placeDineInOrTakeawayOrder = () => {
+    if (cart.length === 0) return
+    if (!customerName.trim() || mobileDigits.length < MOBILE_DIGITS) return
+    if (isDineInOrder && !arrivalDisplayTime) return
+    if (isTakeawayOrder && !pickupDisplayTime) return
+
+    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
+    const e164 = phone.length === 10 ? `91${phone}` : phone
+    const orderItems = formatOrderItems()
+    const message = isDineInOrder
+      ? `Hi Mango, I want to place a Dine In pre-order.
+
+Name: ${customerName.trim()}
+Phone: +91 ${mobileDigits}
+Arrival Time: ${arrivalDisplayTime}
+Preferred Seating: ${preferredSeating.trim() || 'N/A'}
+Order Items:
+${orderItems}
+Total: ₹${total.toFixed(0)}${couponBlock}
+Notes: ${orderNotes.trim() || 'N/A'}
+
+Please confirm my order.`
+      : `Hi Mango, I want to place a Takeaway order.
+
+Name: ${customerName.trim()}
+Phone: +91 ${mobileDigits}
+Pickup Time: ${pickupDisplayTime}
+Order Items:
+${orderItems}
+Total: ₹${total.toFixed(0)}${couponBlock}
+Notes: ${orderNotes.trim() || 'N/A'}
+
+Please confirm my order.`
+
+    window.open(getWhatsAppLink(e164, message), '_blank')
+    clearCheckoutSession()
+    setCart([])
+  }
+
   const orderNow = () => {
     if (cart.length === 0) return
     if (!mappedAddress.trim() || userLat == null || userLng == null || deliveryZone !== 'inside') return
     if (mobileDigits.length < MOBILE_DIGITS) return
     const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
     const e164 = phone.length === 10 ? `91${phone}` : phone
-    const base = generateWhatsAppCartMessage(cart, total)
+    const base = generateWhatsAppCartMessage(cart, payableTotal)
+    const couponSummary = appliedCoupon
+      ? `\n\nCoupon Applied:\n${appliedCoupon.code} (${appliedCoupon.discountPercent}% off)\nOriginal total: ₹${total.toFixed(0)}\nDiscount: -₹${discountAmount.toFixed(0)}\nFinal total: ₹${payableTotal.toFixed(0)}`
+      : ''
     const customer =
       `\n\nCustomer Details:\nCall this number: +91 ${mobileDigits}\n\n${fullAddressBlock}` +
       `\n\n(Map distance ~${distanceFromRestaurant?.toFixed(1)} km from restaurant)` +
       `\n\nPlease confirm this order.` +
       `\n\n---\nFor customer: After order confirmation, please pay here:\n${paymentPageUrl}`
-    window.open(getWhatsAppLink(e164, `${base}${customer}`), '_blank')
+    window.open(getWhatsAppLink(e164, `${base}${couponSummary}${customer}`), '_blank')
     clearCheckoutSession()
     setCart([])
   }
@@ -144,13 +251,13 @@ export default function CheckoutPage() {
 
     if (!window.isSecureContext) {
       setLocationStatus(
-        'Location ke liye HTTPS link zaroori hai. mango.onelink.cards khulkar try karein — localhost HTTP par GPS kaam nahi karta.'
+        'Location requires a secure HTTPS link. Please try on mango.onelink.cards because GPS may not work on localhost HTTP.'
       )
       return
     }
 
     if (!navigator.geolocation) {
-      setLocationStatus('Is browser / phone par location API band hai. Chrome ya Safari update karke try karein.')
+      setLocationStatus('Location is not available in this browser. Please try again in Chrome or Safari.')
       return
     }
 
@@ -197,20 +304,18 @@ export default function CheckoutPage() {
         setIsLocating(false)
         if (err.code === err.PERMISSION_DENIED) {
           setLocationStatus(
-            'Location permission OFF hai. Steps: (1) Chrome ⋮ → Settings → Site settings → Location → Allow. ' +
-              '(2) Ya phone Settings → Apps → Chrome → Permissions → Location → Allow. ' +
-              'Phir neeche “Use current location” dubara dabayein.'
+            'Location permission is off. Open browser settings, allow location for this site, then tap “Use current location” again.'
           )
           setToast(
-            'Location band hai — Chrome / phone Settings se Allow karein, phir yahi button dubara dabayein.'
+            'Location is blocked. Allow location in browser or phone settings, then tap the button again.'
           )
         } else if (err.code === err.TIMEOUT) {
           setLocationStatus(
-            'Location time out — khuli jagah / balcony try karein, GPS on hai check karein, button dubara dabayein.'
+            'Location timed out. Please check that GPS is on and tap the button again.'
           )
         } else {
           setLocationStatus(
-            'Location abhi nahi mili. GPS / Location services ON karein aur dubara try karein.'
+            'Location could not be detected. Please turn on location services and try again.'
           )
         }
       },
@@ -219,15 +324,27 @@ export default function CheckoutPage() {
   }
 
   const canPlaceOrder =
-    cart.length > 0 &&
-    mobileDigits.length === MOBILE_DIGITS &&
-    mappedAddress.trim() &&
-    userLat != null &&
-    userLng != null &&
-    deliveryZone === 'inside'
+    isOnlineOrder
+      ? cart.length > 0 &&
+        mobileDigits.length === MOBILE_DIGITS &&
+        mappedAddress.trim() &&
+        userLat != null &&
+        userLng != null &&
+        deliveryZone === 'inside'
+      : cart.length > 0 &&
+        customerName.trim().length > 1 &&
+        mobileDigits.length === MOBILE_DIGITS &&
+        (isDineInOrder ? Boolean(arrivalDisplayTime) : Boolean(pickupDisplayTime))
 
   const validationMessage = (): string | null => {
     if (cart.length === 0) return 'Your cart is empty — add items from the menu first.'
+    if (!isOnlineOrder) {
+      if (customerName.trim().length < 2) return 'Enter your name.'
+      if (mobileDigits.length < MOBILE_DIGITS) return 'Enter your 10-digit mobile number.'
+      if (isDineInOrder && !arrivalDisplayTime) return 'Select arrival time.'
+      if (isTakeawayOrder && !pickupDisplayTime) return 'Select pickup time.'
+      return null
+    }
     if (userLat == null || userLng == null) {
       return 'Tap “Use current location” and allow location when your browser asks.'
     }
@@ -246,17 +363,84 @@ export default function CheckoutPage() {
     if (msg) {
       setToast(msg)
       if (cart.length === 0) return
-      if (userLat == null || userLng == null) scrollFieldIntoView(locationBlockRef.current)
+      if (!isOnlineOrder) {
+        if (mobileDigits.length < MOBILE_DIGITS) scrollFieldIntoView(mobileBlockRef.current)
+      } else if (userLat == null || userLng == null) scrollFieldIntoView(locationBlockRef.current)
       else if (!mappedAddress.trim()) scrollFieldIntoView(addressRef.current)
       else if (mobileDigits.length < MOBILE_DIGITS) scrollFieldIntoView(mobileBlockRef.current)
       return
     }
-    orderNow()
+    if (isOnlineOrder) orderNow()
+    else placeDineInOrTakeawayOrder()
   }
 
   const focusScroll = (el: HTMLElement) => {
     el.scrollIntoView({ block: 'center', behavior: 'smooth' })
   }
+
+  const couponSection = (
+    <section className="mt-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_8px_18px_rgba(15,23,42,0.05)]">
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <h2 className="text-[13px] font-bold text-slate-900">Apply Coupon</h2>
+          <p className="mt-0.5 text-[11px] font-medium text-slate-500">Enter your code at checkout.</p>
+        </div>
+        {appliedCoupon && (
+          <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">
+            {appliedCoupon.discountPercent}% OFF
+          </span>
+        )}
+      </div>
+
+      <div className="mt-2 flex min-w-0 gap-2">
+        <input
+          value={couponCode}
+          onChange={(e) => {
+            setCouponCode(e.target.value)
+            if (appliedCoupon) setAppliedCoupon(null)
+            if (couponMessage) setCouponMessage('')
+          }}
+          onFocus={(e) => focusScroll(e.target)}
+          placeholder="Enter coupon code"
+          className={`h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 uppercase text-slate-900 placeholder:normal-case placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+        />
+        {appliedCoupon ? (
+          <button
+            type="button"
+            onClick={removeCoupon}
+            className="h-10 shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 text-[12px] font-bold text-slate-700 active:scale-[0.98]"
+          >
+            Remove
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={applyCoupon}
+            className="h-10 shrink-0 rounded-xl bg-[#E23744] px-3.5 text-[12px] font-bold text-white shadow-[0_8px_16px_rgba(226,55,68,0.20)] active:scale-[0.98]"
+          >
+            Apply
+          </button>
+        )}
+      </div>
+
+      {couponMessage && (
+        <p
+          className={`mt-2 rounded-xl px-3 py-1.5 text-[11px] font-semibold ${
+            appliedCoupon
+              ? 'border border-emerald-100 bg-emerald-50 text-emerald-700'
+              : 'border border-red-100 bg-red-50 text-red-600'
+          }`}
+        >
+          {couponMessage}
+        </p>
+      )}
+
+      <div className="mt-2 flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2 text-[12px]">
+        <span className="font-semibold text-slate-600">{appliedCoupon ? 'Discounted total' : 'Cart total'}</span>
+        <span className="font-extrabold text-slate-950">₹{payableTotal.toFixed(0)}</span>
+      </div>
+    </section>
+  )
 
   return (
     <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden bg-[#F25269]">
@@ -289,14 +473,14 @@ export default function CheckoutPage() {
         <div className="mx-auto w-full max-w-md px-3 pt-3">
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
-              href="/menu?mode=order"
+              href={menuOrderHref}
               onClick={() => clearCheckoutSession()}
               className="-ml-1 inline-flex min-h-[48px] min-w-[48px] touch-manipulation items-center gap-2 rounded-xl px-2 py-2 text-[15px] font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
             >
               <ArrowLeft className="h-5 w-5 shrink-0" strokeWidth={2.25} aria-hidden />
               <span>Back</span>
             </Link>
-            <p className="mt-1 text-lg font-extrabold tracking-tight text-slate-900">Checkout</p>
+            <p className="mt-1 text-lg font-extrabold tracking-tight text-slate-900">{orderHeading}</p>
             <p className="mt-0.5 text-xs text-slate-500">{totalItems} items</p>
           </div>
 
@@ -345,14 +529,15 @@ export default function CheckoutPage() {
             </div>
 
             <Link
-              href="/menu?mode=order"
-              onClick={() => writeHandoffToMenuFromCheckout(cart)}
+              href={menuOrderHref}
+              onClick={() => writeHandoffToMenuFromCheckout(cart, orderType)}
               className="mt-2.5 inline-flex touch-manipulation items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
             >
               + Add more items
             </Link>
           </section>
 
+          {isOnlineOrder ? (
           <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-[15px] font-bold text-slate-900">Delivery</h2>
@@ -469,6 +654,141 @@ export default function CheckoutPage() {
               <p className="mt-2.5 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs leading-relaxed text-slate-600">{locationStatus}</p>
             )}
           </section>
+          ) : (
+          <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-[15px] font-bold text-slate-900">
+                {isDineInOrder ? 'Dine In Details' : 'Takeaway Details'}
+              </h2>
+              <Link href="/order" className="text-[12px] font-semibold text-[#E23744]">
+                Change Order Type
+              </Link>
+            </div>
+
+            <div className="mt-3 grid gap-3">
+              <div>
+                <label htmlFor="customer-name" className="mb-1 block text-[12px] font-semibold text-slate-800">
+                  Name
+                </label>
+                <input
+                  id="customer-name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  onFocus={(e) => focusScroll(e.target)}
+                  placeholder="Your name"
+                  className={`h-11 min-w-0 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+                />
+              </div>
+
+              <div ref={mobileBlockRef}>
+                <label htmlFor="checkout-mobile" className="mb-1 block text-[12px] font-semibold text-slate-800">
+                  Phone
+                </label>
+                <div className="flex h-11 min-w-0 items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-300/80">
+                  <span
+                    className="flex shrink-0 items-center gap-1.5 border-r border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100/90 px-2 sm:px-2.5"
+                    aria-label="India, country code +91"
+                  >
+                    <span className="select-none text-[18px] leading-none" aria-hidden title="India">
+                      🇮🇳
+                    </span>
+                    <span className="text-[13px] font-bold tabular-nums tracking-tight text-slate-800">+91</span>
+                  </span>
+                  <input
+                    id="checkout-mobile"
+                    value={mobileDigits}
+                    onChange={(e) => setMobile(digitsOnly(e.target.value).slice(0, MOBILE_DIGITS))}
+                    onFocus={(e) => focusScroll(e.target)}
+                    placeholder="98765 43210"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    maxLength={MOBILE_DIGITS}
+                    className={`min-w-0 flex-1 bg-white px-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none ${fieldText}`}
+                  />
+                </div>
+              </div>
+
+              {isDineInOrder ? (
+                <>
+                  <div>
+                    <label htmlFor="arrival-time" className="mb-1 block text-[12px] font-semibold text-slate-800">
+                      Arrival Time
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="arrival-time"
+                        value={arrivalTime}
+                        onChange={(e) => setArrivalTime(e.target.value)}
+                        className={`h-11 min-w-0 w-full appearance-none rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 px-3 pr-10 font-semibold text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+                      >
+                        {dineInArrivalOptions.map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    </div>
+                  </div>
+                  {arrivalTime === 'Custom time' && (
+                    <input
+                      value={arrivalCustomTime}
+                      onChange={(e) => setArrivalCustomTime(e.target.value)}
+                      onFocus={(e) => focusScroll(e.target)}
+                      placeholder="Enter arrival time"
+                      className={`h-11 min-w-0 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+                    />
+                  )}
+                  <input
+                    value={preferredSeating}
+                    onChange={(e) => setPreferredSeating(e.target.value)}
+                    onFocus={(e) => focusScroll(e.target)}
+                    placeholder="Preferred seating / table (optional)"
+                    className={`h-11 min-w-0 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+                  />
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label htmlFor="pickup-time" className="mb-1 block text-[12px] font-semibold text-slate-800">
+                      Pickup Time
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="pickup-time"
+                        value={pickupTime}
+                        onChange={(e) => setPickupTime(e.target.value)}
+                        className={`h-11 min-w-0 w-full appearance-none rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 px-3 pr-10 font-semibold text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+                      >
+                        {takeawayPickupOptions.map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    </div>
+                  </div>
+                  {pickupTime === 'Custom time' && (
+                    <input
+                      value={pickupCustomTime}
+                      onChange={(e) => setPickupCustomTime(e.target.value)}
+                      onFocus={(e) => focusScroll(e.target)}
+                      placeholder="Enter pickup time"
+                      className={`h-11 min-w-0 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+                    />
+                  )}
+                </>
+              )}
+
+              <textarea
+                value={orderNotes}
+                onChange={(e) => setOrderNotes(e.target.value)}
+                onFocus={(e) => focusScroll(e.target)}
+                placeholder="Notes (optional)"
+                rows={3}
+                className={`w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+              />
+            </div>
+          </section>
+          )}
+          {couponSection}
         </div>
       </main>
 
@@ -510,12 +830,14 @@ export default function CheckoutPage() {
               </span>
             </span>
             <span className="min-w-0 text-left text-[16px] font-semibold leading-tight text-white drop-shadow-sm">
-              {totalItems} {totalItems === 1 ? 'item' : 'items'} · ₹{total.toFixed(0)}
+              {totalItems} {totalItems === 1 ? 'item' : 'items'} · ₹{payableTotal.toFixed(0)}
             </span>
           </span>
           <span className="shrink-0 pl-1 text-right leading-tight">
             <span className="block text-[15px] font-bold text-white">Place order</span>
-            <span className="mt-0.5 block text-[11px] font-medium text-white/90">Pay by UPI</span>
+            <span className="mt-0.5 block text-[11px] font-medium text-white/90">
+              {isOnlineOrder ? 'Pay by UPI' : 'Send on WhatsApp'}
+            </span>
           </span>
         </button>
       </div>

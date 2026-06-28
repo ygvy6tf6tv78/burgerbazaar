@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Phone, Download, MapPin, ShoppingCart, Star, X, Instagram, UtensilsCrossed } from 'lucide-react'
+import { Phone, Download, MapPin, ShoppingCart, Star, X, List, ShoppingBag } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -235,11 +235,11 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <UtensilsCrossed className="w-4 h-4 shrink-0 text-slate-600" strokeWidth={2.25} aria-hidden />
+            <List className="w-4 h-4 shrink-0 text-slate-700" strokeWidth={2.5} aria-hidden />
             <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
           </Link>
           <Link
-            href="/menu?mode=order"
+            href="/order"
             onClick={(e) => e.stopPropagation()}
             className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
             style={{
@@ -262,11 +262,78 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             }}
           >
             <ShoppingCart className="w-4 h-4 shrink-0 text-[#E23744]" strokeWidth={2.25} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Order Now</span>
+            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Order Online</span>
           </Link>
         </div>
 
-        {/* Row 3: Zomato left, Swiggy right */}
+        {/* Row 3: Takeaway / Dine In + Instagram */}
+        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+          <Link
+            href="/order"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
+            style={{
+              color: '#0F172A',
+              boxShadow: '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+              borderRadius: '16px',
+              fontSize: '14px',
+              WebkitTapHighlightColor: 'transparent',
+              transform: 'translateY(-1px)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 10px 20px rgba(15, 118, 110, 0.28), 0 6px 12px rgba(15, 118, 110, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+          >
+            <ShoppingBag className="w-4 h-4 shrink-0 text-teal-700" strokeWidth={2.35} aria-hidden />
+            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Takeaway / Dine</span>
+          </Link>
+
+          <Button
+            data-instagram-button
+            onClick={(e) => {
+              e.stopPropagation()
+              setInstagramSelectorOpen(!instagramSelectorOpen)
+              setCallSelectorOpen(false)
+              setWhatsappSelectorOpen(false)
+            }}
+            className="w-full min-w-0 h-11 bg-white/90 hover:bg-white text-slate-900 font-semibold rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border border-slate-200/90"
+            style={{
+              boxShadow: '0 8px 16px rgba(225, 48, 108, 0.16), 0 4px 8px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+              borderRadius: '16px',
+              fontSize: '14px',
+              WebkitTapHighlightColor: 'transparent',
+              transform: 'translateY(-1px)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 10px 20px rgba(225, 48, 108, 0.22), 0 6px 12px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow =
+                '0 8px 16px rgba(225, 48, 108, 0.16), 0 4px 8px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+          >
+            <Image
+              src="/social.png"
+              alt=""
+              width={22}
+              height={22}
+              className="h-[22px] w-[22px] shrink-0 object-contain"
+            />
+            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Instagram</span>
+          </Button>
+        </div>
+
+        {/* Row 4: Zomato left, Swiggy right */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           {shopConfig.social?.zomato && (
             <Link

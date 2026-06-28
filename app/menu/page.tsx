@@ -14,6 +14,8 @@ import {
   MANGO_HANDOFF_TO_MENU,
   MANGO_CHECKOUT_SESSION,
   writeHandoffToCheckout,
+  writeOrderType,
+  type MangoOrderType,
 } from '../lib/cart-session'
 
 type MenuCategoryKey = keyof typeof menuCategories
@@ -53,7 +55,12 @@ function MenuPageInner() {
   const router = useRouter()
   const catParam = searchParams.get('cat') as MenuCategoryKey | null
   const mode = searchParams.get('mode')
+  const typeParam = searchParams.get('type')
   const isOrderMode = mode === 'order'
+  const orderType: MangoOrderType =
+    typeParam === 'dine-in' || typeParam === 'takeaway' ? typeParam : 'online'
+  const orderTitle =
+    orderType === 'dine-in' ? 'Dine In Order' : orderType === 'takeaway' ? 'Takeaway Order' : 'Order Online'
   const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'burgerPizza'
   const [activeCategory, setActiveCategory] = useState<MenuCategoryKey>(initialCat)
   const [isLightMode, setIsLightMode] = useState(true)
@@ -84,6 +91,11 @@ function MenuPageInner() {
   useEffect(() => {
     if (isOrderMode) setIsLightMode(true)
   }, [isOrderMode])
+
+  useEffect(() => {
+    if (!isOrderMode) return
+    writeOrderType(orderType)
+  }, [isOrderMode, orderType])
 
   // Restore cart only after checkout → “Add more items” (one-shot handoff). Refresh / first visit = empty cart.
   useEffect(() => {
@@ -243,7 +255,7 @@ function MenuPageInner() {
   }, [activeFilter, isOrderMode, filteredOrderCategories])
 
   const goToCheckout = () => {
-    writeHandoffToCheckout(cart)
+    writeHandoffToCheckout(cart, orderType)
     router.push('/checkout')
   }
 
@@ -306,7 +318,7 @@ function MenuPageInner() {
                   }`}
                 >
                   {isOrderMode ? (
-                    <span className="text-lg sm:text-xl font-bold tracking-tight leading-tight">Order Online</span>
+                    <span className="text-lg sm:text-xl font-bold tracking-tight leading-tight">{orderTitle}</span>
                   ) : (
                     <span className="text-xl sm:text-2xl font-bold tracking-tight">Our Menu</span>
                   )}
@@ -367,6 +379,14 @@ function MenuPageInner() {
               </div>}
 
               <div className="mt-4">
+                {isOrderMode && (
+                  <Link
+                    href="/order"
+                    className="mb-3 inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-semibold leading-none text-slate-700 shadow-sm active:scale-[0.98]"
+                  >
+                    Change Order Type
+                  </Link>
+                )}
                 <AnimatePresence>
                   {!isOrderMode && showSlideHint && (
                     <motion.div
@@ -545,11 +565,11 @@ function MenuPageInner() {
                     <section
                       ref={(el) => { orderSectionRefs.current[key] = el }}
                       key={`order-section-${key}`}
-                      className={`w-full overflow-hidden rounded-2xl border transition-all duration-200 ${
+                      className={`w-full overflow-hidden rounded-[28px] border transition-all duration-200 ${
                         isLightMode
                           ? isOpen
-                            ? 'border-mango-green/25 bg-white shadow-[0_10px_28px_rgba(30,77,61,0.1)] ring-1 ring-mango-green/15'
-                            : 'border-slate-200/95 bg-white shadow-sm hover:border-slate-300'
+                            ? 'border-mango-green/25 bg-white shadow-[0_16px_36px_rgba(30,77,61,0.12)] ring-1 ring-mango-green/15'
+                            : 'border-slate-200/95 bg-white shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:border-slate-300'
                           : isOpen
                             ? 'border-white/20 bg-white/[0.08] shadow-lg ring-1 ring-white/10'
                             : 'border-white/10 bg-white/[0.06] hover:bg-white/[0.08]'
@@ -569,18 +589,18 @@ function MenuPageInner() {
                           setActiveCategory(key)
                           scheduleScrollToOrderSection(key)
                         }}
-                        className={`flex w-full items-center gap-3 px-4 py-3.5 text-left touch-manipulation active:bg-slate-50/80 ${
+                        className={`flex w-full items-center gap-3 px-4 py-4 text-left touch-manipulation active:bg-slate-50/80 ${
                           isLightMode ? 'bg-slate-50/70 hover:bg-slate-50' : 'bg-white/[0.04] hover:bg-white/[0.07]'
                         }`}
                       >
-                        <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100">
-                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="44px" unoptimized />
+                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(15,23,42,0.12)] ring-1 ring-slate-100">
+                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="56px" unoptimized />
                         </span>
                         <div className="min-w-0 flex-1">
-                          <span className={`block truncate text-[16px] font-semibold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
+                          <span className={`block truncate text-[17px] font-extrabold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
                             {cat.name}
                           </span>
-                          <span className={`mt-0.5 block text-[12px] ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
+                          <span className={`mt-1 block text-[13px] font-medium ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
                             {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
                             <span className="opacity-40"> · </span>
                             {isOpen ? 'Tap header to close' : 'Tap to view & add'}
@@ -610,7 +630,7 @@ function MenuPageInner() {
                             transition={{ duration: 0.18, ease: 'easeOut' }}
                             className={`overflow-hidden border-t ${isLightMode ? 'border-slate-100' : 'border-white/10'}`}
                           >
-                            <div className="p-3 space-y-3">
+                            <div className="p-3 space-y-3.5">
                               {filteredItems.map((item, index) => {
                                 const inCartQty = cart.find((c) => c.id === item.id)?.cartQuantity || 0
                                 return (
@@ -619,13 +639,13 @@ function MenuPageInner() {
                                     initial={{ opacity: 0, y: 8 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: Math.min(index * 0.02, 0.15) }}
-                                    className="group rounded-2xl overflow-hidden border transition-all duration-300 relative min-h-[160px]"
+                                    className="group overflow-hidden rounded-[26px] border transition-all duration-300 relative min-h-[166px]"
                                     style={
                                       isLightMode
                                         ? {
                                             background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 56%, #fafafa 100%)',
                                             border: '1px solid rgba(226, 232, 240, 0.95)',
-                                            boxShadow: '0 10px 20px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.96)',
+                                            boxShadow: '0 12px 26px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.96)',
                                           }
                                         : {
                                             background: 'linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))',
@@ -634,7 +654,7 @@ function MenuPageInner() {
                                           }
                                     }
                                   >
-                                    <div className="p-3.5 relative z-10">
+                                    <div className="p-4 relative z-10">
                                       <span
                                         className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
                                           isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-400/35'
