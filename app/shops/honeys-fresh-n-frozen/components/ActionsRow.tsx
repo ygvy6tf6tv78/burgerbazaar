@@ -154,7 +154,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           </Button>
 
           <Link
-            href="/order"
+            href="/menu?mode=order&type=online"
             onClick={(e) => e.stopPropagation()}
             className="min-w-0 h-11 text-white font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden"
             style={{
@@ -182,7 +182,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           </Link>
         </div>
 
-        {/* Row 2: Dine-In / Takeaway + View Menu */}
+        {/* Row 2: Dine/Pickup + View Menu */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           <Link
             href="/order"
@@ -208,7 +208,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             }}
           >
             <ShoppingBag className="w-4 h-4 shrink-0 text-teal-700" strokeWidth={2.35} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Dine-In / Takeaway</span>
+            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Dine/Pickup</span>
           </Link>
           <Link
             href="/menu"
@@ -240,15 +240,6 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           {onOpenPayments && (
             <div className="min-w-0 relative">
-              <span
-                className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap z-20 animate-pulse"
-                style={{
-                  background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
-                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.5), 0 0 12px rgba(239, 68, 68, 0.3)'
-                }}
-              >
-                NEW
-              </span>
               <Button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -323,7 +314,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             }}
           >
             <Image
-              src="/social.png"
+              src="/instagram-logo-transparent.webp"
               alt=""
               width={22}
               height={22}
@@ -659,7 +650,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                       >
                         <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
                           <Image
-                            src="/social.png"
+                            src="/instagram-logo-transparent.webp"
                             alt="Instagram"
                             width={72}
                             height={72}
