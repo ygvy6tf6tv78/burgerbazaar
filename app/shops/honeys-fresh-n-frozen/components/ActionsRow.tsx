@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Phone, Download, MapPin, ShoppingCart, Star, X, List, ShoppingBag } from 'lucide-react'
+import { Phone, Download, MapPin, ShoppingCart, Star, X, BookOpenText, ShoppingBag } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -231,61 +231,13 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <List className="w-4 h-4 shrink-0 text-slate-700" strokeWidth={2.5} aria-hidden />
+            <BookOpenText className="w-4 h-4 shrink-0 text-slate-700" strokeWidth={2.35} aria-hidden />
             <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
           </Link>
         </div>
 
-        {/* Row 3: Payment + Instagram */}
+        {/* Row 3: Instagram + Payment */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          {onOpenPayments && (
-            <div className="min-w-0 relative">
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onOpenPayments()
-                }}
-                className="w-full min-w-0 h-11 text-white font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden group"
-                style={{
-                  background:
-                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)',
-                  boxShadow:
-                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-                  WebkitTapHighlightColor: 'transparent',
-                  transform: 'translateY(-1px)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 12px 28px rgba(21, 124, 130, 0.5), 0 6px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-                  e.currentTarget.style.background =
-                    'radial-gradient(circle at 30% 30%, rgb(25, 140, 145) 0%, rgb(20, 130, 120) 40%, rgb(20, 25, 30) 100%)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
-                  e.currentTarget.style.transform = 'translateY(-1px) scale(1)'
-                  e.currentTarget.style.background =
-                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)'
-                }}
-              >
-                <Image
-                  src="/icons8-bhim-48.png"
-                  alt="Payment"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 object-contain relative z-10"
-                  style={{ filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }}
-                />
-                <span
-                  className="text-sm font-bold relative z-10 truncate"
-                  style={{ fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}
-                >
-                  {t('openPayment')}
-                </span>
-              </Button>
-            </div>
-          )}
           <Button
             data-instagram-button
             onClick={(e) => {
@@ -316,12 +268,63 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             <Image
               src="/instagram-logo-transparent.webp"
               alt=""
-              width={22}
-              height={22}
-              className="h-[22px] w-[22px] shrink-0 object-contain"
+              width={28}
+              height={28}
+              className="h-7 w-7 shrink-0 object-contain"
             />
             <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Instagram</span>
           </Button>
+          {onOpenPayments && (
+            <div className="min-w-0 relative">
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onOpenPayments()
+                }}
+                className="w-full min-w-0 h-11 bg-white/90 hover:bg-white text-slate-900 font-semibold rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border border-slate-200/90"
+                style={{
+                  background:
+                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)',
+                  boxShadow:
+                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+                  borderColor: 'rgba(255, 255, 255, 0.22)',
+                  borderRadius: '16px',
+                  fontSize: '14px',
+                  WebkitTapHighlightColor: 'transparent',
+                  transform: 'translateY(-1px)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    '0 12px 28px rgba(21, 124, 130, 0.5), 0 6px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.background =
+                    'radial-gradient(circle at 30% 30%, rgb(25, 140, 145) 0%, rgb(20, 130, 120) 40%, rgb(20, 25, 30) 100%)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                  e.currentTarget.style.background =
+                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)'
+                }}
+              >
+                <Image
+                  src="/icons8-bhim-48.png"
+                  alt="Payment"
+                  width={16}
+                  height={16}
+                  className="w-4 h-4 object-contain relative z-10"
+                  style={{ filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }}
+                />
+                <span
+                  className="text-sm font-bold relative z-10 truncate"
+                  style={{ color: '#FFFFFF', fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}
+                >
+                  {t('openPayment')}
+                </span>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Row 4: Zomato left, Swiggy right */}

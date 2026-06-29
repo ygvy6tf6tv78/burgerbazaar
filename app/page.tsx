@@ -18,9 +18,18 @@ import BackToTop from './components/BackToTop'
 import LoadingScreen from './components/LoadingScreen'
 
 export default function Home() {
-  const [showLoading, setShowLoading] = useState(true)
+  const [showLoading, setShowLoading] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return sessionStorage.getItem('mangoLandingLoaded') !== 'true'
+  })
 
   useEffect(() => {
+    // Show the branded loading screen only on the first landing-page entry per tab.
+    if (typeof window !== 'undefined' && sessionStorage.getItem('mangoLandingLoaded') === 'true') {
+      setShowLoading(false)
+      return
+    }
+
     // Check if coming from any inner page - skip loading screen and return to the main card
     if (typeof window !== 'undefined') {
       const fromGallery = sessionStorage.getItem('fromGallery')
@@ -28,6 +37,7 @@ export default function Home() {
       const fromReviews = sessionStorage.getItem('fromReviews')
 
       if (fromGallery === 'true' || fromMenu === 'true' || fromReviews === 'true') {
+        sessionStorage.setItem('mangoLandingLoaded', 'true')
         setShowLoading(false)
         sessionStorage.removeItem('fromGallery')
         sessionStorage.removeItem('fromMenu')
@@ -45,11 +55,13 @@ export default function Home() {
 
     // Show loading screen on every page load/refresh for a short branded moment
     const timer = setTimeout(() => {
+      sessionStorage.setItem('mangoLandingLoaded', 'true')
       setShowLoading(false)
     }, 1800)
 
     // Fallback: ensure loading screen always disappears quickly
     const fallbackTimer = setTimeout(() => {
+      sessionStorage.setItem('mangoLandingLoaded', 'true')
       setShowLoading(false)
     }, 2600)
 

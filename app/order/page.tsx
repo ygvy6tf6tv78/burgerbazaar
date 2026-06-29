@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Bike, Clock3, ShoppingBag, Utensils } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Bike, Clock3, PackageCheck, UtensilsCrossed } from 'lucide-react'
 import { writeOrderType, type MangoOrderType } from '../lib/cart-session'
 
 const dinePickupModes: Array<{
@@ -9,6 +9,7 @@ const dinePickupModes: Array<{
   title: string
   subtitle: string
   detail: string
+  image: string
   href: string
   Icon: typeof Bike
 }> = [
@@ -17,16 +18,18 @@ const dinePickupModes: Array<{
     title: 'Dine In',
     subtitle: 'Pre-order before you arrive.',
     detail: 'Food ready for your dine-in visit at Mango.',
+    image: 'url("/unnamed.webp")',
     href: '/menu?mode=order&type=dine-in',
-    Icon: Utensils,
+    Icon: UtensilsCrossed,
   },
   {
     type: 'takeaway',
     title: 'Pickup',
     subtitle: 'Packed and ready to collect.',
     detail: 'Skip waiting and collect your order from the restaurant.',
+    image: 'url("https://images.unsplash.com/photo-1617347454431-f49d7ff5c3b1?auto=format&fit=crop&w=900&q=80")',
     href: '/menu?mode=order&type=takeaway',
-    Icon: ShoppingBag,
+    Icon: PackageCheck,
   },
 ]
 
@@ -35,30 +38,29 @@ export default function OrderTypePage() {
     <main className="mx-auto min-h-screen w-full max-w-[430px] bg-gradient-to-b from-[#fff9ea] via-white to-[#fff1d2] px-3 pb-10 pt-[max(0.75rem,env(safe-area-inset-top))] text-slate-900">
       <div className="w-full">
         <section className="overflow-hidden rounded-[28px] border border-amber-200/80 bg-white shadow-[0_16px_38px_rgba(120,53,15,0.12)]">
-          <div className="h-2 bg-gradient-to-r from-[#E23744] via-[#F7A928] to-[#215941]" />
           <div className="p-3">
-          <div className="relative flex items-center justify-between">
-            <Link
-              href="/"
-              className="z-10 inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full bg-slate-50 text-slate-950 transition-colors hover:bg-slate-100 active:scale-95"
-              aria-label="Back"
-            >
-              <ArrowLeft className="h-[18px] w-[18px] text-slate-900" />
-            </Link>
-            <h1 className="absolute left-0 right-0 px-12 text-center text-[20px] font-extrabold tracking-tight text-slate-950">
-              Dine/Pickup
-            </h1>
-            <span className="z-10 h-10 w-10" aria-hidden />
-          </div>
+            <div className="relative flex items-center justify-between">
+              <Link
+                href="/"
+                className="z-10 inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full bg-slate-50 text-slate-950 transition-colors hover:bg-slate-100 active:scale-95"
+                aria-label="Back"
+              >
+                <ArrowLeft className="h-[18px] w-[18px] text-slate-900" />
+              </Link>
+              <h1 className="absolute left-0 right-0 px-12 text-center text-[20px] font-extrabold tracking-tight text-slate-950">
+                Order Type
+              </h1>
+              <span className="z-10 h-10 w-10" aria-hidden />
+            </div>
 
-          <p className="mx-auto mt-2 max-w-[290px] px-2 text-center text-[12px] font-semibold leading-5 text-slate-600">
-            Choose how you want Mango to prepare your order.
-          </p>
+            <p className="mx-auto mt-2 max-w-[290px] px-2 text-center text-[12px] font-semibold leading-5 text-slate-600">
+              Pick dine-in pre-order or packed pickup.
+            </p>
           </div>
         </section>
 
         <section className="mt-3 grid gap-3">
-          {dinePickupModes.map(({ type, title, subtitle, detail, href, Icon }) => (
+          {dinePickupModes.map(({ type, title, subtitle, detail, image, href, Icon }) => (
             <Link
               key={type}
               href={href}
@@ -66,12 +68,14 @@ export default function OrderTypePage() {
               className="group overflow-hidden rounded-[28px] border border-slate-200/90 bg-white shadow-[0_14px_32px_rgba(15,23,42,0.10)] transition-transform active:scale-[0.985]"
             >
               <div
-                className={`h-16 border-b ${
-                  type === 'dine-in'
-                    ? 'border-amber-200/80 bg-[radial-gradient(circle_at_18%_20%,rgba(251,191,36,0.42),transparent_35%),linear-gradient(135deg,#fff8e3,#fff,#fef3c7)]'
-                    : 'border-teal-200/80 bg-[radial-gradient(circle_at_18%_20%,rgba(20,184,166,0.28),transparent_35%),linear-gradient(135deg,#ecfdf5,#fff,#e0f2fe)]'
-                }`}
-              />
+                className="relative h-24 border-b border-white/70 bg-cover bg-center transition-transform duration-300 group-active:scale-[1.02]"
+                style={{ backgroundImage: image }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
+                <div className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1 text-[11px] font-extrabold text-slate-950 shadow-sm">
+                  {type === 'dine-in' ? 'Dine at Mango' : 'Quick Pickup'}
+                </div>
+              </div>
               <div className="flex items-center gap-3 p-3.5">
                 <span
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] ring-1 ${
