@@ -75,6 +75,7 @@ function MenuPageInner() {
   const [isLightMode, setIsLightMode] = useState(true)
   const [showSlideHint, setShowSlideHint] = useState(false)
   const [cart, setCart] = useState<CartItem[]>([])
+  const [cartStorageReady, setCartStorageReady] = useState(false)
   const [lastAddedItemId, setLastAddedItemId] = useState<string | null>(null)
   const [cartBarPulse, setCartBarPulse] = useState(false)
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
@@ -108,21 +109,18 @@ function MenuPageInner() {
     writeOrderType(orderType)
   }, [isOrderMode, orderType])
 
-  // Restore cart only after checkout → “Add more items” (one-shot handoff). Refresh / first visit = empty cart.
+  // Restore cart in order mode so refresh keeps selected items until checkout/order clear.
   useEffect(() => {
-    if (!isOrderMode || typeof window === 'undefined') return
-    const fromCheckout = window.sessionStorage.getItem(MANGO_HANDOFF_TO_MENU) === '1'
-    window.sessionStorage.removeItem(MANGO_HANDOFF_TO_MENU)
-    if (!fromCheckout) {
-      setCart([])
-      window.sessionStorage.removeItem(MANGO_CART_KEY)
-      window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
+    if (!isOrderMode || typeof window === 'undefined') {
+      setCartStorageReady(true)
       return
     }
+    window.sessionStorage.removeItem(MANGO_HANDOFF_TO_MENU)
     const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
     if (!raw) {
       setCart([])
       window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
+      setCartStorageReady(true)
       return
     }
     try {
@@ -132,7 +130,17 @@ function MenuPageInner() {
       setCart([])
     }
     window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
+    setCartStorageReady(true)
   }, [isOrderMode])
+
+  useEffect(() => {
+    if (!isOrderMode || typeof window === 'undefined' || !cartStorageReady) return
+    if (cart.length === 0) {
+      window.sessionStorage.removeItem(MANGO_CART_KEY)
+      return
+    }
+    window.sessionStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
+  }, [cart, cartStorageReady, isOrderMode])
 
   useEffect(() => {
     const el = categoryRefs.current[activeCategory]
@@ -939,19 +947,21 @@ function MenuPageInner() {
                   className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_32px_rgba(176,122,73,0.34)] flex items-center justify-between px-4 border border-[#E9C46A]/40"
                   style={{ background: 'linear-gradient(135deg,#B07A49,#7B4A2D)' }}
                 >
-                  <span className="flex items-center gap-2.5">
-                    <span className="flex items-center -space-x-2">
-                      <span className="w-7 h-7 rounded-full border border-white/80 overflow-hidden bg-white">
-                        <Image src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=120&q=60" alt="Food 1" width={28} height={28} className="w-full h-full object-cover" unoptimized />
-                      </span>
-                      <span className="w-7 h-7 rounded-full border border-white/80 overflow-hidden bg-white">
-                        <Image src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=120&q=60" alt="Food 2" width={28} height={28} className="w-full h-full object-cover" unoptimized />
-                      </span>
-                    </span>
-                    <span className="text-[16px] font-semibold">{getTotalItems()} items added</span>
-                  </span>
-                  <span className="text-[16px] font-semibold">Checkout &gt;</span>
-                </motion.button>
+	                  <span className="flex min-w-0 items-center gap-2.5">
+	                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/95 text-[13px] font-extrabold text-[#7B4A2D] shadow-sm">
+	                      {getTotalItems()}
+	                    </span>
+	                    <span className="min-w-0 text-left">
+	                      <span className="block truncate text-[15px] font-extrabold">
+	                        {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'} added
+	                      </span>
+	                      <span className="block text-[12px] font-semibold text-white/80">
+	                        Total ₹{getTotalPrice().toFixed(0)}
+	                      </span>
+	                    </span>
+	                  </span>
+	                  <span className="shrink-0 text-[15px] font-extrabold">Checkout &gt;</span>
+	                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>

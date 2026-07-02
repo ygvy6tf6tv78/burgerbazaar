@@ -33,9 +33,8 @@ function digitsOnly(s: string) {
 function locationAddressText(address: string | undefined, mapUrl: string | undefined) {
   const cleanAddress = address?.trim()
   const cleanMapUrl = mapUrl?.trim()
-  if (cleanAddress && cleanMapUrl) return `${cleanAddress}\nGoogle Maps: ${cleanMapUrl}`
   if (cleanAddress) return cleanAddress
-  if (cleanMapUrl) return `Pinned location from phone GPS.\nGoogle Maps: ${cleanMapUrl}`
+  if (cleanMapUrl) return 'Pinned location from phone GPS. Please add house, area and landmark details.'
   return 'Pinned location from phone GPS. Please add house, area and landmark details.'
 }
 
@@ -59,6 +58,7 @@ export default function CheckoutPage() {
   const [pickupCustomTime, setPickupCustomTime] = useState('')
   const [orderNotes, setOrderNotes] = useState('')
   const [mappedAddress, setMappedAddress] = useState('')
+  const [mappedMapUrl, setMappedMapUrl] = useState('')
   const [flatHouse, setFlatHouse] = useState('')
   const [landmark, setLandmark] = useState('')
   const [userLat, setUserLat] = useState<number | null>(null)
@@ -98,11 +98,11 @@ export default function CheckoutPage() {
     const handoff = window.sessionStorage.getItem(MANGO_HANDOFF_TO_CHECKOUT) === '1'
     window.sessionStorage.removeItem(MANGO_HANDOFF_TO_CHECKOUT)
     const sessionActive = window.sessionStorage.getItem(MANGO_CHECKOUT_SESSION) === '1'
+    const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
     setOrderType(readOrderType())
 
     let next: CartItem[] = []
-    if (handoff || sessionActive) {
-      const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
+    if (handoff || sessionActive || raw) {
       if (raw) {
         try {
           const parsed = JSON.parse(raw) as CartItem[]
@@ -153,11 +153,12 @@ export default function CheckoutPage() {
 
   const fullAddressBlock = useMemo(() => {
     const lines: string[] = []
-    if (mappedAddress.trim()) lines.push(`Delivery pin: ${mappedAddress.trim()}`)
+    if (mappedAddress.trim()) lines.push(`Delivery address: ${mappedAddress.trim()}`)
+    if (mappedMapUrl.trim()) lines.push(`Google Maps: ${mappedMapUrl.trim()}`)
     if (flatHouse.trim()) lines.push(`Flat / house / floor: ${flatHouse.trim()}`)
     if (landmark.trim()) lines.push(`Nearby landmark: ${landmark.trim()}`)
     return lines.join('\n')
-  }, [mappedAddress, flatHouse, landmark])
+  }, [mappedAddress, mappedMapUrl, flatHouse, landmark])
 
   const updateQty = (id: string, qty: number) => {
     if (qty <= 0) {
@@ -263,6 +264,7 @@ Please confirm my order.`
           const data = await response.json()
           if (data?.address || data?.mapUrl) {
             setMappedAddress(locationAddressText(data?.address, data?.mapUrl))
+            setMappedMapUrl(typeof data?.mapUrl === 'string' ? data.mapUrl : mapsUrlForCoords(latitude, longitude))
             const d = distanceKm(latitude, longitude, delivery.restaurantLat, delivery.restaurantLng)
             setLocationStatus(
               d <= radiusKm
@@ -271,6 +273,7 @@ Please confirm my order.`
             )
           } else {
             setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
+            setMappedMapUrl(mapsUrlForCoords(latitude, longitude))
             const d = distanceKm(latitude, longitude, delivery.restaurantLat, delivery.restaurantLng)
             setLocationStatus(
               d <= radiusKm
@@ -282,6 +285,7 @@ Please confirm my order.`
           setLocationStatus('Could not load full address — GPS pin is still saved.')
           const { latitude, longitude } = position.coords
           setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
+          setMappedMapUrl(mapsUrlForCoords(latitude, longitude))
         } finally {
           setIsLocating(false)
         }
