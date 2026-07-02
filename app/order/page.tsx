@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft, ArrowRight, Bike, Clock3, PackageCheck, UtensilsCrossed } from 'lucide-react'
 import { writeOrderType, type MangoOrderType } from '../lib/cart-session'
 
@@ -9,7 +10,6 @@ const dinePickupModes: Array<{
   title: string
   subtitle: string
   detail: string
-  image: string
   href: string
   Icon: typeof Bike
 }> = [
@@ -18,7 +18,6 @@ const dinePickupModes: Array<{
     title: 'Dine In',
     subtitle: 'Pre-order before you arrive.',
     detail: 'Fresh food ready for your dine-in visit at The Sonnet Cafe.',
-    image: 'url("/unnamed.webp")',
     href: '/menu?mode=order&type=dine-in',
     Icon: UtensilsCrossed,
   },
@@ -27,7 +26,6 @@ const dinePickupModes: Array<{
     title: 'Pickup',
     subtitle: 'Packed and ready to collect.',
     detail: 'Skip waiting and collect your order from the restaurant.',
-    image: 'url("https://images.unsplash.com/photo-1617347454431-f49d7ff5c3b1?auto=format&fit=crop&w=900&q=80")',
     href: '/menu?mode=order&type=takeaway',
     Icon: PackageCheck,
   },
@@ -60,20 +58,33 @@ export default function OrderTypePage() {
         </section>
 
         <section className="mt-3 grid gap-3">
-          {dinePickupModes.map(({ type, title, subtitle, detail, image, href, Icon }) => (
+          {dinePickupModes.map(({ type, title, subtitle, detail, href, Icon }) => (
             <Link
               key={type}
               href={href}
               onClick={() => writeOrderType(type)}
-              className="group overflow-hidden rounded-[28px] border border-[#D8C3A5]/70 bg-white shadow-[0_14px_32px_rgba(73,46,26,0.10)] transition-transform active:scale-[0.985]"
+              className="group overflow-hidden rounded-[28px] border border-[#D8C3A5]/70 bg-[linear-gradient(145deg,#ffffff_0%,#fffaf1_58%,#ffffff_100%)] shadow-[0_14px_32px_rgba(73,46,26,0.10)] transition-transform active:scale-[0.985]"
             >
-              <div
-                className="relative h-24 border-b border-white/70 bg-cover bg-center transition-transform duration-300 group-active:scale-[1.02]"
-                style={{ backgroundImage: image }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
-                <div className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1 text-[11px] font-extrabold text-slate-950 shadow-sm">
-                  {type === 'dine-in' ? 'Dine at The Sonnet Cafe' : 'Quick Pickup'}
+              <div className="border-b border-[#D8C3A5]/45 px-3.5 py-3">
+                <div className="flex items-center gap-3">
+                  <span className="relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl border border-[#D8C3A5] bg-[#F4E9DC] shadow-[0_8px_18px_rgba(73,46,26,0.10)]">
+                    <Image
+                      src="/sonnet-logo.jpeg"
+                      alt="The Sonnet Cafe"
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                      priority={type === 'dine-in'}
+                    />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[11px] font-extrabold uppercase tracking-wide text-[#7B4A2D]">
+                      {type === 'dine-in' ? 'Dine at Sonnet' : 'Quick pickup'}
+                    </span>
+                    <span className="mt-0.5 block text-[13px] font-semibold leading-4 text-slate-600">
+                      Fresh kitchen orders from 12 PM to 10 PM
+                    </span>
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3.5">

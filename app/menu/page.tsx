@@ -313,7 +313,7 @@ function MenuPageInner() {
       >
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className={`absolute -top-14 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl ${isLightMode ? 'bg-[#D8C3A5]/20' : 'bg-[#D8C3A5]/10'}`} />
-          <div className={`absolute top-[22rem] -left-20 h-64 w-64 rounded-full blur-3xl ${isLightMode ? 'bg-mango-green/12' : 'bg-mango-green/16'}`} />
+          <div className={`absolute top-[22rem] -left-20 h-64 w-64 rounded-full blur-3xl ${isLightMode ? 'bg-[#B07A49]/12' : 'bg-[#E9C46A]/10'}`} />
           <div className={`absolute bottom-[18rem] right-[-5rem] h-72 w-72 rounded-full blur-3xl ${isLightMode ? 'bg-[#D8C3A5]/15' : 'bg-white/[0.05]'}`} />
         </div>
 
@@ -360,7 +360,7 @@ function MenuPageInner() {
                   <button
                     type="button"
                     onClick={() => setIsLightMode((v) => !v)}
-                    className={`z-10 relative inline-flex h-8 w-14 items-center rounded-full border transition-colors touch-manipulation ${
+                      className={`z-10 relative inline-flex h-8 w-14 items-center rounded-full border transition-colors touch-manipulation ${
                       isLightMode
                         ? 'border-[#D8C3A5] bg-slate-100 shadow-[0_6px_16px_rgba(73,46,26,0.10)]'
                         : 'border-white/15 bg-slate-800 shadow-[0_10px_24px_rgba(0,0,0,0.35)]'
@@ -383,7 +383,7 @@ function MenuPageInner() {
                     </span>
                     <span
                       className={`relative z-10 inline-flex h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform ${
-                        isLightMode ? 'translate-x-[26px]' : 'translate-x-1'
+                        isLightMode ? 'translate-x-1' : 'translate-x-[26px]'
                       }`}
                     />
                   </button>
@@ -446,31 +446,48 @@ function MenuPageInner() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                {!isOrderMode && (
-                  <p className={`mb-2.5 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
-                    Browse Categories
-                  </p>
-                )}
+	                {!isOrderMode && (
+	                  <div className="mb-2.5 flex items-center justify-between gap-2 px-0.5">
+	                    <p className={`text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
+	                      Browse Categories
+	                    </p>
+	                    <div className="flex shrink-0 items-center gap-1.5">
+	                      <button
+	                        type="button"
+	                        onClick={() => scrollCategoryStrip('left')}
+	                        className={`inline-flex h-7 items-center gap-1 rounded-full border px-2 text-[10px] font-extrabold uppercase tracking-wide transition-colors ${
+	                          isLightMode
+	                            ? 'border-[#D8C3A5] bg-white text-[#7B4A2D] shadow-sm hover:bg-[#FFF7E8]'
+	                            : 'border-[#E9C46A]/35 bg-white/[0.08] text-[#F8E08E] hover:bg-white/[0.12]'
+	                        }`}
+	                        aria-label="Scroll categories left"
+	                      >
+	                        <ChevronLeft className="h-3.5 w-3.5" />
+	                        Left
+	                      </button>
+	                      <button
+	                        type="button"
+	                        onClick={() => scrollCategoryStrip('right')}
+	                        className={`inline-flex h-7 items-center gap-1 rounded-full border px-2 text-[10px] font-extrabold uppercase tracking-wide transition-colors ${
+	                          isLightMode
+	                            ? 'border-[#D8C3A5] bg-white text-[#7B4A2D] shadow-sm hover:bg-[#FFF7E8]'
+	                            : 'border-[#E9C46A]/35 bg-white/[0.08] text-[#F8E08E] hover:bg-white/[0.12]'
+	                        }`}
+	                        aria-label="Scroll categories right"
+	                      >
+	                        Right
+	                        <ChevronRight className="h-3.5 w-3.5" />
+	                      </button>
+	                    </div>
+	                  </div>
+	                )}
                 {isOrderMode && (
                   <p className={`mb-2.5 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
                     Browse filters
                   </p>
 	                )}
 	                {!isOrderMode && (
-	                  <div className="flex items-center gap-2">
-	                    <button
-	                      type="button"
-	                      onClick={() => scrollCategoryStrip('left')}
-	                      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border shadow-sm transition-colors ${
-	                        isLightMode
-	                          ? 'border-slate-200 bg-white text-[#7B4A2D] hover:bg-[#FFF7E8]'
-	                          : 'border-white/15 bg-white/[0.08] text-white hover:bg-white/[0.12]'
-	                      }`}
-	                      aria-label="Scroll categories left"
-	                    >
-	                      <ChevronLeft className="h-4 w-4" />
-	                    </button>
-	                    <div ref={categoryScrollerRef} className="flex min-w-0 flex-1 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
+		                  <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
 	                      {categoryKeys.map((key) => {
 	                        const cat = menuCategories[key]
 	                        const isActive = activeCategory === key
@@ -499,21 +516,8 @@ function MenuPageInner() {
 	                          </motion.button>
 	                        )
 	                      })}
-	                    </div>
-	                    <button
-	                      type="button"
-	                      onClick={() => scrollCategoryStrip('right')}
-	                      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border shadow-sm transition-colors ${
-	                        isLightMode
-	                          ? 'border-slate-200 bg-white text-[#7B4A2D] hover:bg-[#FFF7E8]'
-	                          : 'border-white/15 bg-white/[0.08] text-white hover:bg-white/[0.12]'
-	                      }`}
-	                      aria-label="Scroll categories right"
-	                    >
-	                      <ChevronRight className="h-4 w-4" />
-	                    </button>
-	                  </div>
-	                )}
+		                  </div>
+		                )}
                 {isOrderMode && (
                   <>
                     <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
@@ -543,19 +547,32 @@ function MenuPageInner() {
                         </button>
                       ))}
                     </div>
-                    <p className={`mb-2.5 mt-4 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
-                      Browse Categories
-                    </p>
-	                    <div className="flex items-center gap-2">
-	                      <button
-	                        type="button"
-	                        onClick={() => scrollCategoryStrip('left')}
-	                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
-	                        aria-label="Scroll categories left"
-	                      >
-	                        <ChevronLeft className="h-4 w-4" />
-	                      </button>
-	                      <div ref={categoryScrollerRef} className="flex min-w-0 flex-1 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
+	                    <div className="mb-2.5 mt-4 flex items-center justify-between gap-2 px-0.5">
+	                      <p className={`text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
+	                        Browse Categories
+	                      </p>
+	                      <div className="flex shrink-0 items-center gap-1.5">
+	                        <button
+	                          type="button"
+	                          onClick={() => scrollCategoryStrip('left')}
+	                          className="inline-flex h-7 items-center gap-1 rounded-full border border-[#D8C3A5] bg-white px-2 text-[10px] font-extrabold uppercase tracking-wide text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
+	                          aria-label="Scroll categories left"
+	                        >
+	                          <ChevronLeft className="h-3.5 w-3.5" />
+	                          Left
+	                        </button>
+	                        <button
+	                          type="button"
+	                          onClick={() => scrollCategoryStrip('right')}
+	                          className="inline-flex h-7 items-center gap-1 rounded-full border border-[#D8C3A5] bg-white px-2 text-[10px] font-extrabold uppercase tracking-wide text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
+	                          aria-label="Scroll categories right"
+	                        >
+	                          Right
+	                          <ChevronRight className="h-3.5 w-3.5" />
+	                        </button>
+	                      </div>
+	                    </div>
+		                    <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
 	                        {categoryKeys.map((key) => {
 	                          const cat = menuCategories[key]
 	                          const isActive = activeCategory === key
@@ -579,16 +596,7 @@ function MenuPageInner() {
 	                            </motion.button>
 	                          )
 	                        })}
-	                      </div>
-	                      <button
-	                        type="button"
-	                        onClick={() => scrollCategoryStrip('right')}
-	                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
-	                        aria-label="Scroll categories right"
-	                      >
-	                        <ChevronRight className="h-4 w-4" />
-	                      </button>
-	                    </div>
+		                    </div>
 	                  </>
 	                )}
               </div>
