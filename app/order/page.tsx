@@ -69,7 +69,7 @@ export default function OrderTypePage() {
                 <div className="flex items-center gap-3">
                   <span className="relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl border border-[#D8C3A5] bg-[#F4E9DC] shadow-[0_8px_18px_rgba(73,46,26,0.10)]">
                     <Image
-                      src="/sonnet-logo.jpeg"
+                      src="/sonnet-logo.png"
                       alt="The Sonnet Cafe"
                       fill
                       className="object-cover"

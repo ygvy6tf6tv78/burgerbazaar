@@ -47,8 +47,8 @@ export const shopConfig = {
 
   social: {
     facebook: "",
-    instagram: "https://www.instagram.com/sonne7/",
-    instagramJammu: "https://www.instagram.com/sonne7/",
+    instagram: "https://www.instagram.com/the.sonnet.cafe/",
+    instagramJammu: "https://www.instagram.com/the.sonnet.cafe/",
     twitter: "",
     linkedin: "",
     swiggy: "https://www.swiggy.com/restaurants/the-sonnet-rajbagh-srinagar-1328663/dineout?is_retargeting=true&media_source=GoogleReserve&utm_campaign=GoogleMap&utm_source=GoogleReserve",
@@ -58,7 +58,7 @@ export const shopConfig = {
   instagramFeed: {
     title: "Follow on Instagram",
     subtitle: "Fresh kitchen moments, bakery drops and cafe updates from Rajbagh.",
-    profileHandle: "@sonne7",
+    profileHandle: "@the.sonnet.cafe",
     posts: [
       {
         id: "sonnet-kitchen",
@@ -66,28 +66,28 @@ export const shopConfig = {
         caption: "Fresh cafe plates and bakery moments from The Sonnet Cafe.",
         mediaType: "post",
         pinned: true,
-        href: "https://www.instagram.com/sonne7/",
+        href: "https://www.instagram.com/the.sonnet.cafe/",
       },
       {
         id: "sonnet-bakery",
         image: "/gallery/unnamed (1).webp",
         caption: "Warm bakery, desserts and daily fresh prep.",
         mediaType: "reel",
-        href: "https://www.instagram.com/sonne7/",
+        href: "https://www.instagram.com/the.sonnet.cafe/",
       },
       {
         id: "sonnet-cafe",
         image: "/gallery/unnamed (2).webp",
         caption: "Cafe, bakery and comfort food from Rajbagh.",
         mediaType: "post",
-        href: "https://www.instagram.com/sonne7/",
+        href: "https://www.instagram.com/the.sonnet.cafe/",
       },
       {
         id: "sonnet-orders",
         image: "/gallery/unnamed (3).webp",
         caption: "Made close to order time, packed fresh.",
         mediaType: "post",
-        href: "https://www.instagram.com/sonne7/",
+        href: "https://www.instagram.com/the.sonnet.cafe/",
       },
     ] as Array<{ id: string; image: string; caption: string; mediaType: "post" | "reel"; pinned?: boolean; href: string }>,
   },
@@ -174,7 +174,7 @@ export const shopConfig = {
   },
 
   assets: {
-    logo: "/sonnet-logo.jpeg",
+    logo: "/sonnet-logo.png",
     gallery: "/shops/honeys-fresh-n-frozen/assets/gallery/",
     qr: "",
   },

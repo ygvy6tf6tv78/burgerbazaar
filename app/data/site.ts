@@ -56,7 +56,7 @@ export const siteConfig = {
 
   social: {
     facebook: "",
-    instagram: "https://www.instagram.com/sonne7/",
+    instagram: "https://www.instagram.com/the.sonnet.cafe/",
     twitter: "",
     linkedin: "",
   },
@@ -65,7 +65,7 @@ export const siteConfig = {
     title: "The Sonnet Cafe Rajbagh Srinagar | Sonnet Onelink Menu, Orders & Reviews",
     description: "The Sonnet Cafe Onelink - 4.8 rated cafe and bakery in Rajbagh, Srinagar. View menu, order online, call, get directions, Zomato, Google reviews and fresh kitchen updates.",
     keywords: "The Sonnet, the sonnet, The Sonnet Cafe, the sonnet cafe, Sonnet, sonnet, The Sonnet Cafe Srinagar, The Sonnet Cafe Rajbagh, Sonnet Cafe Srinagar, Sonnet Cafe Rajbagh, Sonnet Onelink, The Sonnet Onelink, sonnet.onelink.cards, Rajbagh cafe, Srinagar cafe, Srinagar bakery, cafe bakery Rajbagh, fresh kitchen Srinagar, The Qureshies Rajbagh cafe, Sonnet Cafe menu, Sonnet Cafe order online, Sonnet Cafe Google reviews",
-    shareImage: "/sonnet-logo.jpeg",
+    shareImage: "/sonnet-logo.png",
   },
 
   credits: {

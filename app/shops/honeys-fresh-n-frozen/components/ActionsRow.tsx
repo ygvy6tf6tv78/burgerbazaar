@@ -663,8 +663,8 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-sm font-bold text-slate-800 mb-1">@sonne7</div>
-                        <div className="text-xs text-slate-600">@sonne7</div>
+                        <div className="text-sm font-bold text-slate-800 mb-1">@the.sonnet.cafe</div>
+                        <div className="text-xs text-slate-600">@the.sonnet.cafe</div>
                       </div>
                     </motion.button>
                   )}

@@ -19,9 +19,7 @@ export default function Hero() {
   const actionsRowRef = useRef<ActionsRowRef>(null)
 
   const headerImages = [
-    '/sonnet-header.jpeg',
-    '/gallery/unnamed.webp',
-    '/gallery/unnamed%20(1).webp',
+    '/sonnet-header.png',
   ]
 
   const handleFlip = (e?: React.MouseEvent, forceFlip = false) => {
