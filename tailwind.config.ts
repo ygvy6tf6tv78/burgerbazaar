@@ -57,12 +57,12 @@ const config: Config = {
           200: '#fef08a',
           300: '#fde047',
           400: '#facc15',
-          500: '#eab308',
+          500: '#b99a75',
           600: '#ca8a04',
           700: '#a16207',
           800: '#854d0e',
           900: '#713f12',
-          DEFAULT: '#eab308',
+          DEFAULT: '#b99a75',
           light: '#fef08a',
         },
         teal: {
@@ -76,7 +76,7 @@ const config: Config = {
           700: '#0f766e',
           800: '#115e59',
           900: '#134e4a',
-          DEFAULT: '#eab308',
+          DEFAULT: '#b99a75',
           light: '#fef08a',
         },
         cyan: {
@@ -90,16 +90,16 @@ const config: Config = {
         },
         fitness: {
           red: '#8B0000',
-          black: '#1A1A1A',
+          black: '#302318',
           green: '#228B22',
         },
         mango: {
-          primary: '#F4A300',
-          primarySoft: '#FFB938',
-          green: '#1E4D3D',
-          greenSoft: '#2F6B55',
-          lightGreen: '#E8F3EE',
-          textDark: '#1A1A1A',
+          primary: '#7B4A2D',
+          primarySoft: '#B07A49',
+          green: '#7B4A2D',
+          greenSoft: '#9A6A43',
+          lightGreen: '#F3E3CF',
+          textDark: '#302318',
         },
       },
       borderRadius: {
@@ -174,4 +174,3 @@ const config: Config = {
 }
 
 export default config
-

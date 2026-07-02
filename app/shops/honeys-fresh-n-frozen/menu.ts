@@ -1,4 +1,4 @@
-// Mango – Pure Vegetarian Restaurant – Menu as per 17-01-2025
+// The Sonnet Cafe - structured menu extracted from supplied menu text
 
 export interface MenuItem {
   id: string
@@ -7,32 +7,33 @@ export interface MenuItem {
   quantity: string
   price: string
   category: MenuCategoryKey
+  kind?: 'Veg' | 'Non-Veg' | 'Egg' | 'Veg/Non-Veg'
   image?: string
 }
 
 export type MenuCategoryKey =
+  'starters'
+  | 'riceNoodlesSoups'
   | 'burgerPizza'
   | 'sandwichSalad'
+  | 'wraps'
   | 'momos'
   | 'pastaMaggiFries'
   | 'healthyDrinks'
-  | 'wraps'
   | 'mojitosSmoothies'
   | 'shakesIceCream'
-  | 'starters'
-  | 'hotBeverages'
-  | 'riceNoodlesSoups'
-  | 'combos'
   | 'mainCourse'
+  | 'combos'
   | 'thali'
-
-function getItemImage(category: string, itemName: string): string {
-  const imageName = itemName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-  return `/menu-items/${category}/${imageName}.jpg`
-}
+  | 'hotBeverages'
+  | 'desserts'
+  | 'icedCoffee'
+  | 'shakes'
+  | 'coolers'
+  | 'signatureDrinks'
+  | 'healthyBlends'
+  | 'icedTea'
+  | 'teaKehwa'
 
 function item(
   id: string,
@@ -40,17 +41,9 @@ function item(
   price: string,
   category: MenuCategoryKey,
   quantity = '1 portion',
-  description?: string
+  kind: MenuItem['kind'] = 'Veg'
 ): MenuItem {
-  return {
-    id,
-    name,
-    quantity,
-    price: `₹${price}`,
-    category,
-    description,
-    image: getItemImage(category, name),
-  }
+  return { id, name, quantity, price, category, kind }
 }
 
 export interface MenuCategoryConfig {
@@ -61,317 +54,315 @@ export interface MenuCategoryConfig {
   items: MenuItem[]
 }
 
-// Category images (Unsplash – veg/food themed)
-const categoryImages: Record<MenuCategoryKey, string> = {
-  burgerPizza: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop',
-  sandwichSalad: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop',
-  momos: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=300&fit=crop',
-  pastaMaggiFries: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop',
-  healthyDrinks: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop',
-  wraps: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop',
-  mojitosSmoothies: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-  shakesIceCream: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop',
-  starters: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop',
-  hotBeverages: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400&h=300&fit=crop',
-  riceNoodlesSoups: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&h=300&fit=crop',
-  combos: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop',
-  mainCourse: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop',
-  thali: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&h=300&fit=crop',
-}
-
 export const menuCategories: Record<MenuCategoryKey, MenuCategoryConfig> = {
-  burgerPizza: {
-    name: 'Pizza & Burger',
-    shortDescription: 'Pizza and burger menu.',
-    icon: '🍔',
-    image: categoryImages.burgerPizza,
-    items: [
-      item('bp-1', 'Veg Corn Pizza (Small)', '110', 'burgerPizza'),
-      item('bp-2', 'Crispy Paneer Pizza (Small)', '130', 'burgerPizza'),
-      item('bp-3', 'Plain Cheese Pizza', '190', 'burgerPizza'),
-      item('bp-4', 'Capsicum Onion Pizza', '190', 'burgerPizza'),
-      item('bp-5', 'Mexican Pizza', '250', 'burgerPizza'),
-      item('bp-6', 'Exotic Vegetable Pizza', '270', 'burgerPizza'),
-      item('bp-7', 'Veg Burger', '70', 'burgerPizza'),
-      item('bp-8', 'Veg Burger + Fries', '90', 'burgerPizza'),
-      item('bp-9', 'Cheese Stuffing Burger + Fries', '120', 'burgerPizza'),
-      item('bp-10', 'Coleslaw Burger + Fries', '130', 'burgerPizza'),
-      item('bp-11', 'Crispy Paneer Burger + Fries', '130', 'burgerPizza'),
-      item('bp-12', 'Mango Special Burger + Fries', '130', 'burgerPizza'),
-      item('bp-13', 'Double Decker Burger + Fries', '140', 'burgerPizza'),
-      item('bp-14', 'Double Cheese Burger + Fries', '140', 'burgerPizza'),
-      item('bp-15', 'Multigrain Burger + Fries', '140', 'burgerPizza'),
-    ],
-  },
-  sandwichSalad: {
-    name: 'Sandwich & Salads',
-    shortDescription: 'Sandwiches and protein salads.',
-    icon: '🥪',
-    image: categoryImages.sandwichSalad,
-    items: [
-      item('ss-1', 'Veg Sandwich', '59', 'sandwichSalad'),
-      item('ss-2', 'Corn Veg Grilled Sandwich', '69', 'sandwichSalad'),
-      item('ss-3', 'Coleslaw Sandwich', '99', 'sandwichSalad'),
-      item('ss-4', 'Club Sandwich', '110', 'sandwichSalad'),
-      item('ss-5', 'Multigrain Sub', '150', 'sandwichSalad'),
-      item('ss-6', 'Protein Rich Salad (Broccoli, Iceberg, Corn, Mushroom)', '150', 'sandwichSalad'),
-      item('ss-7', 'Protein Rich Salad (Corn, Tomato, Onion, Cucumber, Carrot with Paneer)', '150', 'sandwichSalad'),
-    ],
-  },
-  momos: {
-    name: 'Momos',
-    shortDescription: 'Steam, fried or pan fried. Half/Full portions.',
-    icon: '🥟',
-    image: categoryImages.momos,
-    items: [
-      item('mo-1', 'Veg Classic Momos (Steam)', '80 / 110', 'momos', 'Half / Full'),
-      item('mo-2', 'Chilli Paneer Momos (Steam)', '90/140', 'momos', 'Half/Full'),
-      item('mo-3', 'Pure Paneer Momos (Steam)', '100/150', 'momos', 'Half/Full'),
-      item('mo-4', 'Veg Classic Momos (Fried)', '80/120', 'momos', 'Half/Full'),
-      item('mo-5', 'Chilli Paneer Momos (Fried)', '100/140', 'momos', 'Half/Full'),
-      item('mo-6', 'Pure Paneer Momos (Fried)', '100/160', 'momos', 'Half/Full'),
-      item('mo-7', 'Veg Classic Momos (Pan Fried)', '80/140', 'momos', 'Half/Full'),
-      item('mo-8', 'Chilli Paneer Momos (Pan Fried)', '100/160', 'momos', 'Half/Full'),
-      item('mo-9', 'Pure Paneer Momos (Pan Fried)', '100/170', 'momos', 'Half/Full'),
-      item('mo-10', 'Kurkure Momos', '110 / 200', 'momos', 'Half / Full'),
-      item('mo-11', 'Afghani Momos', '110 / 200', 'momos', 'Half / Full'),
-      item('mo-12', 'Momo Platter (9 pcs)', '240', 'momos'),
-    ],
-  },
-  pastaMaggiFries: {
-    name: 'Pasta, Maggi & Fries',
-    shortDescription: 'Pasta, Maggi and Belgium fries.',
-    icon: '🍝',
-    image: categoryImages.pastaMaggiFries,
-    items: [
-      item('pm-1', 'Pasta White/Red', '150', 'pastaMaggiFries'),
-      item('pm-2', 'Mixed Pasta', '150', 'pastaMaggiFries'),
-      item('pm-3', 'Baked Pasta', '200', 'pastaMaggiFries'),
-      item('pm-4', 'Pasta with Garlic Bread', '200', 'pastaMaggiFries'),
-      item('pm-5', 'Cheese Garlic Bread (3 pcs)', '110', 'pastaMaggiFries'),
-      item('pm-6', 'Vegetable Maggi', '60', 'pastaMaggiFries'),
-      item('pm-7', 'Schezwan Maggi', '60', 'pastaMaggiFries'),
-      item('pm-8', 'Paneer Maggi', '70', 'pastaMaggiFries'),
-      item('pm-9', 'Baked Maggi', '100', 'pastaMaggiFries'),
-      item('pm-10', 'Maggi Tadka', '80', 'pastaMaggiFries'),
-      item('pm-11', 'Corn & Paneer Maggi', '90', 'pastaMaggiFries'),
-      item('pm-12', 'Cheese Maggi', '90', 'pastaMaggiFries'),
-      item('pm-13', 'Finger Chips', '100', 'pastaMaggiFries'),
-      item('pm-14', 'Fries Peri Peri', '120', 'pastaMaggiFries'),
-      item('pm-15', 'Masala Fries with Cheese', '140', 'pastaMaggiFries'),
-      item('pm-16', 'Mexican Salsa Fries', '140', 'pastaMaggiFries'),
-      item('pm-17', 'Loaded Fries', '150', 'pastaMaggiFries'),
-    ],
-  },
-  healthyDrinks: {
-    name: 'Healthy Drinks',
-    shortDescription: 'Fresh and healthy drinks.',
-    icon: '🥤',
-    image: categoryImages.healthyDrinks,
-    items: [
-      item('hd-1', 'Nimbu Pani', '80', 'healthyDrinks'),
-      item('hd-2', 'Fresh Lime Soda', '80', 'healthyDrinks'),
-      item('hd-3', 'Rooh Afza', '80', 'healthyDrinks'),
-      item('hd-4', 'Rooh Afza with Fresh Lemon', '90', 'healthyDrinks'),
-      item('hd-5', 'Chia Seeds Shakes', '100', 'healthyDrinks'),
-      item('hd-6', 'Fresh Lemon Water with Chia Seeds', '90', 'healthyDrinks'),
-      item('hd-7', 'Fresh Lemon Soda with Chia Seeds', '100', 'healthyDrinks'),
-      item('hd-8', 'Date Smoothie with Oats', '140', 'healthyDrinks'),
-      item('hd-9', 'Banana & Dates Smoothie', '140', 'healthyDrinks'),
-      item('hd-10', 'Banana & Oats with Honey', '140', 'healthyDrinks'),
-      item('hd-11', 'Date & Choco Smoothie', '140', 'healthyDrinks'),
-      item('hd-12', 'Healthy Chocolate Banana Smoothie', '140', 'healthyDrinks'),
-      item('hd-13', 'Peanut Butter Banana Smoothie (Almond Milk)', '140', 'healthyDrinks'),
-    ],
-  },
-  wraps: {
-    name: 'Wraps',
-    shortDescription: 'Masala chaap, mushroom, veg, corn and paneer wraps.',
-    icon: '🌯',
-    image: categoryImages.wraps,
-    items: [
-      item('wr-1', 'Veg Wrap', '100', 'wraps'),
-      item('wr-2', 'Corn Wrap', '100', 'wraps'),
-      item('wr-3', 'Mushroom Wrap', '100', 'wraps'),
-      item('wr-4', 'Masala Chaap Wrap', '110', 'wraps'),
-      item('wr-5', 'Paneer Tikka Wrap', '120', 'wraps'),
-      item('wr-6', 'Paneer Manchurian Wrap', '130', 'wraps'),
-      item('wr-7', 'Vegetable Cheese Wrap', '130', 'wraps'),
-      item('wr-8', 'Zingy Zesty Moroccan Grilled Wrap (Paneer/Corn/Mushroom)', '130', 'wraps'),
-    ],
-  },
-  mojitosSmoothies: {
-    name: 'Mojitos & Smoothies',
-    shortDescription: 'Mojitos and healthy smoothies.',
-    icon: '🍹',
-    image: categoryImages.mojitosSmoothies,
-    items: [
-      item('ms-1', 'Lemon Ice Tea', '100', 'mojitosSmoothies'),
-      item('ms-2', 'Peach Ice Tea', '100', 'mojitosSmoothies'),
-      item('ms-3', 'Kiwi Mojito', '100', 'mojitosSmoothies'),
-      item('ms-4', 'Black Currant Mojito', '100', 'mojitosSmoothies'),
-      item('ms-5', 'Mix Berries Mojito', '100', 'mojitosSmoothies'),
-      item('ms-6', 'Strawberry Mojito', '100', 'mojitosSmoothies'),
-      item('ms-7', 'Blue Cancans Mojito', '100', 'mojitosSmoothies'),
-      item('ms-8', 'Lemon Mojito', '100', 'mojitosSmoothies'),
-      item('ms-9', 'Green Apple Mojito', '100', 'mojitosSmoothies'),
-      item('ms-10', 'Litchi Mojito', '100', 'mojitosSmoothies'),
-      item('ms-11', 'Paan Mojito', '100', 'mojitosSmoothies'),
-      item('ms-12', 'Mulberry Mojito', '100', 'mojitosSmoothies'),
-    ],
-  },
-  shakesIceCream: {
-    name: 'Shakes & Ice Cream',
-    shortDescription: 'Shakes and ice cream.',
-    icon: '🍦',
-    image: categoryImages.shakesIceCream,
-    items: [
-      item('si-1', 'Mulberry Shake', '110', 'shakesIceCream'),
-      item('si-2', 'Cold Coffee', '110', 'shakesIceCream'),
-      item('si-3', 'Mango Shake', '110', 'shakesIceCream'),
-      item('si-4', 'Strawberry Shake', '110', 'shakesIceCream'),
-      item('si-5', 'Kiwi Shake', '110', 'shakesIceCream'),
-      item('si-6', 'Butter Scotch Shake', '110', 'shakesIceCream'),
-      item('si-7', 'Banana Shake', '110', 'shakesIceCream'),
-      item('si-8', 'Vanilla Shake', '110', 'shakesIceCream'),
-      item('si-9', 'Chocolate Cookie Shake', '110', 'shakesIceCream'),
-      item('si-10', 'Oreo Shake', '110', 'shakesIceCream'),
-      item('si-11', 'Bubblegum Shake', '110', 'shakesIceCream'),
-      item('si-12', 'Kit-Kat Shake', '120', 'shakesIceCream'),
-      item('si-13', 'Cold Coffee with Ice Cream', '130', 'shakesIceCream'),
-      item('si-14', 'Choco Brownie Shake', '150', 'shakesIceCream'),
-      item('si-15', 'Ice Cream (Real Strawberry/Pineapple/Mix Berries)', '90', 'shakesIceCream'),
-      item('si-16', 'Hot Chocolate', '130', 'shakesIceCream'),
-      item('si-17', 'Fruit Cocktail', '140', 'shakesIceCream'),
-      item('si-18', 'Choco Brownie with Ice Cream', '120', 'shakesIceCream'),
-    ],
-  },
   starters: {
-    name: 'Spring Rolls & Appetizers',
-    shortDescription: 'Spring rolls and appetizers/snacks.',
-    icon: '🥡',
-    image: categoryImages.starters,
+    name: 'Starters & Small Plates',
+    shortDescription: 'Small plates, fries and chicken bites.',
+    icon: '🍟',
+    image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=300&fit=crop',
     items: [
-      item('st-1', 'Vegetables Spring Rolls', '140', 'starters'),
-      item('st-2', 'Kurkure Spring Rolls', '150', 'starters'),
-      item('st-3', 'Paneer Corn Spring Rolls', '160', 'starters'),
-      item('st-4', 'Paneer Corn Kurkure Spring Rolls', '170', 'starters'),
-      item('st-5', 'Masala Sweet Corn', '70', 'starters'),
-      item('st-6', 'Crispy Corn', '150', 'starters'),
-      item('st-7', 'Veg Manchurian Dry', '150 / 200', 'starters', 'Half / Full'),
-      item('st-8', 'Chilli Paneer Dry', '150 / 200', 'starters', 'Half / Full'),
-      item('st-9', 'Chilli Mushroom', '150 / 200', 'starters', 'Half / Full'),
-      item('st-10', 'Kurkure Paneer Fingers', '150', 'starters'),
-      item('st-11', 'Crispy Baby Corn', '150', 'starters'),
-      item('st-12', 'Chilli Soya', '120 / 180', 'starters', 'Half / Full'),
-      item('st-13', 'Kurkure Soya Nuggets', '120 / 180', 'starters', 'Half / Full'),
-      item('st-14', 'Loaded Cheesy Nachos', '180', 'starters'),
-      item('st-15', 'Honey Chilli Potato', '150', 'starters'),
-      item('st-16', 'Lotus Stem Honey Chilli', '260', 'starters'),
-      item('st-17', 'Chilli Potato', '150', 'starters'),
-      item('st-18', 'Veg Masala Chaap', '110', 'starters'),
-      item('st-19', 'Paneer Manchurian Dry', '130 / 220', 'starters', 'Half / Full'),
-    ],
-  },
-  hotBeverages: {
-    name: 'Hot Beverages',
-    shortDescription: 'Coffee, tea and winter specials.',
-    icon: '☕',
-    image: categoryImages.hotBeverages,
-    items: [
-      item('hb-1', 'Coffee', '40', 'hotBeverages'),
-      item('hb-2', 'Tea', '30', 'hotBeverages'),
-      item('hb-3', 'Organic Tea', '40', 'hotBeverages'),
-      item('hb-4', 'Lemon Tea', '40', 'hotBeverages'),
-      item('hb-5', 'Shashi Qawah (Winter Special)', '60', 'hotBeverages'),
+      item('starters-1', 'Hummus and Warm Pita', '₹249', 'starters', '1 portion', 'Veg'),
+      item('starters-2', 'Crisp Chicken Popcorn', '₹179', 'starters', '1 portion', 'Non-Veg'),
+      item('starters-3', 'Honey Chilli Potatoes', '₹249', 'starters', '1 portion', 'Veg'),
+      item('starters-4', 'Peri-Peri Chicken Strips', '₹239', 'starters', '1 portion', 'Non-Veg'),
+      item('starters-5', 'Seasoned Fries', '₹149', 'starters', 'Classic -', 'Veg'),
+      item('starters-6', 'Seasoned Fries', '₹169', 'starters', 'Peri-Peri -', 'Veg'),
+      item('starters-7', 'Seasoned Fries', '₹199', 'starters', 'Cheesy -', 'Veg'),
+      item('starters-8', 'Nandos Style Fully Loaded Chips', '₹249', 'starters', '1 portion', 'Veg'),
     ],
   },
   riceNoodlesSoups: {
-    name: 'Rice, Noodles & Soups',
-    shortDescription: 'Fried rice, noodles and soups.',
-    icon: '🍜',
-    image: categoryImages.riceNoodlesSoups,
+    name: 'Soups',
+    shortDescription: 'Soup options with classic and chicken variants.',
+    icon: '🥣',
+    image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400&h=300&fit=crop',
     items: [
-      item('rn-1', 'Veg Fried Rice', '150', 'riceNoodlesSoups'),
-      item('rn-2', 'Golden Corn Fried Rice', '170', 'riceNoodlesSoups'),
-      item('rn-3', 'Exotic Vegetable Fried Rice', '190', 'riceNoodlesSoups'),
-      item('rn-4', 'Veg Special Noodles', '150', 'riceNoodlesSoups'),
-      item('rn-5', 'Chilli Garlic Noodles', '150', 'riceNoodlesSoups'),
-      item('rn-6', 'Schezwan Noodles', '160', 'riceNoodlesSoups'),
-      item('rn-7', 'Vegetable Paneer Noodles', '180', 'riceNoodlesSoups'),
-      item('rn-8', 'Exotic Vegetable Noodles', '180', 'riceNoodlesSoups'),
-      item('rn-9', 'Veg Corn Soup', '100', 'riceNoodlesSoups'),
-      item('rn-10', 'Manchow Soup', '100', 'riceNoodlesSoups'),
-      item('rn-11', "Hot 'n' Sour Soup", '100', 'riceNoodlesSoups'),
-      item('rn-12', 'Exotic Vegetables Healthy Soup', '100', 'riceNoodlesSoups'),
-      item('rn-13', 'Lemon Coriander Soup', '100', 'riceNoodlesSoups'),
+      item('riceNoodlesSoups-1', 'Hot & Sour', '₹149 / ₹199', 'riceNoodlesSoups', 'Veg / Chicken', 'Non-Veg'),
+      item('riceNoodlesSoups-2', 'Manchow Soup', '₹149 / ₹199', 'riceNoodlesSoups', 'Veg / Chicken', 'Non-Veg'),
+      item('riceNoodlesSoups-3', 'Sweet-Corn', '₹149', 'riceNoodlesSoups', 'Veg', 'Veg'),
     ],
   },
-  combos: {
-    name: 'Combos',
-    shortDescription: 'Burger, wrap, momos and Chinese platter combos.',
-    icon: '🍱',
-    image: categoryImages.combos,
+  burgerPizza: {
+    name: 'Burgers',
+    shortDescription: 'Cafe-style burgers with clear pricing.',
+    icon: '🍔',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop',
     items: [
-      item('co-1', 'Special Burger + Coke', '130', 'combos'),
-      item('co-2', 'Paneer Tikka Wrap + Coke', '150', 'combos'),
-      item('co-3', 'Crispy Paneer Burger + Coke', '150', 'combos'),
-      item('co-4', 'Multigrain Healthy Sandwich + Fresh Lime Soda', '150', 'combos'),
-      item('co-5', 'Veg Cheese Wrap + Coke', '160', 'combos'),
-      item('co-6', 'Kurkure Veg Momos + Coke', '180', 'combos'),
-      item('co-7', 'Pasta (Red/White) + Garlic Bread', '200', 'combos'),
-      item('co-8', 'Chinese Platter (Spring Roll, Momos 4pcs, Honey Chilli Potato)', '260', 'combos'),
-      item('co-9', 'Veg Fried Rice/Noodles With Veg Manchurian', '290', 'combos'),
-      item('co-10', 'Chilli Paneer With Noodles/Fried Rice', '320', 'combos'),
+      item('burgerPizza-1', 'Aaloo Tikki Burger', '₹109', 'burgerPizza', '1 portion', 'Veg'),
+      item('burgerPizza-2', 'Dynamite Chicken Burger', '₹279', 'burgerPizza', '1 portion', 'Non-Veg'),
+      item('burgerPizza-3', 'Crispy Chicken Burger', '₹249', 'burgerPizza', '1 portion', 'Non-Veg'),
+    ],
+  },
+  sandwichSalad: {
+    name: 'Sandwiches',
+    shortDescription: 'Grilled and fresh cafe sandwiches.',
+    icon: '🥪',
+    image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop',
+    items: [
+      item('sandwichSalad-1', 'Chicken Tikka Sandwich', '₹249', 'sandwichSalad', '1 portion', 'Non-Veg'),
+      item('sandwichSalad-2', 'Tomato and Cucumber Melt', '₹149', 'sandwichSalad', '1 portion', 'Veg'),
+      item('sandwichSalad-3', 'Grilled Chicken Sandwich', '₹199', 'sandwichSalad', '1 portion', 'Non-Veg'),
+      item('sandwichSalad-4', 'Falafel Sandwich', '₹149', 'sandwichSalad', '1 portion', 'Veg'),
+    ],
+  },
+  wraps: {
+    name: 'Wraps & Rolls',
+    shortDescription: 'Shawarma, rolls and wraps.',
+    icon: '🌯',
+    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop',
+    items: [
+      item('wraps-1', 'Middle Eastern Shawarma', '₹249', 'wraps', '1 portion', 'Veg'),
+      item('wraps-2', 'Shawarma Platter', '₹349', 'wraps', '1 portion', 'Veg'),
+      item('wraps-3', 'Spiced Chicken Wrap', '₹229', 'wraps', '1 portion', 'Non-Veg'),
+      item('wraps-4', 'Chicken Tikka Wrap', '₹249', 'wraps', '1 portion', 'Non-Veg'),
+      item('wraps-5', 'Spiced Paneer Roll', '₹179', 'wraps', '1 portion', 'Veg'),
+    ],
+  },
+  momos: {
+    name: 'Pizza\'s',
+    shortDescription: 'Thin or thick crust options.',
+    icon: '🍕',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
+    items: [
+      item('momos-1', 'Chicken Blast Chef\'s Special', '₹329 / ₹439 / ₹599', 'momos', 'Small / Medium / Large', 'Non-Veg'),
+      item('momos-2', 'Mexican Spiced Chicken', '₹329 / ₹399 / ₹529', 'momos', 'Small / Medium / Large', 'Non-Veg'),
+      item('momos-3', 'Fatira', '₹299', 'momos', '1 portion', 'Veg'),
+      item('momos-4', 'Roasted Chicken Delight', '₹279 / ₹349 / ₹479', 'momos', 'Small / Medium / Large', 'Non-Veg'),
+      item('momos-5', 'Garden Farmhouse', '₹199 / ₹319 / ₹449', 'momos', 'Small / Medium / Large', 'Veg'),
+      item('momos-6', 'Margherita Pizza', '₹229 / ₹349 / ₹549', 'momos', 'Small / Medium / Large', 'Veg'),
+      item('momos-7', 'Mushroom and Garlic Pizza', '₹279 / ₹379 / ₹519', 'momos', 'Small / Medium / Large', 'Veg'),
+    ],
+  },
+  pastaMaggiFries: {
+    name: 'Pastas & Salads',
+    shortDescription: 'Penne pastas and fresh salad.',
+    icon: '🍝',
+    image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop',
+    items: [
+      item('pastaMaggiFries-1', 'Alfredo', '₹269 / ₹349', 'pastaMaggiFries', 'Veg / Chicken', 'Non-Veg'),
+      item('pastaMaggiFries-2', 'Arrabbiata', '₹249 / ₹329', 'pastaMaggiFries', 'Veg / Chicken', 'Non-Veg'),
+      item('pastaMaggiFries-3', 'Blush Sauce', '₹249 / ₹369', 'pastaMaggiFries', 'Veg / Chicken', 'Non-Veg'),
+      item('pastaMaggiFries-4', 'Garden Green Salad', '₹119', 'pastaMaggiFries', '1 portion', 'Veg'),
+    ],
+  },
+  healthyDrinks: {
+    name: 'Ramen & Noodles',
+    shortDescription: 'Noodles and ramen bowls.',
+    icon: '🍜',
+    image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop',
+    items: [
+      item('healthyDrinks-1', 'Chowmein', '₹169 / ₹209', 'healthyDrinks', 'Veg / Chicken', 'Non-Veg'),
+      item('healthyDrinks-2', 'Triple Cheese Ramen', '₹389 / ₹399', 'healthyDrinks', 'Veg / Egg', 'Egg'),
+      item('healthyDrinks-3', 'Korean Hot Chicken Ramen', '₹349 / ₹359', 'healthyDrinks', 'Veg / Egg', 'Egg'),
+      item('healthyDrinks-4', 'Carbonara Style Ramen', '₹349 / ₹359', 'healthyDrinks', 'Veg / Egg', 'Egg'),
+    ],
+  },
+  mojitosSmoothies: {
+    name: 'Dumplings',
+    shortDescription: 'Steamed, crispy and tandoori dumplings.',
+    icon: '🥟',
+    image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=300&fit=crop',
+    items: [
+      item('mojitosSmoothies-1', 'Afghani Dumplings', '₹269', 'mojitosSmoothies', '1 portion', 'Veg'),
+      item('mojitosSmoothies-2', 'Crispy Chicken Dumplings', '₹130', 'mojitosSmoothies', '1 portion', 'Non-Veg'),
+      item('mojitosSmoothies-3', 'Steamed Chicken Dumplings', '₹120', 'mojitosSmoothies', '1 portion', 'Non-Veg'),
+      item('mojitosSmoothies-4', 'Tandoori Dumplings', '₹179', 'mojitosSmoothies', '1 portion', 'Veg'),
+    ],
+  },
+  shakesIceCream: {
+    name: 'Tandoor',
+    shortDescription: 'Tikka, kebab and tandoor plates.',
+    icon: '🔥',
+    image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=300&fit=crop',
+    items: [
+      item('shakesIceCream-1', 'Chicken Tikka', '₹359', 'shakesIceCream', '1 portion', 'Non-Veg'),
+      item('shakesIceCream-2', 'Paneer Tikka', '₹329', 'shakesIceCream', '1 portion', 'Veg'),
+      item('shakesIceCream-3', 'Tandoori Chicken', '₹349 / ₹649', 'shakesIceCream', 'Half / Full', 'Non-Veg'),
+      item('shakesIceCream-4', 'Mutton Seekh Kebab', '₹229 / ₹419', 'shakesIceCream', 'Half / Full', 'Non-Veg'),
     ],
   },
   mainCourse: {
-    name: 'Main Course & Gravy',
-    shortDescription: 'Gravy, rice plate, pulao and special Indian combos.',
+    name: 'Curries & Mains',
+    shortDescription: 'Cafe mains, curries and steaks.',
     icon: '🍛',
-    image: categoryImages.mainCourse,
+    image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop',
     items: [
-      item('mc-1', 'Mixed Raita', '60', 'mainCourse'),
-      item('mc-2', 'Vegetarian Masala Champ', '110', 'mainCourse'),
-      item('mc-3', 'Rice Plate', '110', 'mainCourse'),
-      item('mc-4', 'Vegetarian Pulao', '120', 'mainCourse'),
-      item('mc-5', 'Jammu Ke Rajma', '130', 'mainCourse'),
-      item('mc-6', 'Kabuli Chana', '130', 'mainCourse'),
-      item('mc-7', 'Kashmiri Palak Paneer', '150', 'mainCourse'),
-      item('mc-8', 'Palak Corn', '150', 'mainCourse'),
-      item('mc-9', 'Veg Rogan Josh with Punjabi Kulcha', '190', 'mainCourse'),
-      item('mc-10', 'Rajma + Rice', '80 / 110', 'mainCourse', 'Half / Full'),
-      item('mc-11', 'Kabuli Chana + Rice', '80 / 110', 'mainCourse', 'Half / Full'),
-      item('mc-12', 'Tuesday Special Curry Pakora + Rice', '100 / 130', 'mainCourse', 'Half / Full'),
-      item('mc-13', 'Veg Champ + Kulcha', '110', 'mainCourse'),
-      item('mc-14', 'Palak Paneer + Veg Pulao', '110 / 140', 'mainCourse', 'Half / Full'),
-      item('mc-15', 'Palak Corn + Veg Pulao', '110 / 140', 'mainCourse', 'Half / Full'),
-      item('mc-16', 'Veg Special Champ + Rice', '110 / 140', 'mainCourse', 'Half / Full'),
-      item('mc-17', 'Rajma Dip Kulcha', '90 / 110', 'mainCourse', 'Half / Full'),
-      item('mc-18', 'Chana Dip Kulcha', '90 / 110', 'mainCourse', 'Half / Full'),
-      item('mc-19', 'Dahi Bhalla', '60', 'mainCourse'),
-      item('mc-20', 'Lassi Sweet/Salty', '60', 'mainCourse'),
+      item('mainCourse-1', 'Butter Chicken [Bone]', '₹399 / ₹699', 'mainCourse', 'Half / Full', 'Non-Veg'),
+      item('mainCourse-2', 'Butter Chicken [Boneless]', '₹449 / ₹799', 'mainCourse', 'Half / Full', 'Non-Veg'),
+      item('mainCourse-3', 'Murg Afghani', '₹429 / ₹749', 'mainCourse', 'Half / Full', 'Veg'),
+      item('mainCourse-4', 'Chicken Rara', '₹349 / ₹699', 'mainCourse', 'Half / Full', 'Non-Veg'),
+      item('mainCourse-5', 'Chicken Kanti', '₹399', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-6', 'Chilli Chicken', '₹349', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-7', 'Chicken Steak With Brown Sauce', '₹369', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-8', 'Chicken Steak With Mushroom Sauce', '₹379', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-9', 'Fajita', '₹449', 'mainCourse', '1 portion', 'Veg'),
+      item('mainCourse-10', 'Shakshuka', '₹349', 'mainCourse', '1 portion', 'Veg'),
+      item('mainCourse-11', 'Peshawari Lamb Kadhai', '₹649 / ₹1049', 'mainCourse', 'Half / Full', 'Non-Veg'),
+      item('mainCourse-12', 'Nalli Nihari', '₹749', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-13', 'Lahori Korma', '₹349 / ₹649', 'mainCourse', 'Half / Full', 'Veg'),
+      item('mainCourse-14', 'Shinwari Keema', '₹449', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-15', 'Chapli Kabab', '₹399', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-16', 'Mutton Rara', '₹549 / ₹1049', 'mainCourse', 'Half / Full', 'Non-Veg'),
+      item('mainCourse-17', 'Mutton Kabab Kanti', '₹449', 'mainCourse', '1 portion', 'Non-Veg'),
+      item('mainCourse-18', 'Matar-Mushroom', '₹149', 'mainCourse', '1 portion', 'Veg'),
+      item('mainCourse-19', 'Panner Butter Masala', '₹299', 'mainCourse', '1 portion', 'Veg'),
+      item('mainCourse-20', 'Panner Kadai', '₹349', 'mainCourse', '1 portion', 'Veg'),
+      item('mainCourse-21', 'Mix-Veg', '₹199', 'mainCourse', '1 portion', 'Veg'),
+    ],
+  },
+  combos: {
+    name: 'Rice Meals',
+    shortDescription: 'Rice sides and fried rice.',
+    icon: '🍚',
+    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop',
+    items: [
+      item('combos-1', 'Chicken-Fried Rice', '₹249', 'combos', '1 portion', 'Non-Veg'),
+      item('combos-2', 'Schezwan Chicken Fried Rice', '₹279', 'combos', '1 portion', 'Non-Veg'),
+      item('combos-3', 'Veg-Fried Rice', '₹179', 'combos', '1 portion', 'Veg'),
+      item('combos-4', 'Steamed Rice', '₹99', 'combos', '1 portion', 'Veg'),
+      item('combos-5', 'Zeera Rice', '₹109', 'combos', '1 portion', 'Veg'),
     ],
   },
   thali: {
-    name: 'Thali',
-    shortDescription: 'Full thali with raita, roti, vegetables and rice.',
-    icon: '🍽️',
-    image: categoryImages.thali,
+    name: 'Breads',
+    shortDescription: 'Naan, roti and rice-pairing breads.',
+    icon: '🫓',
+    image: 'https://images.unsplash.com/photo-1601050690117-64b6a6109e53?w=400&h=300&fit=crop',
     items: [
-      item('th-1', 'Thali A – Raita + 2 Tawa Roti + 2 Veg Dishes + 1 Paneer + Rice', '180', 'thali'),
-      item('th-2', 'Thali B – Raita + Sweet Dish + 2 Tawa Roti + 2 Veg Dishes + Paneer Dish + Veg Pulao', '210', 'thali'),
+      item('thali-1', 'Classic Naan', '₹49', 'thali', '1 portion', 'Veg'),
+      item('thali-2', 'Butter Naan', '₹69', 'thali', '1 portion', 'Veg'),
+      item('thali-3', 'Garlic Naan', '₹79', 'thali', '1 portion', 'Veg'),
+      item('thali-4', 'Naan Gone Wrong', '₹49', 'thali', '1 portion', 'Veg'),
+      item('thali-5', 'Tawa Naan', '₹49', 'thali', '1 portion', 'Veg'),
+      item('thali-6', 'Rumali Roti', '₹29', 'thali', '1 portion', 'Veg'),
+    ],
+  },
+  hotBeverages: {
+    name: 'Dessert Delights',
+    shortDescription: 'Pastries, brownies and sweet plates.',
+    icon: '🍰',
+    image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop',
+    items: [
+      item('hotBeverages-1', 'Brownie', '₹120', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-2', 'Brownie With Ice-Cream', '₹150', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-3', 'Brownie On Sizzler', '₹170', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-4', 'Shahi Tukda', '₹119', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-5', 'Um-Ali', '₹149', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-6', 'Red-Velvet Pastry', '₹140', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-7', 'Fresh-Fruit Pastry', '₹150', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-8', 'Cupcakes', '₹60', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-9', 'Pancakes (Classic)', '₹219', 'hotBeverages', '1 portion', 'Veg'),
+      item('hotBeverages-10', 'Pancakes (Triple Chocolate)', '₹259', 'hotBeverages', '1 portion', 'Veg'),
+    ],
+  },
+  desserts: {
+    name: 'Hot Drinks',
+    shortDescription: 'Coffee and hot chocolate.',
+    icon: '☕',
+    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop',
+    items: [
+      item('desserts-1', 'Espresso', '₹99 / ₹109', 'desserts', '1 portion', 'Veg'),
+      item('desserts-2', 'Black Coffee', '₹119', 'desserts', '1 portion', 'Veg'),
+      item('desserts-3', 'House Latte', '₹139 / ₹149', 'desserts', '1 portion', 'Veg'),
+      item('desserts-4', 'Americano', '₹109', 'desserts', '1 portion', 'Veg'),
+      item('desserts-5', 'Cappuccino', '₹139 / ₹149', 'desserts', '1 portion', 'Veg'),
+      item('desserts-6', 'Classic Hot Chocolate', '₹149', 'desserts', '1 portion', 'Veg'),
+    ],
+  },
+  icedCoffee: {
+    name: 'Iced Coffee',
+    shortDescription: 'Cold coffee classics and frappe.',
+    icon: '🧊',
+    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=300&fit=crop',
+    items: [
+      item('icedCoffee-1', 'Iced Americano', '₹119 / ₹129', 'icedCoffee', '1 portion', 'Veg'),
+      item('icedCoffee-2', 'Iced Cappuccino', '₹139 / ₹149', 'icedCoffee', '1 portion', 'Veg'),
+      item('icedCoffee-3', 'Coffee Frappe', '₹199', 'icedCoffee', '1 portion', 'Veg'),
+      item('icedCoffee-4', 'Iced Latte', '₹139 / ₹149', 'icedCoffee', '1 portion', 'Veg'),
+      item('icedCoffee-5', 'Sonnet Special Iced Latte', '₹159', 'icedCoffee', '1 portion', 'Veg'),
+      item('icedCoffee-6', 'Iced Mocha', '₹139', 'icedCoffee', '1 portion', 'Veg'),
+    ],
+  },
+  shakes: {
+    name: 'Shakes',
+    shortDescription: 'Creamy cafe shakes.',
+    icon: '🥤',
+    image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop',
+    items: [
+      item('shakes-1', 'Classic Vanilla', '₹179', 'shakes', '1 portion', 'Veg'),
+      item('shakes-2', 'Strawberry Shake', '₹189', 'shakes', '1 portion', 'Veg'),
+      item('shakes-3', 'Loaded Chocolate', '₹199', 'shakes', '1 portion', 'Veg'),
+      item('shakes-4', 'Mango Shake', '₹199', 'shakes', '1 portion', 'Veg'),
+      item('shakes-5', 'Oreo Shake', '₹199', 'shakes', '1 portion', 'Veg'),
+      item('shakes-6', 'Kit-Kat Shake', '₹199', 'shakes', '1 portion', 'Veg'),
+      item('shakes-7', 'Nutella Milk Shake', '₹179', 'shakes', '1 portion', 'Veg'),
+      item('shakes-8', 'Brownie Shake', '₹199', 'shakes', '1 portion', 'Veg'),
+    ],
+  },
+  coolers: {
+    name: 'Mocktails & Coolers',
+    shortDescription: 'Refreshing coolers and lemonade.',
+    icon: '🍹',
+    image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop',
+    items: [
+      item('coolers-1', 'Green Apple Refresher', '₹119', 'coolers', '1 portion', 'Veg'),
+      item('coolers-2', 'Blue Citrus Cooler', '₹119', 'coolers', '1 portion', 'Veg'),
+      item('coolers-3', 'Virgin Mojito', '₹119', 'coolers', '1 portion', 'Veg'),
+      item('coolers-4', 'Apple Honey Lime Soda', '₹119', 'coolers', '1 portion', 'Veg'),
+      item('coolers-5', 'House Lemonade', '₹109', 'coolers', '1 portion', 'Veg'),
+    ],
+  },
+  signatureDrinks: {
+    name: 'Signature Drinks',
+    shortDescription: 'Sonnet signature drinks.',
+    icon: '✨',
+    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=300&fit=crop',
+    items: [
+      item('signatureDrinks-1', 'Italian Thick Hot Chocolate', '₹219', 'signatureDrinks', '1 portion', 'Veg'),
+      item('signatureDrinks-2', 'Affogato', '₹109', 'signatureDrinks', '1 portion', 'Veg'),
+      item('signatureDrinks-3', 'Sonnet Signature Latte', '₹159', 'signatureDrinks', '1 portion', 'Veg'),
+      item('signatureDrinks-4', 'Café Mocha', '₹139', 'signatureDrinks', '1 portion', 'Veg'),
+    ],
+  },
+  healthyBlends: {
+    name: 'Healthy Blends',
+    shortDescription: 'Fruit, nut and date shakes.',
+    icon: '🌿',
+    image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&h=300&fit=crop',
+    items: [
+      item('healthyBlends-1', 'Peanut Butter Shake', '₹189', 'healthyBlends', '1 portion', 'Veg'),
+      item('healthyBlends-2', 'Almond & Date Shake', '₹199', 'healthyBlends', '1 portion', 'Veg'),
+      item('healthyBlends-3', 'Banana Shake', '₹159', 'healthyBlends', '1 portion', 'Veg'),
+    ],
+  },
+  icedTea: {
+    name: 'Iced Tea',
+    shortDescription: 'Peach and lemon iced tea.',
+    icon: '🍑',
+    image: 'https://images.unsplash.com/photo-1497534446932-c925b458314e?w=400&h=300&fit=crop',
+    items: [
+      item('icedTea-1', 'Peach Iced Tea', '₹149', 'icedTea', '1 portion', 'Veg'),
+      item('icedTea-2', 'Lemon Iced Tea', '₹149', 'icedTea', '1 portion', 'Veg'),
+    ],
+  },
+  teaKehwa: {
+    name: 'Tea & Kehwa',
+    shortDescription: 'Tea and Kashmiri kehwa.',
+    icon: '🫖',
+    image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&h=300&fit=crop',
+    items: [
+      item('teaKehwa-1', 'Classic Tea', '₹49', 'teaKehwa', '1 portion', 'Veg'),
+      item('teaKehwa-2', 'Lemon Tea', '₹69', 'teaKehwa', '1 portion', 'Veg'),
+      item('teaKehwa-3', 'Honey Ginger Lemon Tea', '₹99', 'teaKehwa', '1 portion', 'Veg'),
+      item('teaKehwa-4', 'Masala Tea', '₹59', 'teaKehwa', '1 portion', 'Veg'),
+      item('teaKehwa-5', 'Kashmiri Kehwa', '₹99', 'teaKehwa', '1 portion', 'Veg'),
     ],
   },
 }
 
 export function generateWhatsAppOrderMessage(item: MenuItem): string {
-  return `Hi Mango, I would like to order:
-
-${item.name}
-${item.quantity} – ${item.price}
-
-Please confirm availability. Thank you!`
+  return `Hi The Sonnet Cafe, I would like to order:` +
+    `\n\n${item.name}\n${item.quantity} - ${item.price}\n\nPlease confirm availability. Thank you!`
 }
 
 export interface CartItem extends MenuItem {
@@ -390,7 +381,7 @@ export function generateWhatsAppCartMessage(cartItems: CartItem[], totalPrice: n
 
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.cartQuantity, 0)
 
-  return `Hi Mango, I would like to place an order:
+  return `Hi The Sonnet Cafe, I would like to place an order:
 
 ${itemsList}
 

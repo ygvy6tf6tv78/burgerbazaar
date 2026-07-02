@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, ChevronLeft, ChevronRight, X, Image as ImageIcon, Video } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, X, Image as ImageIcon, Video, Share2 } from 'lucide-react'
+import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 
 // Gallery images from public/gallery folder
 const galleryImages = [
@@ -71,29 +72,42 @@ export default function GalleryPage() {
     setPhotoIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))
   }
 
+  const handleShareContact = async () => {
+    const shareText = `${shopConfig.name} - ${shopConfig.tagline}. Call ${shopConfig.contact.officePhone}. ${shopConfig.contact.address}`
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shopConfig.name, text: shareText, url: shopConfig.url })
+        return
+      } catch {
+      }
+    }
+    await navigator.clipboard.writeText(`${shareText}\n${shopConfig.url}`)
+    alert('Contact copied to clipboard.')
+  }
+
   return (
     <>
-      <main className="relative min-h-screen overflow-x-hidden pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]" style={{ backgroundColor: '#1a1a1a' }}>
+      <main className="relative min-h-screen overflow-x-hidden pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]" style={{ backgroundColor: '#efd8bc' }}>
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#FBEC89]/10 blur-3xl" />
-          <div className="absolute top-[18rem] -left-20 h-64 w-64 rounded-full bg-mango-green/14 blur-3xl" />
-          <div className="absolute bottom-[12rem] right-[-4rem] h-72 w-72 rounded-full bg-white/[0.05] blur-3xl" />
+          <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#B07A49]/20 blur-3xl" />
+          <div className="absolute top-[18rem] -left-20 h-64 w-64 rounded-full bg-mango-green/12 blur-3xl" />
+          <div className="absolute bottom-[12rem] right-[-4rem] h-72 w-72 rounded-full bg-white/45 blur-3xl" />
         </div>
 
         <div
           className="sticky top-0 z-20 backdrop-blur-xl"
           style={{
             paddingTop: 'max(0.45rem, env(safe-area-inset-top))',
-            background: 'linear-gradient(180deg, rgba(20,20,20,0.92) 0%, rgba(20,20,20,0.68) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,248,238,0.94) 0%, rgba(246,230,209,0.72) 100%)',
           }}
         >
           <div className="max-w-md mx-auto px-1 pb-3 relative z-10">
-            <div className="rounded-[28px] border border-white/8 bg-white/[0.05] shadow-[0_20px_40px_rgba(0,0,0,0.28)] px-3 sm:px-4 py-3.5">
+            <div className="rounded-[28px] border border-[#B07A49]/25 bg-white/70 shadow-[0_20px_40px_rgba(73,46,26,0.12)] px-3 sm:px-4 py-3.5">
               <div className="relative flex items-center justify-between">
                 <Link
                   href="/"
                   prefetch
-                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/[0.06] transition-colors hover:bg-white/[0.12] active:scale-[0.97] touch-manipulation shadow-[0_10px_20px_rgba(0,0,0,0.16)]"
+                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[#B07A49]/30 bg-white transition-colors hover:bg-[#f8ead8] active:scale-[0.97] touch-manipulation shadow-[0_10px_20px_rgba(73,46,26,0.10)]"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     if (typeof window !== 'undefined') {
@@ -101,33 +115,41 @@ export default function GalleryPage() {
                     }
                   }}
                 >
-                  <ArrowLeft className="h-5 w-5 shrink-0 text-slate-100" strokeWidth={2.25} aria-hidden />
+                  <ArrowLeft className="h-5 w-5 shrink-0 text-[#302318]" strokeWidth={2.25} aria-hidden />
                 </Link>
 
                 <div className="pointer-events-none absolute inset-x-0 text-center">
-                  <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">Gallery</h1>
+                  <h1 className="text-lg sm:text-xl font-bold text-[#302318] tracking-tight">Gallery</h1>
                 </div>
 
-                <div className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-white/85 shadow-[0_10px_20px_rgba(0,0,0,0.14)]">
+                <div className="rounded-full border border-[#B07A49]/30 bg-white px-3 py-1.5 text-xs font-semibold text-[#6f5137] shadow-[0_10px_20px_rgba(73,46,26,0.10)]">
                   {activeTab === 'photos' ? `${galleryImages.length} Photos` : `${galleryVideos.length} Videos`}
                 </div>
               </div>
 
               <div className="mt-3 pl-[3px]">
-                <p className="text-sm text-slate-300/85">Moments at Mango</p>
+                <p className="text-sm text-[#6f5137]">Fresh kitchen moments at The Sonnet Cafe</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="max-w-md mx-auto py-4 sm:py-6 relative z-10">
-          <div className="section-shell section-shell-dark">
+          <div className="section-shell section-shell-light">
             <div className="section-shell-inner p-5 sm:p-6">
               <div className="mb-5">
                 <div className="section-title-accent mb-2">
-                  <h2 className="text-xl sm:text-2xl font-bold text-white">Gallery Collection</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#302318]">Gallery Collection</h2>
                 </div>
-                <p className="text-sm text-slate-300">Browse photos and video moments from Mango.</p>
+                <p className="text-sm text-[#6f5137]">Browse cafe, bakery and menu moments from The Sonnet Cafe.</p>
+                <button
+                  type="button"
+                  onClick={handleShareContact}
+                  className="mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-2xl bg-white text-[#7B4A2D] font-bold border border-[#B07A49]/45 shadow-[0_14px_28px_rgba(73,46,26,0.12)]"
+                >
+                  <Share2 className="w-5 h-5" />
+                  Share
+                </button>
               </div>
 
               <div className="flex gap-3 mb-5">
@@ -137,11 +159,11 @@ export default function GalleryPage() {
                   className={`flex-1 px-5 py-3.5 rounded-2xl font-semibold text-sm sm:text-base transition-all ${
                     activeTab === 'photos'
                       ? 'bg-mango-green text-white shadow-[0_16px_30px_rgba(30,77,61,0.28)]'
-                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/90 border border-slate-700/50'
+                      : 'bg-white text-[#6f5137] hover:bg-[#f8ead8] border border-[#B07A49]/30'
                   }`}
                 >
                   <span className="flex items-center justify-center gap-2.5">
-                    <ImageIcon className={`w-5 h-5 ${activeTab === 'photos' ? 'text-white' : 'text-slate-400'}`} strokeWidth={2.5} />
+                    <ImageIcon className={`w-5 h-5 ${activeTab === 'photos' ? 'text-white' : 'text-[#6f5137]'}`} strokeWidth={2.5} />
                     Photos
                   </span>
                 </motion.button>
@@ -151,11 +173,11 @@ export default function GalleryPage() {
                   className={`flex-1 px-5 py-3.5 rounded-2xl font-semibold text-sm sm:text-base transition-all ${
                     activeTab === 'videos'
                       ? 'bg-mango-green text-white shadow-[0_16px_30px_rgba(30,77,61,0.28)]'
-                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/90 border border-slate-700/50'
+                      : 'bg-white text-[#6f5137] hover:bg-[#f8ead8] border border-[#B07A49]/30'
                   }`}
                 >
                   <span className="flex items-center justify-center gap-2.5">
-                    <Video className={`w-5 h-5 ${activeTab === 'videos' ? 'text-white' : 'text-slate-400'}`} strokeWidth={2.5} />
+                    <Video className={`w-5 h-5 ${activeTab === 'videos' ? 'text-white' : 'text-[#6f5137]'}`} strokeWidth={2.5} />
                     Videos
                   </span>
                 </motion.button>

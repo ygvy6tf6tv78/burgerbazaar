@@ -112,9 +112,9 @@ export default function Hero() {
           <div 
           className="rounded-[24px] shadow-2xl relative cursor-pointer overflow-hidden"
           style={{
-            background: 'linear-gradient(165deg, #FBEC89 0%, #FDF8E0 18%, #ffffff 45%, #FEFDF5 70%, #ffffff 100%)',
-            border: '1px solid rgba(251, 236, 137, 0.45)',
-            boxShadow: '0 22px 60px rgba(251, 236, 137, 0.16), 0 10px 28px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
+            background: 'linear-gradient(165deg, #D8C3A5 0%, #F4E9DC 18%, #ffffff 45%, #FAF5EF 70%, #ffffff 100%)',
+            border: '1px solid rgba(216, 195, 165, 0.45)',
+            boxShadow: '0 22px 60px rgba(216, 195, 165, 0.16), 0 10px 28px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
             minHeight: '580px',
             boxSizing: 'border-box'
           }}
@@ -164,7 +164,7 @@ export default function Hero() {
                 >
                   <Image
                     src={headerImages[headerImageIndex]}
-                    alt="Mango Restaurant"
+                    alt="The Sonnet Cafe"
                     fill
                     className="object-cover"
                     priority
@@ -217,7 +217,7 @@ export default function Hero() {
                     WebkitTapHighlightColor: 'transparent',
                     boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2)'
                   }}
-                  title="Follow @mangojammu"
+                  title="Follow The Sonnet Cafe"
                 >
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
                     <Image
@@ -407,41 +407,41 @@ export default function Hero() {
                 </h2>
 
                 {/* Block 1: Location */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(251, 236, 137, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)' }}>
-                    <MapPin className="w-5 h-5 text-[#FBEC89]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(216, 195, 165, 0.4)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)' }}>
+                    <MapPin className="w-5 h-5 text-[#D8C3A5]" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Location</p>
-                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Shop No 32, B2 South Block, Bahu Plaza, Gandhi Nagar, Jammu, Jammu & Kashmir – 180004</p>
+                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">{shopConfig.contact.locationLine}</p>
                   </div>
                 </div>
 
                 {/* Block 2: Services */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(251, 236, 137, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)' }}>
-                    <Store className="w-5 h-5 text-[#FBEC89]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(216, 195, 165, 0.4)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)' }}>
+                    <Store className="w-5 h-5 text-[#D8C3A5]" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Services</p>
-                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Dine-In • Takeaway • Pure Vegetarian</p>
+                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Dine-In • Delivery • Takeaway • Cafe & Bakery</p>
                   </div>
                 </div>
 
                 {/* Block 3: Timings */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(251, 236, 137, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)' }}>
-                    <Clock className="w-5 h-5 text-[#FBEC89]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(216, 195, 165, 0.4)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)' }}>
+                    <Clock className="w-5 h-5 text-[#D8C3A5]" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Timings</p>
-                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Monday – Saturday: 10:30 AM – 9:30 PM</p>
-                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Sunday: 11:00 AM – 9:30 PM</p>
+                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">12:00 PM – 10:30 PM</p>
+                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Last orders by 10:00 PM</p>
                   </div>
                 </div>
 
                 {/* Google Map */}
-                <div className="w-full h-28 sm:h-32 rounded-[22px] overflow-hidden mb-4 pointer-events-none flex-shrink-0 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'rgba(255,255,255,0.94)', borderColor: 'rgba(251, 236, 137, 0.35)' }}>
+                <div className="w-full h-28 sm:h-32 rounded-[22px] overflow-hidden mb-4 pointer-events-none flex-shrink-0 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'rgba(255,255,255,0.94)', borderColor: 'rgba(216, 195, 165, 0.35)' }}>
                   <iframe
                     src={`https://www.google.com/maps?q=${encodeURIComponent(shopConfig.contact.mapQuery)}&output=embed`}
                     width="100%"

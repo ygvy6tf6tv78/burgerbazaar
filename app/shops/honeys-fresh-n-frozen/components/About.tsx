@@ -7,7 +7,7 @@ export default function About() {
     <section className="w-full max-w-md mx-auto py-6">
       <div className="section-shell section-shell-green">
         <div className="section-shell-inner p-7 sm:p-8">
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-[#FBEC89]/18 blur-3xl" />
+          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-[#D8C3A5]/18 blur-3xl" />
           <div className="absolute left-[-2rem] bottom-[-2rem] h-28 w-28 rounded-full bg-white/[0.08] blur-3xl" />
 
           <div className="relative">
@@ -19,7 +19,7 @@ export default function About() {
             <p className="text-white/90 leading-[1.75] text-[15px]">
               {shopConfig.about.shortDescription}
             </p>
-            <div className="mt-6 h-px w-full bg-gradient-to-r from-white/40 via-[#FBEC89]/65 to-transparent" />
+            <div className="mt-6 h-px w-full bg-gradient-to-r from-white/40 via-[#D8C3A5]/65 to-transparent" />
           </div>
         </div>
       </div>

@@ -16,12 +16,10 @@ import GoogleReviews from './shops/honeys-fresh-n-frozen/components/GoogleReview
 import Footer from './components/Footer'
 import BackToTop from './components/BackToTop'
 import LoadingScreen from './components/LoadingScreen'
+import { shopConfig } from './shops/honeys-fresh-n-frozen/config'
 
 export default function Home() {
-  const [showLoading, setShowLoading] = useState(() => {
-    if (typeof window === 'undefined') return true
-    return sessionStorage.getItem('mangoLandingLoaded') !== 'true'
-  })
+  const [showLoading, setShowLoading] = useState(true)
 
   useEffect(() => {
     // Show the branded loading screen only on the first landing-page entry per tab.
@@ -92,9 +90,9 @@ export default function Home() {
         <>
           {/* Fixed viewport glows — avoids repainting huge blurs on every scroll tick */}
           <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-            <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#FBEC89]/10 blur-3xl" />
-            <div className="absolute top-[28vh] -left-20 h-64 w-64 rounded-full bg-mango-green/14 blur-3xl" />
-            <div className="absolute bottom-[15vh] right-[-5rem] h-72 w-72 rounded-full bg-[#FBEC89]/10 blur-3xl" />
+            <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#7B4A2D]/18 blur-3xl" />
+            <div className="absolute top-[28vh] -left-20 h-64 w-64 rounded-full bg-[#B07A49]/16 blur-3xl" />
+            <div className="absolute bottom-[15vh] right-[-5rem] h-72 w-72 rounded-full bg-[#EAD0B1]/42 blur-3xl" />
           </div>
         <motion.main
           initial={{ opacity: 0 }}
@@ -108,9 +106,9 @@ export default function Home() {
             <About />
             <MenuPreview />
             <Services />
-            <Gallery />
             <GoogleReviews />
-            <InstagramFeed />
+            <Gallery />
+            {shopConfig.sections.showInstagramFeed && <InstagramFeed />}
             <ContactCard />
             <Footer />
             <BackToTop />

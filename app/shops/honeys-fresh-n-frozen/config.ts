@@ -1,188 +1,166 @@
-// Shop Configuration for Mango – Pure Vegetarian Restaurant
+// Shop Configuration for The Sonnet Cafe
 // All shop-specific data lives here
 
-export type ContactPersonLabel = "Mango"
+export type ContactPersonLabel = "The Sonnet Cafe"
 
 export interface ContactPerson {
   label: ContactPersonLabel
-  phoneE164: string // Full number with country code: 919419532222
-  phoneDisplay: string // Formatted for display: 94191 41495
-  whatsappE164: string // Same as phoneE164 for WhatsApp
+  phoneE164: string
+  phoneDisplay: string
+  whatsappE164: string
 }
 
 export const shopConfig = {
-  // Basic Info (Hero / first card: Mango Bahu Plaza)
-  name: "MANGO",
-  tagline: "Pure Vegetarian • Budget Friendly • Bahu Plaza, Jammu",
-  taglineShort: "Authentic Taste. Everyday Prices.",
-  url: "https://mango.onelink.cards",
+  name: "The Sonnet Cafe",
+  tagline: "Fresh kitchen • Cafe plates • Bakery",
+  taglineShort: "Fresh food, made with care.",
+  url: "https://sonnet.onelink.cards",
   cardType: "B2C" as const,
-  keywordBadges: ["4.1 ★ Google Rating", "₹200–400 per person", "Pure Vegetarian", "Bahu Plaza Location"] as string[],
+  keywordBadges: ["4.8 ★ Google Rating", "46 Google reviews", "Fresh kitchen", "Orders 12 PM–10 PM"] as string[],
 
-  // Contact Information (Mango Bahu Plaza)
   contact: {
-    phones: ["9419532222"],
-    email: "honeyfish.jmu@gmail.com",
-    address: "Shop No 32, B2 South Block, Vidhata Nagar, Bahu Plaza, Gandhi Nagar, Jammu, 180004",
-    locationLine: "Located inside Bahu Plaza, South Block at Vidhata Nagar. 7 minutes from central Gandhi Nagar area.",
-    mapQuery: "Mango Bahu Plaza Vidhata Nagar Gandhi Nagar Jammu",
-    storeHours: "Monday – Saturday: 10:30 AM – 9:30 PM. Sunday: 11:00 AM – 9:30 PM.",
-    storeHoursStatus: "Open Now",
-    officePhone: "9419532222",
+    phones: ["9596019296"],
+    email: "",
+    address: "The Qureshies, 160, Rajbagh, Srinagar, Jammu and Kashmir 190008",
+    locationLine: "Located at The Qureshies, Rajbagh, Srinagar. Fresh orders are open from 12:00 PM to 10:00 PM.",
+    mapQuery: "The Sonnet Cafe The Qureshies 160 Rajbagh Srinagar 190008",
+    storeHours: "Open daily from 12:00 PM. Delivery orders close at 10:00 PM.",
+    storeHoursStatus: "Opens 12 PM",
+    officePhone: "9596019296",
   },
-  
-  // Contact (single Mango number)
+
   contactPersons: [
     {
-      label: "Mango" as ContactPersonLabel,
-      phoneE164: "919419532222",
-      phoneDisplay: "94195 32222",
-      whatsappE164: "919419532222",
+      label: "The Sonnet Cafe" as ContactPersonLabel,
+      phoneE164: "919596019296",
+      phoneDisplay: "095960 19296",
+      whatsappE164: "919596019296",
     },
   ] as ContactPerson[],
-  
-  // WhatsApp Configuration
+
   whatsapp: {
-    defaultPhone: "9419532222",
-    defaultMessage: "Hi Mango, I would like to place an order. Please share today's availability and rates.",
+    defaultPhone: "9596019296",
+    defaultMessage: "Hi The Sonnet Cafe, I would like to place an order. Please share today's fresh availability.",
     showSelector: false,
-    selectorPersons: ["Mango"] as ContactPersonLabel[],
+    selectorPersons: ["The Sonnet Cafe"] as ContactPersonLabel[],
   },
-  
-  // Social Media Links
+
   social: {
-    facebook: "https://www.facebook.com/share/198avg1doq/",
-    instagram: "https://www.instagram.com/mangojammu/?hl=en",
-    instagramJammu: "https://www.instagram.com/mangojammu/?hl=en",
+    facebook: "",
+    instagram: "https://www.instagram.com/sonne7/",
+    instagramJammu: "https://www.instagram.com/sonne7/",
     twitter: "",
     linkedin: "",
-    swiggy: "https://www.swiggy.com/menu/105228?source=sharing",
-    zomato: "https://zomato.onelink.me/xqzv/fag7tcfj",
+    swiggy: "https://www.swiggy.com/restaurants/the-sonnet-rajbagh-srinagar-1328663/dineout?is_retargeting=true&media_source=GoogleReserve&utm_campaign=GoogleMap&utm_source=GoogleReserve",
+    zomato: "https://www.zomato.com/srinagar/restaurants?q=The%20Sonnet%20Cafe",
   },
 
   instagramFeed: {
-    title: "Latest on Instagram",
-    subtitle: "Fresh drops, reels and cafe vibes from Mango",
-    profileHandle: "@mangojammu",
+    title: "Follow on Instagram",
+    subtitle: "Fresh kitchen moments, bakery drops and cafe updates from Rajbagh.",
+    profileHandle: "@sonne7",
     posts: [
       {
-        id: "ig-1",
+        id: "sonnet-kitchen",
         image: "/gallery/unnamed.webp",
-        caption: "Signature bites, fresh plating and peak Mango mood.",
-        mediaType: "post" as const,
+        caption: "Fresh cafe plates and bakery moments from The Sonnet Cafe.",
+        mediaType: "post",
         pinned: true,
-        href: "https://www.instagram.com/mangojammu/?hl=en",
+        href: "https://www.instagram.com/sonne7/",
       },
       {
-        id: "ig-2",
+        id: "sonnet-bakery",
         image: "/gallery/unnamed (1).webp",
-        caption: "Cafe table moments worth sharing with the group.",
-        mediaType: "reel" as const,
-        pinned: true,
-        href: "https://www.instagram.com/mangojammu/?hl=en",
+        caption: "Warm bakery, desserts and daily fresh prep.",
+        mediaType: "reel",
+        href: "https://www.instagram.com/sonne7/",
       },
       {
-        id: "ig-3",
+        id: "sonnet-cafe",
         image: "/gallery/unnamed (2).webp",
-        caption: "Fast comfort food with a cleaner, premium vibe.",
-        mediaType: "post" as const,
-        href: "https://www.instagram.com/mangojammu/?hl=en",
+        caption: "Cafe, bakery and comfort food from Rajbagh.",
+        mediaType: "post",
+        href: "https://www.instagram.com/sonne7/",
       },
       {
-        id: "ig-4",
+        id: "sonnet-orders",
         image: "/gallery/unnamed (3).webp",
-        caption: "Fresh vegetarian cravings, ready for the next order.",
-        mediaType: "reel" as const,
-        href: "https://www.instagram.com/mangojammu/?hl=en",
+        caption: "Made close to order time, packed fresh.",
+        mediaType: "post",
+        href: "https://www.instagram.com/sonne7/",
       },
-      {
-        id: "ig-5",
-        image: "/gallery/unnamed (4).webp",
-        caption: "Everyday budget-friendly food that still feels special.",
-        mediaType: "post" as const,
-        href: "https://www.instagram.com/mangojammu/?hl=en",
-      },
-      {
-        id: "ig-6",
-        image: "/gallery/unnamed (5).webp",
-        caption: "Bring your friends, save the reel, plan the visit.",
-        mediaType: "reel" as const,
-        href: "https://www.instagram.com/mangojammu/?hl=en",
-      },
-    ],
+    ] as Array<{ id: string; image: string; caption: string; mediaType: "post" | "reel"; pinned?: boolean; href: string }>,
   },
-  
-  // Trust Badges
+
   trustBadges: [
-    "Pure Vegetarian",
-    "4.1★ Google Rating",
-    "Dine-In & Takeaway"
+    "4.8★ Google Rating",
+    "Fresh Kitchen",
+    "Fresh Chicken Daily",
+    "Dine-In, Delivery & Takeaway"
   ] as string[],
-  
-  // Brand Information (services for flip card)
+
   brands: [
-    { name: "Pure Vegetarian Restaurant", tagline: "", logo: "" },
-    { name: "Dine-In Available", tagline: "", logo: "" },
-    { name: "Takeaway Available", tagline: "", logo: "" },
-    { name: "Budget Friendly Dining", tagline: "", logo: "" },
-    { name: "North Indian & Chinese Cuisine", tagline: "", logo: "" },
+    { name: "Fresh Kitchen", tagline: "", logo: "" },
+    { name: "Google Rated 4.8", tagline: "", logo: "" },
+    { name: "Dine-In Reservations", tagline: "", logo: "" },
+    { name: "Order Online", tagline: "", logo: "" },
+    { name: "Made After Order", tagline: "", logo: "" },
   ],
 
-  // About Section (Welcome to Mango)
   about: {
-    title: "Welcome to Mango",
-    shortDescription: "Located in the heart of Bahu Plaza, Mango is a pure vegetarian restaurant serving authentic North Indian and Chinese flavours. We focus on clean preparation, quality ingredients, and a welcoming dining experience for families and friends.",
+    title: "Welcome to The Sonnet Cafe",
+    shortDescription: "A Rajbagh cafe and bakery built around fresh kitchen prep, fresh chicken, warm bakery desserts, coffee, shakes and comfort plates made close to order time.",
   },
   menuUrl: "/menu",
+  menuPdfUrl: "/sonnet-menu.pdf",
 
-  /** Delivery area: distance from this pin (Mango @ Bahu Plaza). Update lat/lng from Google Maps if needed. */
   delivery: {
-    restaurantLat: 32.7249,
-    restaurantLng: 74.8568,
-    radiusKm: 5,
-    label: "Mango, Bahu Plaza, Jammu",
+    restaurantLat: 34.0669,
+    restaurantLng: 74.8196,
+    radiusKm: 3.5,
+    label: "The Sonnet Cafe, Rajbagh, Srinagar",
   },
-  
-  // Payment Configuration
+
+  ordering: {
+    opensAt: "12:00 PM",
+    closesAt: "10:00 PM",
+  },
+
   payment: {
-    upiId: "9419197204.ibz@icici",
-    upiName: "Mango Restaurant",
-    // Leave empty to auto-generate QR directly from UPI ID
+    upiId: "",
+    upiName: "The Sonnet Cafe",
     upiQrImageUrl: "",
-    scannerImage: "/shops/honeys-fresh-n-frozen/assets/qr/scan.png",
+    scannerImage: "",
     bank: {
-      bankName: "Jammu and Kashmir Bank",
-      accountNumberMasked: "0045010100002437",
-      ifsc: "JAKA0TARGET",
-      accountHolder: "HONEY S FRESH N FROZEN PROP SHIVANI MAHAJAN",
-      branchName: "CHANDNAGAR JAMMU"
+      bankName: "",
+      accountNumberMasked: "",
+      ifsc: "",
+      accountHolder: "",
+      branchName: ""
     },
-    // Payment page: include Pay via Scanner with download and save scanner image option
-    showScanner: true,
+    showScanner: false,
     showDownloadQR: true,
   },
-  
-  // Google Reviews
+
   google: {
-    placeId: "ChIJx172t6WFHjkRO5-dx4NQ9Jc",
-    mapsUrl: "https://www.google.com/maps/place/?q=place_id:ChIJx172t6WFHjkRO5-dx4NQ9Jc",
-    reviewsUrl: "https://search.google.com/local/writereview?placeid=ChIJx172t6WFHjkRO5-dx4NQ9Jc",
+    placeId: "ChIJNV8GIZmP4TgRY4lEDqVd8BA",
+    mapsUrl: "https://www.google.com/maps/place/?q=place_id:ChIJNV8GIZmP4TgRY4lEDqVd8BA",
+    reviewsUrl: "https://search.google.com/local/writereview?placeid=ChIJNV8GIZmP4TgRY4lEDqVd8BA",
+    fallbackRating: 4.8,
+    fallbackReviewCount: 46,
   },
-  
-  // SEO
+
   seo: {
-    title: "MANGO - Pure Vegetarian Restaurant | Bahu Plaza Jammu",
-    description: "Mango Bahu Plaza Jammu - Pure vegetarian restaurant. North Indian & Chinese cuisine, budget friendly dining, dine-in & takeaway. Authentic taste, everyday prices.",
-    keywords: "Mango Bahu Plaza Jammu, Vegetarian Restaurant in Bahu Plaza, North Indian Restaurant Jammu, Chinese Food Bahu Plaza, Budget Friendly Restaurant Jammu",
+    title: "The Sonnet Cafe Rajbagh Srinagar | Sonnet Onelink Menu, Orders & Reviews",
+    description: "The Sonnet Cafe Onelink - 4.8 rated cafe and bakery in Rajbagh, Srinagar. View menu, order online, call, get directions, Zomato, Google reviews and fresh kitchen updates.",
+    keywords: "The Sonnet, the sonnet, The Sonnet Cafe, the sonnet cafe, Sonnet, sonnet, The Sonnet Cafe Srinagar, The Sonnet Cafe Rajbagh, Sonnet Cafe Srinagar, Sonnet Cafe Rajbagh, Sonnet Onelink, The Sonnet Onelink, sonnet.onelink.cards, Rajbagh cafe, Srinagar cafe, Srinagar bakery, cafe bakery Rajbagh, fresh kitchen Srinagar, The Qureshies Rajbagh cafe, Sonnet Cafe menu, Sonnet Cafe order online, Sonnet Cafe Google reviews",
   },
-  
-  // Credits
+
   credits: {
     designer: "RepixelX Studio",
     designerUrl: "https://repixelx.com",
   },
-  
-  // Section Toggles (for enabling/disabling sections)
+
   sections: {
     showAbout: true,
     showMenu: true,
@@ -190,27 +168,19 @@ export const shopConfig = {
     showGallery: true,
     showInstagramFeed: true,
     showReviews: true,
-    showSocialConnect: true,
+    showSocialConnect: false,
     showContactCard: true,
     showFooter: true,
   },
-  
-  // Assets Paths (relative to public folder)
-  // Logo: put your logo at public/components/fff.png (copy from components/fff.png when you update it)
+
   assets: {
-    logo: "/components/fff.png",
+    logo: "/sonnet-logo.jpeg",
     gallery: "/shops/honeys-fresh-n-frozen/assets/gallery/",
-    qr: "/shops/honeys-fresh-n-frozen/assets/qr/scan.png",
+    qr: "",
   },
-  
-  // Catalog (empty for now, can be populated later)
+
   catalog: [] as Array<{ id: string; title: string; description: string; logo: string; details: string; images: string[] }>,
-  
-  // Brochures (empty for now)
-  brochures: [] as Array<{ href: string; title: string }>,
-  
-  // Menu data is in menu.ts file in same folder
-  // Import: import { menuCategories } from './menu'
+  brochures: [{ href: "/sonnet-menu.pdf", title: "Full Menu PDF" }] as Array<{ href: string; title: string }>,
 }
 
 export type ShopConfig = typeof shopConfig

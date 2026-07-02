@@ -103,9 +103,9 @@ export default function ReviewsPage() {
       background: 'linear-gradient(135deg, #fefbf3 0%, #faf8f0 50%, #fefbf3 100%)'
     }}>
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-20 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#FBEC89]/18 blur-3xl" />
+        <div className="absolute -top-20 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#D8C3A5]/18 blur-3xl" />
         <div className="absolute top-[18rem] -left-16 h-64 w-64 rounded-full bg-mango-green/10 blur-3xl" />
-        <div className="absolute bottom-[8rem] right-[-4rem] h-72 w-72 rounded-full bg-[#FBEC89]/12 blur-3xl" />
+        <div className="absolute bottom-[8rem] right-[-4rem] h-72 w-72 rounded-full bg-[#D8C3A5]/12 blur-3xl" />
       </div>
 
       {/* Header */}
@@ -150,7 +150,7 @@ export default function ReviewsPage() {
               style={{ 
                 height: '150px',
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                border: '1px solid rgba(251, 236, 137, 0.22)',
+                border: '1px solid rgba(216, 195, 165, 0.22)',
                 boxShadow: '0 16px 34px rgba(15, 23, 42, 0.08)'
               }} 
             />
@@ -159,7 +159,7 @@ export default function ReviewsPage() {
               style={{ 
                 height: '150px',
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                border: '1px solid rgba(251, 236, 137, 0.22)',
+                border: '1px solid rgba(216, 195, 165, 0.22)',
                 boxShadow: '0 16px 34px rgba(15, 23, 42, 0.08)'
               }} 
             />
@@ -168,7 +168,7 @@ export default function ReviewsPage() {
               style={{ 
                 height: '150px',
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                border: '1px solid rgba(251, 236, 137, 0.22)',
+                border: '1px solid rgba(216, 195, 165, 0.22)',
                 boxShadow: '0 16px 34px rgba(15, 23, 42, 0.08)'
               }} 
             />
@@ -177,7 +177,7 @@ export default function ReviewsPage() {
           // Error State
           <div className="text-center py-12 rounded-[24px]" style={{
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            border: '1px solid rgba(251, 236, 137, 0.22)',
+            border: '1px solid rgba(216, 195, 165, 0.22)',
             boxShadow: '0 16px 34px rgba(15, 23, 42, 0.08)'
           }}>
             <p className="mb-4 text-slate-700">
@@ -200,7 +200,7 @@ export default function ReviewsPage() {
                 className="rounded-[28px] p-6 shadow-md"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,240,0.95) 42%, rgba(255,255,255,0.98) 100%)',
-                  border: '1px solid rgba(251, 236, 137, 0.26)',
+                  border: '1px solid rgba(216, 195, 165, 0.26)',
                   boxShadow: '0 18px 36px rgba(15, 23, 42, 0.08)'
                 }}
               >
@@ -211,7 +211,7 @@ export default function ReviewsPage() {
                         key={star}
                         className={`w-6 h-6 ${
                           star <= Math.round(reviewsData.rating)
-                            ? 'fill-yellow-400 text-yellow-400'
+                            ? 'fill-[#FFD43B] text-[#FFD43B]'
                             : 'text-gray-300'
                         }`}
                       />
@@ -222,7 +222,7 @@ export default function ReviewsPage() {
                   </span>
                 </div>
                 <p className="text-base text-slate-600 leading-relaxed">
-                  {reviewsData.message || 'Google reviews are temporarily unavailable.'}
+                  {reviewsData.message || 'Live Google rating summary.'}
                 </p>
                 <div className="mt-5">
                   <a
@@ -231,8 +231,8 @@ export default function ReviewsPage() {
                     rel="noopener noreferrer"
                     className="block w-full text-white font-semibold py-4 px-6 rounded-[24px] shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                     style={{
-                      background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)',
-                      boxShadow: '0 20px 36px rgba(30,77,61,0.24)'
+                      background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)',
+                      boxShadow: '0 20px 36px rgba(176,122,73,0.24)'
                     }}
                   >
                     View on Google
@@ -250,7 +250,7 @@ export default function ReviewsPage() {
               className="mb-6 text-center rounded-[28px] p-6 shadow-md"
               style={{
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,240,0.95) 42%, rgba(255,255,255,0.98) 100%)',
-                border: '1px solid rgba(251, 236, 137, 0.26)',
+                border: '1px solid rgba(216, 195, 165, 0.26)',
                 boxShadow: '0 18px 36px rgba(15, 23, 42, 0.08)'
               }}
             >
@@ -261,7 +261,7 @@ export default function ReviewsPage() {
                       key={star}
                       className={`w-6 h-6 ${
                         star <= Math.round(reviewsData.rating)
-                          ? 'fill-yellow-400 text-yellow-400'
+                          ? 'fill-[#FFD43B] text-[#FFD43B]'
                           : 'text-gray-300'
                       }`}
                     />
@@ -291,11 +291,11 @@ export default function ReviewsPage() {
                     className="rounded-[24px] p-5 hover:shadow-lg transition-all shadow-sm relative overflow-hidden"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(254,252,240,0.95) 42%, rgba(255,255,255,0.98) 100%)',
-                      border: '1px solid rgba(251, 236, 137, 0.24)',
+                      border: '1px solid rgba(216, 195, 165, 0.24)',
                       boxShadow: '0 16px 34px rgba(15, 23, 42, 0.08)'
                     }}
                   >
-                    <div className="absolute inset-x-5 top-3 h-8 rounded-full bg-[#FBEC89]/20 blur-2xl pointer-events-none" />
+                    <div className="absolute inset-x-5 top-3 h-8 rounded-full bg-[#D8C3A5]/20 blur-2xl pointer-events-none" />
                     <div className="flex items-start gap-3 mb-3 relative z-10">
                       {review.profile_photo_url ? (
                         <Image
@@ -303,14 +303,14 @@ export default function ReviewsPage() {
                           alt={review.author_name}
                           width={48}
                           height={48}
-                          className="w-12 h-12 rounded-full object-cover ring-2 ring-[#FBEC89]/20"
+                          className="w-12 h-12 rounded-full object-cover ring-2 ring-[#D8C3A5]/20"
                           unoptimized
                         />
                       ) : (
                         <div 
                           className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{
-                            background: 'linear-gradient(135deg, #2F6B55 0%, #1E4D3D 100%)'
+                            background: 'linear-gradient(135deg, #9A6A43 0%, #7B4A2D 100%)'
                           }}
                         >
                           <span className="text-white font-semibold text-base">
@@ -329,7 +329,7 @@ export default function ReviewsPage() {
                                 key={star}
                                 className={`w-4 h-4 ${
                                   star <= review.rating
-                                    ? 'fill-yellow-400 text-yellow-400'
+                                    ? 'fill-[#FFD43B] text-[#FFD43B]'
                                     : 'text-gray-300'
                                 }`}
                               />
@@ -373,8 +373,8 @@ export default function ReviewsPage() {
                   onClick={() => setDisplayCount(reviewsData.reviews.length)}
                   className="w-full text-white font-semibold py-3.5 px-6 rounded-2xl shadow-md hover:shadow-lg transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)',
-                    boxShadow: '0 18px 34px rgba(30,77,61,0.24)'
+                    background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)',
+                    boxShadow: '0 18px 34px rgba(176,122,73,0.24)'
                   }}
                 >
                   View More ({reviewsData.reviews.length - displayCount} more)
@@ -394,8 +394,8 @@ export default function ReviewsPage() {
                 rel="noopener noreferrer"
                 className="block w-full text-white font-semibold py-4 px-6 rounded-[24px] shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                 style={{
-                  background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)',
-                  boxShadow: '0 20px 36px rgba(30,77,61,0.24)'
+                  background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)',
+                  boxShadow: '0 20px 36px rgba(176,122,73,0.24)'
                 }}
               >
                 View All Reviews on Google

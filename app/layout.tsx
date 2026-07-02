@@ -21,11 +21,20 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: siteConfig.seo.title,
+  title: {
+    default: siteConfig.seo.title,
+    template: `%s | ${siteConfig.name} Rajbagh Srinagar`,
+  },
   description: siteConfig.seo.description,
   keywords: siteConfig.seo.keywords,
   authors: [{ name: siteConfig.name }],
   creator: siteConfig.credits.designer,
+  publisher: siteConfig.name,
+  applicationName: `${siteConfig.name} Onelink`,
+  category: 'restaurant',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
@@ -52,6 +61,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
   },
 }
 
@@ -66,27 +82,49 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // JSON-LD structured data for LocalBusiness
+  // JSON-LD structured data for local SEO.
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': ['Restaurant', 'CafeOrCoffeeShop', 'Bakery'],
+    '@id': `${siteConfig.url}/#the-sonnet-cafe`,
     name: siteConfig.name,
-    description: siteConfig.tagline,
+    alternateName: ['Sonnet Cafe', 'The Sonnet Onelink', 'Sonnet Onelink'],
+    description: siteConfig.seo.description,
     url: siteConfig.url,
+    image: `${siteConfig.url}/sonnet-logo.jpeg`,
+    logo: `${siteConfig.url}/sonnet-logo.jpeg`,
     telephone: `+91${siteConfig.contact.phones[0]}`,
     email: siteConfig.contact.email,
+    priceRange: '₹200-₹1400',
+    servesCuisine: ['Cafe', 'Bakery', 'Fast Food', 'Coffee', 'Desserts'],
     address: {
       '@type': 'PostalAddress',
       streetAddress: siteConfig.contact.address,
-      addressLocality: 'Dehradun',
-      addressRegion: 'Uttarakhand',
+      addressLocality: 'Srinagar',
+      addressRegion: 'Jammu and Kashmir',
+      postalCode: '190008',
       addressCountry: 'IN',
     },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 34.0669,
+      longitude: 74.8196,
+    },
+    areaServed: ['Rajbagh', 'Srinagar', 'Jammu and Kashmir'],
+    hasMap: siteConfig.google.mapsUrl,
+    menu: `${siteConfig.url}/menu`,
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      opens: '06:00',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '12:00',
       closes: '22:00',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '46',
+      bestRating: '5',
+      worstRating: '1',
     },
     sameAs: [
       siteConfig.social.facebook,
@@ -121,4 +159,3 @@ export default function RootLayout({
     </html>
   )
 }
-

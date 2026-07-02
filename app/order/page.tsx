@@ -17,7 +17,7 @@ const dinePickupModes: Array<{
     type: 'dine-in',
     title: 'Dine In',
     subtitle: 'Pre-order before you arrive.',
-    detail: 'Food ready for your dine-in visit at Mango.',
+    detail: 'Fresh food ready for your dine-in visit at The Sonnet Cafe.',
     image: 'url("/unnamed.webp")',
     href: '/menu?mode=order&type=dine-in',
     Icon: UtensilsCrossed,
@@ -35,9 +35,9 @@ const dinePickupModes: Array<{
 
 export default function OrderTypePage() {
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[430px] bg-gradient-to-b from-[#fff9ea] via-white to-[#fff1d2] px-3 pb-10 pt-[max(0.75rem,env(safe-area-inset-top))] text-slate-900">
+    <main className="mx-auto min-h-screen w-full max-w-[430px] bg-white px-3 pb-10 pt-[max(0.75rem,env(safe-area-inset-top))] text-slate-900">
       <div className="w-full">
-        <section className="overflow-hidden rounded-[28px] border border-amber-200/80 bg-white shadow-[0_16px_38px_rgba(120,53,15,0.12)]">
+        <section className="overflow-hidden rounded-[28px] border border-[#D8C3A5]/70 bg-white shadow-[0_16px_38px_rgba(73,46,26,0.10)]">
           <div className="p-3">
             <div className="relative flex items-center justify-between">
               <Link
@@ -65,7 +65,7 @@ export default function OrderTypePage() {
               key={type}
               href={href}
               onClick={() => writeOrderType(type)}
-              className="group overflow-hidden rounded-[28px] border border-slate-200/90 bg-white shadow-[0_14px_32px_rgba(15,23,42,0.10)] transition-transform active:scale-[0.985]"
+              className="group overflow-hidden rounded-[28px] border border-[#D8C3A5]/70 bg-white shadow-[0_14px_32px_rgba(73,46,26,0.10)] transition-transform active:scale-[0.985]"
             >
               <div
                 className="relative h-24 border-b border-white/70 bg-cover bg-center transition-transform duration-300 group-active:scale-[1.02]"
@@ -73,15 +73,15 @@ export default function OrderTypePage() {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
                 <div className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1 text-[11px] font-extrabold text-slate-950 shadow-sm">
-                  {type === 'dine-in' ? 'Dine at Mango' : 'Quick Pickup'}
+                  {type === 'dine-in' ? 'Dine at The Sonnet Cafe' : 'Quick Pickup'}
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3.5">
                 <span
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] ring-1 ${
                     type === 'dine-in'
-                      ? 'bg-amber-50 text-amber-700 ring-amber-200'
-                      : 'bg-teal-50 text-teal-700 ring-teal-200'
+                      ? 'bg-[#F4E9DC] text-[#7B4A2D] ring-[#D8C3A5]'
+                      : 'bg-[#FAF5EF] text-[#7B4A2D] ring-[#D8C3A5]'
                   }`}
                 >
                   <Icon className="h-5 w-5" strokeWidth={2.4} />
@@ -91,7 +91,7 @@ export default function OrderTypePage() {
                   <span className="mt-0.5 block text-[12px] font-bold leading-4 text-slate-600">{subtitle}</span>
                   <span className="mt-1 block text-[11px] font-medium leading-4 text-slate-500">{detail}</span>
                 </span>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-colors group-active:bg-[#fff3f6] group-active:text-[#E23744]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F4E9DC] text-[#7B4A2D] transition-colors group-active:bg-[#D8C3A5] group-active:text-[#4A2E1A]">
                   <ArrowRight className="h-4 w-4" />
                 </span>
               </div>
@@ -99,15 +99,15 @@ export default function OrderTypePage() {
           ))}
         </section>
 
-        <section className="mt-3 rounded-[24px] border border-slate-200/90 bg-white/95 p-3 shadow-[0_10px_24px_rgba(15,23,42,0.07)]">
+        <section className="mt-3 rounded-[24px] border border-[#D8C3A5]/70 bg-white p-3 shadow-[0_10px_24px_rgba(73,46,26,0.08)]">
           <div className="flex items-center gap-2 text-[12px] font-bold text-slate-500">
-            <Clock3 className="h-4 w-4 text-[#215941]" />
+            <Clock3 className="h-4 w-4 text-[#7B4A2D]" />
             Want regular delivery instead?
           </div>
           <Link
             href="/menu?mode=order&type=online"
             onClick={() => writeOrderType('online')}
-            className="mt-2 flex h-11 items-center justify-center gap-2 rounded-full bg-[#215941] px-4 text-[14px] font-extrabold text-white shadow-[0_10px_20px_rgba(33,89,65,0.22)] active:scale-[0.98]"
+            className="mt-2 flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#7B4A2D] via-[#9A6A43] to-[#B07A49] px-4 text-[14px] font-extrabold text-white shadow-[0_10px_20px_rgba(122,74,45,0.24)] active:scale-[0.98]"
           >
             Switch to Online Order
             <Bike className="h-4 w-4" strokeWidth={2.35} />

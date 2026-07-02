@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Pay · Mango',
-  description: 'UPI / QR payment — Mango, Bahu Plaza Jammu',
+  title: 'Pay · The Sonnet Cafe',
+  description: 'UPI / QR payment - The Sonnet Cafe, Rajbagh Srinagar',
 }
 
 export default function MangoPayLayout({ children }: { children: React.ReactNode }) {

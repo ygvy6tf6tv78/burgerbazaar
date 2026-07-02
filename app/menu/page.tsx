@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Moon, Sun, ChevronsLeftRight, ShoppingCart, Plus, Minus, Check, List, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, ChevronsLeftRight, BookOpenText, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react'
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -17,13 +17,14 @@ import {
   writeOrderType,
   type MangoOrderType,
 } from '../lib/cart-session'
+import { getOrderWindowState, type OrderWindowState } from '../lib/order-hours'
 
 type MenuCategoryKey = keyof typeof menuCategories
 
 const categoryKeys: MenuCategoryKey[] = [
-  'burgerPizza',
   'sandwichSalad',
   'momos',
+  'burgerPizza',
   'pastaMaggiFries',
   'healthyDrinks',
   'wraps',
@@ -35,11 +36,19 @@ const categoryKeys: MenuCategoryKey[] = [
   'combos',
   'mainCourse',
   'thali',
+  'desserts',
+  'icedCoffee',
+  'shakes',
+  'coolers',
+  'signatureDrinks',
+  'healthyBlends',
+  'icedTea',
+  'teaKehwa',
 ]
 
 // PDF menu in public – opens in phone preview / browser
-const MENU_PDF_URL = '/mango%20menu%2017-01-2025.pdf'
-const defaultOrderMessage = "Hi Mango, I'd like to order from the menu. Please share today's availability and rates."
+const MENU_PDF_URL = '/sonnet-menu.pdf'
+const defaultOrderMessage = "Hi The Sonnet Cafe, I'd like to order from the menu. Please share today's fresh availability."
 
 /** Document scroll — same pattern as /reviews (no nested 100dvh scroller; avoids mobile “half cut” viewport). */
 function scrollElementTopOnPage(element: HTMLElement, paddingTop = 8, behavior: ScrollBehavior = 'auto') {
@@ -61,7 +70,7 @@ function MenuPageInner() {
     typeParam === 'dine-in' || typeParam === 'takeaway' ? typeParam : 'online'
   const orderTitle =
     orderType === 'dine-in' ? 'Dine In Order' : orderType === 'takeaway' ? 'Takeaway Order' : 'Order Online'
-  const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'burgerPizza'
+  const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : categoryKeys[0]
   const [activeCategory, setActiveCategory] = useState<MenuCategoryKey>(initialCat)
   const [isLightMode, setIsLightMode] = useState(true)
   const [showSlideHint, setShowSlideHint] = useState(false)
@@ -71,6 +80,8 @@ function MenuPageInner() {
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
   const [expandedOrderCategory, setExpandedOrderCategory] = useState<MenuCategoryKey | null>(initialCat)
   const [activeFilter, setActiveFilter] = useState<'all' | 'under150' | 'under300' | 'quickBites' | 'meals' | 'drinks' | 'desserts' | 'combos'>('all')
+  const [orderWindow, setOrderWindow] = useState<OrderWindowState>(() => getOrderWindowState())
+  const categoryScrollerRef = useRef<HTMLDivElement | null>(null)
   const categoryRefs = useRef<Partial<Record<MenuCategoryKey, HTMLButtonElement | null>>>({})
   const orderSectionRefs = useRef<Partial<Record<MenuCategoryKey, HTMLElement | null>>>({})
   /** Accordion header row — scroll target so the category title bar lands under the header, not the section bottom. */
@@ -124,12 +135,11 @@ function MenuPageInner() {
   }, [isOrderMode])
 
   useEffect(() => {
-    if (!isOrderMode) return
     const el = categoryRefs.current[activeCategory]
     if (!el) return
     if (skipInitialOrderCategoryPillScroll.current) {
       skipInitialOrderCategoryPillScroll.current = false
-      return
+      if (isOrderMode) return
     }
     el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }, [activeCategory, isOrderMode])
@@ -147,16 +157,26 @@ function MenuPageInner() {
     }
   }, [])
 
+  useEffect(() => {
+    setOrderWindow(getOrderWindowState())
+    const interval = window.setInterval(() => setOrderWindow(getOrderWindowState()), 60000)
+    return () => window.clearInterval(interval)
+  }, [])
+
   const currentCategory = menuCategories[activeCategory]
   const currentItemCount = currentCategory.items.length
 
   const openWhatsApp = () => {
-    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
+    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9596019296'
     const e164 = phone.length === 10 ? `91${phone}` : phone
     window.open(getWhatsAppLink(e164, defaultOrderMessage), '_blank')
   }
 
   const addToCart = (menuItem: MenuItem) => {
+    if (!orderWindow.isOpen) {
+      alert(orderWindow.message)
+      return
+    }
     setCart((prev) => {
       const existing = prev.find((item) => item.id === menuItem.id)
       if (existing) return prev.map((item) => item.id === menuItem.id ? { ...item, cartQuantity: item.cartQuantity + 1 } : item)
@@ -198,10 +218,10 @@ function MenuPageInner() {
           if (activeFilter === 'all') return true
           if (activeFilter === 'under150') return price > 0 && price <= 150
           if (activeFilter === 'under300') return price > 0 && price <= 300
-          if (activeFilter === 'quickBites') return ['burgerPizza', 'sandwichSalad', 'momos', 'pastaMaggiFries', 'wraps', 'starters'].includes(key)
-          if (activeFilter === 'meals') return ['mainCourse', 'riceNoodlesSoups', 'thali'].includes(key)
-          if (activeFilter === 'drinks') return ['healthyDrinks', 'mojitosSmoothies', 'shakesIceCream', 'hotBeverages'].includes(key)
-          if (activeFilter === 'desserts') return ['shakesIceCream'].includes(key)
+          if (activeFilter === 'quickBites') return ['burgerPizza', 'sandwichSalad', 'momos', 'pastaMaggiFries', 'wraps', 'starters', 'mojitosSmoothies'].includes(key)
+          if (activeFilter === 'meals') return ['mainCourse', 'riceNoodlesSoups', 'thali', 'combos', 'healthyDrinks', 'shakesIceCream'].includes(key)
+          if (activeFilter === 'drinks') return ['desserts', 'icedCoffee', 'shakes', 'coolers', 'signatureDrinks', 'healthyBlends', 'icedTea', 'teaKehwa'].includes(key)
+          if (activeFilter === 'desserts') return ['hotBeverages'].includes(key)
           if (activeFilter === 'combos') return ['combos'].includes(key)
           return true
         })
@@ -219,6 +239,13 @@ function MenuPageInner() {
       return
     }
     section?.scrollIntoView({ behavior: 'auto', block: 'start' })
+  }
+
+  const scrollCategoryStrip = (direction: 'left' | 'right') => {
+    const scroller = categoryScrollerRef.current
+    if (!scroller) return
+    const amount = Math.max(160, Math.round(scroller.clientWidth * 0.72))
+    scroller.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' })
   }
 
   /** After accordion opens (~200ms transition), snap scroll to category header (instant, not smooth). */
@@ -255,6 +282,10 @@ function MenuPageInner() {
   }, [activeFilter, isOrderMode, filteredOrderCategories])
 
   const goToCheckout = () => {
+    if (!orderWindow.isOpen) {
+      alert(orderWindow.message)
+      return
+    }
     writeHandoffToCheckout(cart, orderType)
     router.push('/checkout')
   }
@@ -272,22 +303,22 @@ function MenuPageInner() {
   }
 
   return (
-    <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden">
+    <div className={`relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden ${isLightMode ? 'bg-white' : 'bg-[#1a1a1a]'}`}>
       <main
         className={`relative min-h-screen ${isOrderMode ? (cart.length > 0 ? 'pb-[calc(9rem+env(safe-area-inset-bottom))]' : 'pb-[calc(5.5rem+env(safe-area-inset-bottom))]') : 'pb-24'} transition-colors duration-300 w-full max-w-full pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))] ${
           isLightMode
-            ? 'bg-gradient-to-b from-[#fff8e8] via-slate-50 to-[#fef2d7] text-slate-900'
-            : 'bg-gradient-to-b from-slate-950 via-[#08110f] to-slate-950 text-white'
+            ? 'bg-gradient-to-b from-white via-[#fffaf1] to-white text-slate-900'
+            : 'bg-[radial-gradient(circle_at_top,rgba(176,122,73,0.16),transparent_20rem),linear-gradient(180deg,#111111_0%,#1a1a1a_42%,#0f0f0f_100%)] text-white'
         }`}
       >
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className={`absolute -top-14 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl ${isLightMode ? 'bg-[#FBEC89]/20' : 'bg-[#FBEC89]/10'}`} />
+          <div className={`absolute -top-14 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl ${isLightMode ? 'bg-[#D8C3A5]/20' : 'bg-[#D8C3A5]/10'}`} />
           <div className={`absolute top-[22rem] -left-20 h-64 w-64 rounded-full blur-3xl ${isLightMode ? 'bg-mango-green/12' : 'bg-mango-green/16'}`} />
-          <div className={`absolute bottom-[18rem] right-[-5rem] h-72 w-72 rounded-full blur-3xl ${isLightMode ? 'bg-[#FBEC89]/15' : 'bg-white/[0.05]'}`} />
+          <div className={`absolute bottom-[18rem] right-[-5rem] h-72 w-72 rounded-full blur-3xl ${isLightMode ? 'bg-[#D8C3A5]/15' : 'bg-white/[0.05]'}`} />
         </div>
 
         <div
-          className={`relative z-20 transition-colors duration-300 ${isLightMode ? 'bg-[#fff8e8]' : 'bg-slate-950'}`}
+          className={`relative z-20 transition-colors duration-300 ${isLightMode ? 'bg-white' : 'bg-[#121212]/95 backdrop-blur-xl'}`}
           style={{
             paddingTop: 'max(0.4rem, env(safe-area-inset-top))',
           }}
@@ -295,7 +326,7 @@ function MenuPageInner() {
           <div className={`w-full max-w-md mx-auto px-2 sm:px-3 ${isOrderMode ? 'pb-2' : 'pb-3'}`}>
             <div
               className={`rounded-[28px] px-2.5 sm:px-3 py-3 border transition-colors duration-300 ${
-                isLightMode ? 'border-amber-200/70 bg-white shadow-sm' : 'border-white/[0.08] bg-white/[0.06] shadow-sm'
+                isLightMode ? 'border-amber-200/70 bg-white shadow-sm' : 'border-[#B07A49]/25 bg-white/[0.07] shadow-[0_18px_40px_rgba(0,0,0,0.28)]'
               }`}
             >
               <div className="flex items-center justify-between relative">
@@ -329,35 +360,32 @@ function MenuPageInner() {
                   <button
                     type="button"
                     onClick={() => setIsLightMode((v) => !v)}
-                    className="flex items-center text-xs sm:text-sm font-semibold z-10 touch-manipulation"
+                    className={`z-10 relative inline-flex h-8 w-14 items-center rounded-full border transition-colors touch-manipulation ${
+                      isLightMode
+                        ? 'border-[#D8C3A5] bg-slate-100 shadow-[0_6px_16px_rgba(73,46,26,0.10)]'
+                        : 'border-white/15 bg-slate-800 shadow-[0_10px_24px_rgba(0,0,0,0.35)]'
+                    }`}
+                    aria-label={isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
                   >
                     <span
-                      className={`relative inline-flex h-7 w-12 sm:h-8 sm:w-14 items-center rounded-full border transition-colors ${
-                        isLightMode
-                          ? 'bg-slate-100 border-slate-300 shadow-[0_4px_10px_rgba(148,163,184,0.55)]'
-                          : 'bg-slate-800 border-slate-600 shadow-[0_6px_16px_rgba(15,23,42,0.8)]'
+                      className={`absolute left-1.5 flex items-center justify-center ${
+                        isLightMode ? 'text-amber-500' : 'text-slate-400'
                       }`}
                     >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex w-1/2 items-center justify-center text-[11px] sm:text-xs ${
-                          isLightMode ? 'text-amber-500' : 'text-slate-400'
-                        }`}
-                      >
-                        <Sun className="w-4 h-4" />
-                      </span>
-                      <span
-                        className={`absolute inset-y-0 right-0 flex w-1/2 items-center justify-center text-[11px] sm:text-xs ${
-                          !isLightMode ? 'text-slate-100' : 'text-slate-400'
-                        }`}
-                      >
-                        <Moon className="w-4 h-4" />
-                      </span>
-                      <span
-                        className={`inline-block h-6 w-6 sm:h-7 sm:w-7 transform rounded-full bg-white shadow-lg transition-transform ${
-                          isLightMode ? 'translate-x-[26px] sm:translate-x-[30px]' : 'translate-x-1'
-                        }`}
-                      />
+                      <Sun className="h-3.5 w-3.5" />
                     </span>
+                    <span
+                      className={`absolute right-1.5 flex items-center justify-center ${
+                        !isLightMode ? 'text-slate-100' : 'text-slate-400'
+                      }`}
+                    >
+                      <Moon className="h-3.5 w-3.5" />
+                    </span>
+                    <span
+                      className={`relative z-10 inline-flex h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform ${
+                        isLightMode ? 'translate-x-[26px]' : 'translate-x-1'
+                      }`}
+                    />
                   </button>
                 )}
               </div>
@@ -373,19 +401,30 @@ function MenuPageInner() {
                       : 'bg-white/[0.08] text-white border-white/[0.1] hover:bg-white/[0.12] shadow-[0_18px_34px_rgba(0,0,0,0.28)]'
                   }`}
                 >
-                  <ShoppingCart className="w-4 h-4 shrink-0" />
+                  <BookOpenText className="w-4 h-4 shrink-0" />
                   View PDF Menu
                 </a>
               </div>}
 
               <div className="mt-4">
                 {isOrderMode && (
-                  <Link
-                    href="/order"
-                    className="mb-3 inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-semibold leading-none text-slate-700 shadow-sm active:scale-[0.98]"
-                  >
-                    Change Order Type
-                  </Link>
+                  <>
+                    <Link
+                      href="/order"
+                      className="mb-3 inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-semibold leading-none text-slate-700 shadow-sm active:scale-[0.98]"
+                    >
+                      Change Order Type
+                    </Link>
+                    <div
+                      className={`mb-3 rounded-2xl border px-3 py-2 text-[12px] font-semibold leading-snug ${
+                        orderWindow.isOpen
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                          : 'border-amber-200 bg-amber-50 text-amber-900'
+                      }`}
+                    >
+                      {orderWindow.message} Window: {orderWindow.label}.
+                    </div>
+                  </>
                 )}
                 <AnimatePresence>
                   {!isOrderMode && showSlideHint && (
@@ -396,9 +435,9 @@ function MenuPageInner() {
                       transition={{ duration: 0.25 }}
                       className="flex items-center justify-center gap-2 mb-3 py-2 px-3 rounded-xl text-sm font-medium"
                       style={{
-                        background: isLightMode ? 'rgba(30, 77, 61, 0.08)' : 'rgba(255,255,255,0.08)',
-                        border: `1px solid ${isLightMode ? 'rgba(30, 77, 61, 0.2)' : 'rgba(255,255,255,0.15)'}`,
-                        color: isLightMode ? '#1E4D3D' : 'rgba(255,255,255,0.95)',
+                        background: isLightMode ? 'rgba(122, 74, 45, 0.08)' : 'rgba(176,122,73,0.12)',
+                        border: `1px solid ${isLightMode ? 'rgba(122, 74, 45, 0.2)' : 'rgba(176,122,73,0.24)'}`,
+                        color: isLightMode ? '#7B4A2D' : 'rgba(255,255,255,0.95)',
                       }}
                     >
                       <ChevronsLeftRight className="w-4 h-4 shrink-0" aria-hidden />
@@ -416,39 +455,65 @@ function MenuPageInner() {
                   <p className={`mb-2.5 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
                     Browse filters
                   </p>
-                )}
-                {!isOrderMode && (
-                <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
-                  {categoryKeys.map((key) => {
-                    const cat = menuCategories[key]
-                    const isActive = activeCategory === key
-                    return (
-                      <motion.button
-                        key={key}
-                        ref={(el) => { categoryRefs.current[key] = el }}
-                        onClick={() => setActiveCategory(key)}
-                        whileTap={{ scale: 0.97 }}
-                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
-                          isActive
-                            ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.28)] ring-1 ring-mango-green/30'
-                            : isLightMode
-                              ? 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
-                              : 'bg-white/[0.08] text-white/92 border-white/[0.14] hover:bg-white/[0.12] shadow-[0_6px_18px_rgba(0,0,0,0.35)]'
-                        }`}
-                      >
-                        <span
-                          className={`relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ${
-                            isLightMode ? 'ring-black/10' : 'ring-white/25'
-                          }`}
-                        >
-                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
-                        </span>
-                        <span className="leading-tight">{cat.name}</span>
-                      </motion.button>
-                    )
-                  })}
-                </div>
-                )}
+	                )}
+	                {!isOrderMode && (
+	                  <div className="flex items-center gap-2">
+	                    <button
+	                      type="button"
+	                      onClick={() => scrollCategoryStrip('left')}
+	                      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border shadow-sm transition-colors ${
+	                        isLightMode
+	                          ? 'border-slate-200 bg-white text-[#7B4A2D] hover:bg-[#FFF7E8]'
+	                          : 'border-white/15 bg-white/[0.08] text-white hover:bg-white/[0.12]'
+	                      }`}
+	                      aria-label="Scroll categories left"
+	                    >
+	                      <ChevronLeft className="h-4 w-4" />
+	                    </button>
+	                    <div ref={categoryScrollerRef} className="flex min-w-0 flex-1 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
+	                      {categoryKeys.map((key) => {
+	                        const cat = menuCategories[key]
+	                        const isActive = activeCategory === key
+	                        return (
+	                          <motion.button
+	                            key={key}
+	                            ref={(el) => { categoryRefs.current[key] = el }}
+	                            onClick={() => setActiveCategory(key)}
+	                            whileTap={{ scale: 0.97 }}
+	                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
+	                              isActive
+	                                ? 'bg-[#B07A49] text-white border-[#E9C46A] shadow-[0_8px_22px_rgba(176,122,73,0.34)] ring-1 ring-[#E9C46A]/35'
+	                                : isLightMode
+	                                  ? 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
+	                                  : 'bg-white/[0.08] text-white/92 border-white/[0.14] hover:bg-white/[0.12] shadow-[0_6px_18px_rgba(0,0,0,0.35)]'
+	                            }`}
+	                          >
+	                            <span
+	                              className={`relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ${
+	                                isLightMode ? 'ring-black/10' : 'ring-white/25'
+	                              }`}
+	                            >
+	                              <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
+	                            </span>
+	                            <span className="leading-tight">{cat.name}</span>
+	                          </motion.button>
+	                        )
+	                      })}
+	                    </div>
+	                    <button
+	                      type="button"
+	                      onClick={() => scrollCategoryStrip('right')}
+	                      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border shadow-sm transition-colors ${
+	                        isLightMode
+	                          ? 'border-slate-200 bg-white text-[#7B4A2D] hover:bg-[#FFF7E8]'
+	                          : 'border-white/15 bg-white/[0.08] text-white hover:bg-white/[0.12]'
+	                      }`}
+	                      aria-label="Scroll categories right"
+	                    >
+	                      <ChevronRight className="h-4 w-4" />
+	                    </button>
+	                  </div>
+	                )}
                 {isOrderMode && (
                   <>
                     <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
@@ -468,7 +533,7 @@ function MenuPageInner() {
                           onClick={() => setActiveFilter(filter.id as typeof activeFilter)}
                           className={`h-9 shrink-0 px-3.5 rounded-full text-sm font-semibold whitespace-nowrap border transition-colors touch-manipulation ${
                             activeFilter === filter.id
-                              ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.22)]'
+                              ? 'bg-[#B07A49] text-white border-[#E9C46A] shadow-[0_8px_22px_rgba(176,122,73,0.30)]'
                               : isLightMode
                                 ? 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-white'
                                 : 'bg-white/[0.08] text-white/90 border-white/[0.15] hover:bg-white/[0.12]'
@@ -478,36 +543,54 @@ function MenuPageInner() {
                         </button>
                       ))}
                     </div>
-                    <p className="mb-2.5 mt-4 px-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                    <p className={`mb-2.5 mt-4 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
                       Browse Categories
                     </p>
-                    <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
-                      {categoryKeys.map((key) => {
-                        const cat = menuCategories[key]
-                        const isActive = activeCategory === key
-                        return (
-                          <motion.button
-                            key={`order-cat-${key}`}
-                            ref={(el) => { categoryRefs.current[key] = el }}
-                            type="button"
-                            onClick={() => jumpToOrderCategory(key)}
-                            whileTap={{ scale: 0.97 }}
-                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
-                              isActive
-                                ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.28)] ring-1 ring-mango-green/30'
-                                : 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
-                            }`}
-                          >
-                            <span className="relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ring-black/10">
-                              <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
-                            </span>
-                            <span className="leading-tight">{cat.name}</span>
-                          </motion.button>
-                        )
-                      })}
-                    </div>
-                  </>
-                )}
+	                    <div className="flex items-center gap-2">
+	                      <button
+	                        type="button"
+	                        onClick={() => scrollCategoryStrip('left')}
+	                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
+	                        aria-label="Scroll categories left"
+	                      >
+	                        <ChevronLeft className="h-4 w-4" />
+	                      </button>
+	                      <div ref={categoryScrollerRef} className="flex min-w-0 flex-1 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
+	                        {categoryKeys.map((key) => {
+	                          const cat = menuCategories[key]
+	                          const isActive = activeCategory === key
+	                          return (
+	                            <motion.button
+	                              key={`order-cat-${key}`}
+	                              ref={(el) => { categoryRefs.current[key] = el }}
+	                              type="button"
+	                              onClick={() => jumpToOrderCategory(key)}
+	                              whileTap={{ scale: 0.97 }}
+	                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
+	                                isActive
+	                                  ? 'bg-[#B07A49] text-white border-[#E9C46A] shadow-[0_8px_22px_rgba(176,122,73,0.34)] ring-1 ring-[#E9C46A]/35'
+	                                  : 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
+	                              }`}
+	                            >
+	                              <span className="relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ring-black/10">
+	                                <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
+	                              </span>
+	                              <span className="leading-tight">{cat.name}</span>
+	                            </motion.button>
+	                          )
+	                        })}
+	                      </div>
+	                      <button
+	                        type="button"
+	                        onClick={() => scrollCategoryStrip('right')}
+	                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
+	                        aria-label="Scroll categories right"
+	                      >
+	                        <ChevronRight className="h-4 w-4" />
+	                      </button>
+	                    </div>
+	                  </>
+	                )}
               </div>
             </div>
           </div>
@@ -541,7 +624,7 @@ function MenuPageInner() {
                   <p className={`mt-0.5 text-[12px] ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
                     {currentItemCount} {currentItemCount === 1 ? 'item' : 'items'}
                     <span className="mx-1.5 opacity-40">·</span>
-                    Pure veg
+                    Fresh kitchen
                   </p>
                 </div>
               </motion.div>
@@ -568,8 +651,8 @@ function MenuPageInner() {
                       className={`w-full overflow-hidden rounded-[28px] border transition-all duration-200 ${
                         isLightMode
                           ? isOpen
-                            ? 'border-mango-green/25 bg-white shadow-[0_16px_36px_rgba(30,77,61,0.12)] ring-1 ring-mango-green/15'
-                            : 'border-slate-200/95 bg-white shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:border-slate-300'
+                            ? 'border-[#B07A49]/45 bg-white shadow-[0_18px_40px_rgba(122,74,45,0.14)] ring-1 ring-[#E9C46A]/30'
+                            : 'border-[#D8C3A5]/70 bg-white shadow-[0_10px_24px_rgba(73,46,26,0.08)] hover:border-[#B07A49]/45'
                           : isOpen
                             ? 'border-white/20 bg-white/[0.08] shadow-lg ring-1 ring-white/10'
                             : 'border-white/10 bg-white/[0.06] hover:bg-white/[0.08]'
@@ -590,10 +673,10 @@ function MenuPageInner() {
                           scheduleScrollToOrderSection(key)
                         }}
                         className={`flex w-full items-center gap-3 px-4 py-4 text-left touch-manipulation active:bg-slate-50/80 ${
-                          isLightMode ? 'bg-slate-50/70 hover:bg-slate-50' : 'bg-white/[0.04] hover:bg-white/[0.07]'
+	                          isLightMode ? 'bg-[#FFFCF7] hover:bg-[#FFF7E8]' : 'bg-white/[0.04] hover:bg-white/[0.07]'
                         }`}
                       >
-                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(15,23,42,0.12)] ring-1 ring-slate-100">
+	                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(73,46,26,0.14)] ring-1 ring-[#D8C3A5]/70">
                           <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="56px" unoptimized />
                         </span>
                         <div className="min-w-0 flex-1">
@@ -610,8 +693,8 @@ function MenuPageInner() {
                           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
                             isLightMode
                               ? isOpen
-                                ? 'bg-mango-green text-white'
-                                : 'bg-white text-slate-600 shadow-sm ring-1 ring-slate-200'
+	                                ? 'bg-[#7B4A2D] text-white'
+	                                : 'bg-white text-[#7B4A2D] shadow-sm ring-1 ring-[#D8C3A5]/80'
                               : isOpen
                                 ? 'bg-white/25 text-white'
                                 : 'bg-white/10 text-white'
@@ -643,33 +726,26 @@ function MenuPageInner() {
                                     style={
                                       isLightMode
                                         ? {
-                                            background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 56%, #fafafa 100%)',
-                                            border: '1px solid rgba(226, 232, 240, 0.95)',
-                                            boxShadow: '0 12px 26px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.96)',
+	                                            background: 'linear-gradient(145deg, #ffffff 0%, #fffaf1 58%, #ffffff 100%)',
+	                                            border: '1px solid rgba(216, 195, 165, 0.72)',
+	                                            boxShadow: '0 14px 30px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.96)',
                                           }
                                         : {
-                                            background: 'linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            boxShadow: '0 12px 28px rgba(0,0,0,0.35)',
+                                            background: 'radial-gradient(circle at 100% 0%, rgba(176,122,73,0.16), transparent 9rem), linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.045))',
+                                            border: '1px solid rgba(233,196,106,0.18)',
+                                            boxShadow: '0 14px 34px rgba(0,0,0,0.42)',
                                           }
                                     }
                                   >
                                     <div className="p-4 relative z-10">
-                                      <span
-                                        className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
-                                          isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-400/35'
-                                        }`}
-                                      >
-                                        Veg
-                                      </span>
-                                      <h3 className={`text-[15px] font-bold leading-tight mt-2 ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
+                                      <h3 className={`text-[15px] font-bold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
                                       <p className={`text-sm font-semibold mt-1 ${isLightMode ? 'text-slate-700' : 'text-white/85'}`}>{item.price}</p>
                                       {item.quantity && item.quantity !== '1 portion' && (
                                         <p className={`text-xs mt-1 ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.quantity}</p>
                                       )}
                                       <div className="mt-3 flex justify-end">
                                         {inCartQty > 0 ? (
-                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: '#F25269', color: '#FFFFFF' }}>
+                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: 'linear-gradient(135deg,#B07A49,#7B4A2D)', color: '#FFFFFF' }}>
                                             <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="w-6 h-6 rounded-full flex items-center justify-center text-white">
                                               <Minus className="w-4 h-4" />
                                             </button>
@@ -687,13 +763,13 @@ function MenuPageInner() {
                                             transition={{ duration: 0.28, ease: 'easeOut' }}
                                             className="relative overflow-hidden h-10 min-w-[120px] rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 border-2"
                                             style={{
-                                              borderColor: '#F25269',
-                                              color: '#F25269',
-                                              background: isLightMode ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                                              borderColor: '#E9C46A',
+                                              color: isLightMode ? '#7B4A2D' : '#F8E08E',
+	                                              background: isLightMode ? 'linear-gradient(135deg,#FFFFFF,#FFF7E8)' : 'rgba(176,122,73,0.12)',
                                             }}
                                           >
                                             {lastAddedItemId === item.id && (
-                                              <span className="absolute inset-0 rounded-xl bg-[#F25269]/10 animate-ping" />
+                                              <span className="absolute inset-0 rounded-xl bg-[#E9C46A]/15 animate-ping" />
                                             )}
                                             <span className="relative z-10 inline-flex items-center gap-1.5">
                                               ADD
@@ -736,26 +812,21 @@ function MenuPageInner() {
                       style={
                         isLightMode
                           ? {
-                              background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 52%, #fcfcfb 100%)',
-                              border: '1px solid rgba(226, 232, 240, 0.95)',
-                              boxShadow: '0 14px 28px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
+	                              background: 'linear-gradient(145deg, #ffffff 0%, #fffaf1 54%, #ffffff 100%)',
+	                              border: '1px solid rgba(216, 195, 165, 0.72)',
+	                              boxShadow: '0 14px 30px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
                             }
                           : {
-                              background: 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04))',
-                              border: '1px solid rgba(255,255,255,0.08)',
-                              boxShadow: '0 18px 48px rgba(0,0,0,0.55)',
+                              background: 'radial-gradient(circle at 100% 0%, rgba(176,122,73,0.18), transparent 8rem), linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.04))',
+                              border: '1px solid rgba(233,196,106,0.18)',
+                              boxShadow: '0 18px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)',
                             }
                       }
                     >
                       <div className="p-4 flex flex-col flex-1 min-h-0 gap-0 relative z-10">
-                        <div className="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+                        <div className="flex items-center justify-end gap-2 shrink-0 flex-wrap">
                           <span
-                            className={`rounded-full px-2.5 py-1 text-[10px] font-semibold border tracking-wide shrink-0 ${isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-300/50'}`}
-                          >
-                            Veg
-                          </span>
-                          <span
-                            className={`rounded-full px-2.5 py-1 text-xs font-bold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-amber-900 border-amber-200 shadow-[0_6px_14px_rgba(15,23,42,0.06)]' : 'bg-black/40 text-amber-100 border-amber-400/50'}`}
+	                            className={`rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-[#7B4A2D] border-[#D8C3A5] shadow-[0_6px_14px_rgba(73,46,26,0.08)]' : 'bg-[#E9C46A] text-[#1a1a1a] border-[#FFE8A3] shadow-[0_8px_18px_rgba(233,196,106,0.22)]'}`}
                           >
                             {item.price}
                           </span>
@@ -823,10 +894,10 @@ function MenuPageInner() {
                       }}
                       className="w-full px-4 py-3.5 text-left flex items-center justify-between border-b border-slate-100/90 last:border-b-0"
                     >
-                      <span className={`text-[16px] font-semibold ${isActive ? 'text-[#E23744]' : 'text-slate-800'}`}>
+                      <span className={`text-[16px] font-semibold ${isActive ? 'text-[#7B4A2D]' : 'text-slate-800'}`}>
                         {cat.name}
                       </span>
-                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[#E23744]' : 'text-slate-500'}`}>
+                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[#7B4A2D]' : 'text-slate-500'}`}>
                         {cat.items.length}
                       </span>
                     </button>
@@ -857,8 +928,8 @@ function MenuPageInner() {
                   onClick={goToCheckout}
                   animate={cartBarPulse ? { scale: [1, 1.02, 1] } : { scale: 1 }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] flex items-center justify-between px-4 border border-white/20"
-                  style={{ background: '#F25269' }}
+                  className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_32px_rgba(176,122,73,0.34)] flex items-center justify-between px-4 border border-[#E9C46A]/40"
+                  style={{ background: 'linear-gradient(135deg,#B07A49,#7B4A2D)' }}
                 >
                   <span className="flex items-center gap-2.5">
                     <span className="flex items-center -space-x-2">
@@ -920,9 +991,9 @@ export default function MenuPage() {
       fallback={
         <main
           className="min-h-screen pb-24 flex items-center justify-center"
-          style={{ backgroundColor: '#1a1a1a' }}
+          style={{ backgroundColor: '#ffffff' }}
         >
-          <p className="text-white/70 text-sm">Loading menu…</p>
+          <p className="text-slate-600 text-sm">Loading menu...</p>
         </main>
       }
     >

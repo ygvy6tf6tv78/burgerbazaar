@@ -17,19 +17,30 @@ import {
   writeHandoffToMenuFromCheckout,
   type MangoOrderType,
 } from '../lib/cart-session'
+import { getOrderWindowState, type OrderWindowState } from '../lib/order-hours'
 
 type DeliveryZone = 'unset' | 'inside' | 'outside'
 type TimeOption = '15 minutes' | '30 minutes' | '45 minutes' | '1 hour' | 'Custom time'
 
 const dineInArrivalOptions: TimeOption[] = ['15 minutes', '30 minutes', '45 minutes', '1 hour', 'Custom time']
 const takeawayPickupOptions = ['10 minutes', '15 minutes', '20 minutes', '30 minutes', '45 minutes', 'Custom time']
-const couponDiscounts: Record<string, number> = {
-  OLMANGO10: 10,
-}
 const MOBILE_DIGITS = 10
 
 function digitsOnly(s: string) {
   return s.replace(/\D/g, '')
+}
+
+function locationAddressText(address: string | undefined, mapUrl: string | undefined) {
+  const cleanAddress = address?.trim()
+  const cleanMapUrl = mapUrl?.trim()
+  if (cleanAddress && cleanMapUrl) return `${cleanAddress}\nGoogle Maps: ${cleanMapUrl}`
+  if (cleanAddress) return cleanAddress
+  if (cleanMapUrl) return `Pinned location from phone GPS.\nGoogle Maps: ${cleanMapUrl}`
+  return 'Pinned location from phone GPS. Please add house, area and landmark details.'
+}
+
+function mapsUrlForCoords(latitude: number, longitude: number) {
+  return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
 }
 
 /** 16px on inputs stops iOS zoom-on-focus; keep compact h-11 like original layout */
@@ -47,9 +58,6 @@ export default function CheckoutPage() {
   const [pickupTime, setPickupTime] = useState('10 minutes')
   const [pickupCustomTime, setPickupCustomTime] = useState('')
   const [orderNotes, setOrderNotes] = useState('')
-  const [couponCode, setCouponCode] = useState('')
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null)
-  const [couponMessage, setCouponMessage] = useState('')
   const [mappedAddress, setMappedAddress] = useState('')
   const [flatHouse, setFlatHouse] = useState('')
   const [landmark, setLandmark] = useState('')
@@ -58,6 +66,7 @@ export default function CheckoutPage() {
   const [isLocating, setIsLocating] = useState(false)
   const [locationStatus, setLocationStatus] = useState('')
   const [toast, setToast] = useState<string | null>(null)
+  const [orderWindow, setOrderWindow] = useState<OrderWindowState>(() => getOrderWindowState())
 
   const locationBlockRef = useRef<HTMLDivElement>(null)
   const addressRef = useRef<HTMLTextAreaElement>(null)
@@ -65,7 +74,7 @@ export default function CheckoutPage() {
 
   const delivery = shopConfig.delivery
   const radiusKm = delivery.radiusKm
-  const paymentPageUrl = `${shopConfig.url.replace(/\/$/, '')}/mango-pay`
+  const paymentPageUrl = `${shopConfig.url.replace(/\/$/, '')}/sonnet-pay`
   const isOnlineOrder = orderType === 'online'
   const isDineInOrder = orderType === 'dine-in'
   const isTakeawayOrder = orderType === 'takeaway'
@@ -112,6 +121,12 @@ export default function CheckoutPage() {
   }, [])
 
   useEffect(() => {
+    setOrderWindow(getOrderWindowState())
+    const interval = window.setInterval(() => setOrderWindow(getOrderWindowState()), 60000)
+    return () => window.clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
     if (typeof window === 'undefined' || !checkoutStorageReady) return
     window.sessionStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
     window.sessionStorage.setItem(MANGO_CHECKOUT_SESSION, '1')
@@ -130,11 +145,7 @@ export default function CheckoutPage() {
     }, 0)
   }, [cart])
   const totalItems = useMemo(() => cart.reduce((sum, item) => sum + item.cartQuantity, 0), [cart])
-  const discountAmount = useMemo(() => {
-    if (!appliedCoupon) return 0
-    return Math.round((total * appliedCoupon.discountPercent) / 100)
-  }, [appliedCoupon, total])
-  const payableTotal = Math.max(total - discountAmount, 0)
+  const payableTotal = total
 
   const mobileDigits = useMemo(() => digitsOnly(mobile).slice(0, MOBILE_DIGITS), [mobile])
   const arrivalDisplayTime = arrivalTime === 'Custom time' ? arrivalCustomTime.trim() : arrivalTime
@@ -165,39 +176,17 @@ export default function CheckoutPage() {
       })
       .join('\n\n')
 
-  const applyCoupon = () => {
-    const normalized = couponCode.replace(/\s+/g, '').toUpperCase()
-    const discountPercent = couponDiscounts[normalized]
-    if (!discountPercent) {
-      setAppliedCoupon(null)
-      setCouponMessage('Invalid coupon code.')
-      return
-    }
-    setAppliedCoupon({ code: couponCode.trim().toUpperCase(), discountPercent })
-    setCouponMessage(`${discountPercent}% discount applied.`)
-  }
-
-  const removeCoupon = () => {
-    setAppliedCoupon(null)
-    setCouponCode('')
-    setCouponMessage('')
-  }
-
-  const couponBlock = appliedCoupon
-    ? `\nCoupon: ${appliedCoupon.code} (${appliedCoupon.discountPercent}% off)\nDiscount: -₹${discountAmount.toFixed(0)}\nFinal Total: ₹${payableTotal.toFixed(0)}`
-    : ''
-
   const placeDineInOrTakeawayOrder = () => {
     if (cart.length === 0) return
     if (!customerName.trim() || mobileDigits.length < MOBILE_DIGITS) return
     if (isDineInOrder && !arrivalDisplayTime) return
     if (isTakeawayOrder && !pickupDisplayTime) return
 
-    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
+    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9596019296'
     const e164 = phone.length === 10 ? `91${phone}` : phone
     const orderItems = formatOrderItems()
     const message = isDineInOrder
-      ? `Hi Mango, I want to place a Dine In pre-order.
+      ? `Hi The Sonnet Cafe, I want to place a Dine In pre-order.
 
 Name: ${customerName.trim()}
 Phone: +91 ${mobileDigits}
@@ -205,18 +194,18 @@ Arrival Time: ${arrivalDisplayTime}
 Preferred Seating: ${preferredSeating.trim() || 'N/A'}
 Order Items:
 ${orderItems}
-Total: ₹${total.toFixed(0)}${couponBlock}
+Total: ₹${total.toFixed(0)}
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
-      : `Hi Mango, I want to place a Takeaway order.
+      : `Hi The Sonnet Cafe, I want to place a Takeaway order.
 
 Name: ${customerName.trim()}
 Phone: +91 ${mobileDigits}
 Pickup Time: ${pickupDisplayTime}
 Order Items:
 ${orderItems}
-Total: ₹${total.toFixed(0)}${couponBlock}
+Total: ₹${total.toFixed(0)}
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
@@ -230,18 +219,15 @@ Please confirm my order.`
     if (cart.length === 0) return
     if (!mappedAddress.trim() || userLat == null || userLng == null || deliveryZone !== 'inside') return
     if (mobileDigits.length < MOBILE_DIGITS) return
-    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
+    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9596019296'
     const e164 = phone.length === 10 ? `91${phone}` : phone
     const base = generateWhatsAppCartMessage(cart, payableTotal)
-    const couponSummary = appliedCoupon
-      ? `\n\nCoupon Applied:\n${appliedCoupon.code} (${appliedCoupon.discountPercent}% off)\nOriginal total: ₹${total.toFixed(0)}\nDiscount: -₹${discountAmount.toFixed(0)}\nFinal total: ₹${payableTotal.toFixed(0)}`
-      : ''
     const customer =
       `\n\nCustomer Details:\nCall this number: +91 ${mobileDigits}\n\n${fullAddressBlock}` +
       `\n\n(Map distance ~${distanceFromRestaurant?.toFixed(1)} km from restaurant)` +
       `\n\nPlease confirm this order.` +
       `\n\n---\nFor customer: After order confirmation, please pay here:\n${paymentPageUrl}`
-    window.open(getWhatsAppLink(e164, `${base}${couponSummary}${customer}`), '_blank')
+    window.open(getWhatsAppLink(e164, `${base}${customer}`), '_blank')
     clearCheckoutSession()
     setCart([])
   }
@@ -251,7 +237,7 @@ Please confirm my order.`
 
     if (!window.isSecureContext) {
       setLocationStatus(
-        'Location requires a secure HTTPS link. Please try on mango.onelink.cards because GPS may not work on localhost HTTP.'
+        'Location requires a secure HTTPS link. Please try on sonnet.onelink.cards because GPS may not work on localhost HTTP.'
       )
       return
     }
@@ -275,8 +261,8 @@ Please confirm my order.`
             throw new Error('Could not fetch address')
           }
           const data = await response.json()
-          if (data?.address) {
-            setMappedAddress(data.address)
+          if (data?.address || data?.mapUrl) {
+            setMappedAddress(locationAddressText(data?.address, data?.mapUrl))
             const d = distanceKm(latitude, longitude, delivery.restaurantLat, delivery.restaurantLng)
             setLocationStatus(
               d <= radiusKm
@@ -284,7 +270,7 @@ Please confirm my order.`
                 : `This pin is ~${d.toFixed(1)} km away — outside our ${radiusKm} km delivery area.`
             )
           } else {
-            setMappedAddress(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`)
+            setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
             const d = distanceKm(latitude, longitude, delivery.restaurantLat, delivery.restaurantLng)
             setLocationStatus(
               d <= radiusKm
@@ -293,9 +279,9 @@ Please confirm my order.`
             )
           }
         } catch {
-          setLocationStatus('Could not load address — location still saved.')
+          setLocationStatus('Could not load full address — GPS pin is still saved.')
           const { latitude, longitude } = position.coords
-          setMappedAddress(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`)
+          setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
         } finally {
           setIsLocating(false)
         }
@@ -324,7 +310,8 @@ Please confirm my order.`
   }
 
   const canPlaceOrder =
-    isOnlineOrder
+    orderWindow.isOpen &&
+    (isOnlineOrder
       ? cart.length > 0 &&
         mobileDigits.length === MOBILE_DIGITS &&
         mappedAddress.trim() &&
@@ -334,10 +321,11 @@ Please confirm my order.`
       : cart.length > 0 &&
         customerName.trim().length > 1 &&
         mobileDigits.length === MOBILE_DIGITS &&
-        (isDineInOrder ? Boolean(arrivalDisplayTime) : Boolean(pickupDisplayTime))
+        (isDineInOrder ? Boolean(arrivalDisplayTime) : Boolean(pickupDisplayTime)))
 
   const validationMessage = (): string | null => {
     if (cart.length === 0) return 'Your cart is empty — add items from the menu first.'
+    if (!orderWindow.isOpen) return `${orderWindow.message} Window: ${orderWindow.label}.`
     if (!isOnlineOrder) {
       if (customerName.trim().length < 2) return 'Enter your name.'
       if (mobileDigits.length < MOBILE_DIGITS) return 'Enter your 10-digit mobile number.'
@@ -378,72 +366,8 @@ Please confirm my order.`
     el.scrollIntoView({ block: 'center', behavior: 'smooth' })
   }
 
-  const couponSection = (
-    <section className="mt-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_8px_18px_rgba(15,23,42,0.05)]">
-      <div className="flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <h2 className="text-[13px] font-bold text-slate-900">Apply Coupon</h2>
-          <p className="mt-0.5 text-[11px] font-medium text-slate-500">Enter your code at checkout.</p>
-        </div>
-        {appliedCoupon && (
-          <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">
-            {appliedCoupon.discountPercent}% OFF
-          </span>
-        )}
-      </div>
-
-      <div className="mt-2 flex min-w-0 gap-2">
-        <input
-          value={couponCode}
-          onChange={(e) => {
-            setCouponCode(e.target.value)
-            if (appliedCoupon) setAppliedCoupon(null)
-            if (couponMessage) setCouponMessage('')
-          }}
-          onFocus={(e) => focusScroll(e.target)}
-          placeholder="Enter coupon code"
-          className={`h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 uppercase text-slate-900 placeholder:normal-case placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
-        />
-        {appliedCoupon ? (
-          <button
-            type="button"
-            onClick={removeCoupon}
-            className="h-10 shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 text-[12px] font-bold text-slate-700 active:scale-[0.98]"
-          >
-            Remove
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={applyCoupon}
-            className="h-10 shrink-0 rounded-xl bg-[#E23744] px-3.5 text-[12px] font-bold text-white shadow-[0_8px_16px_rgba(226,55,68,0.20)] active:scale-[0.98]"
-          >
-            Apply
-          </button>
-        )}
-      </div>
-
-      {couponMessage && (
-        <p
-          className={`mt-2 rounded-xl px-3 py-1.5 text-[11px] font-semibold ${
-            appliedCoupon
-              ? 'border border-emerald-100 bg-emerald-50 text-emerald-700'
-              : 'border border-red-100 bg-red-50 text-red-600'
-          }`}
-        >
-          {couponMessage}
-        </p>
-      )}
-
-      <div className="mt-2 flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2 text-[12px]">
-        <span className="font-semibold text-slate-600">{appliedCoupon ? 'Discounted total' : 'Cart total'}</span>
-        <span className="font-extrabold text-slate-950">₹{payableTotal.toFixed(0)}</span>
-      </div>
-    </section>
-  )
-
   return (
-    <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden bg-[#F25269]">
+    <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden bg-[#1F5A43]">
       {toast && (
         <div
           className="fixed left-0 right-0 top-0 z-[10001] flex justify-center px-3 pt-[max(0.5rem,env(safe-area-inset-top))]"
@@ -503,19 +427,19 @@ Please confirm my order.`
                         <p className="mt-0.5 text-xs text-slate-500">{item.price}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="inline-flex h-9 items-center rounded-xl border border-[#f3b5c0] bg-[#fff3f6] px-2">
+                        <div className="inline-flex h-9 items-center rounded-xl border border-[#B99A75] bg-[#F4E9DC] px-2">
                           <button
                             type="button"
                             onClick={() => updateQty(item.id, item.cartQuantity - 1)}
-                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#E23744] active:opacity-70"
+                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#1F5A43] active:opacity-70"
                           >
                             <Minus className="h-3.5 w-3.5" />
                           </button>
-                          <span className="w-7 text-center text-sm font-bold text-[#E23744]">{item.cartQuantity}</span>
+                          <span className="w-7 text-center text-sm font-bold text-[#1F5A43]">{item.cartQuantity}</span>
                           <button
                             type="button"
                             onClick={() => updateQty(item.id, item.cartQuantity + 1)}
-                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#E23744] active:opacity-70"
+                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#1F5A43] active:opacity-70"
                           >
                             <Plus className="h-3.5 w-3.5" />
                           </button>
@@ -531,10 +455,20 @@ Please confirm my order.`
             <Link
               href={menuOrderHref}
               onClick={() => writeHandoffToMenuFromCheckout(cart, orderType)}
-              className="mt-2.5 inline-flex touch-manipulation items-center rounded-full border border-[#f3b5c0] bg-[#fff3f6] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#E23744] active:scale-[0.98]"
+              className="mt-2.5 inline-flex touch-manipulation items-center rounded-full border border-[#B99A75] bg-[#F4E9DC] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#1F5A43] active:scale-[0.98]"
             >
               + Add more items
             </Link>
+          </section>
+
+          <section
+            className={`mt-3 rounded-3xl border p-3.5 text-[12px] font-semibold leading-snug shadow-[0_12px_24px_rgba(15,23,42,0.05)] ${
+              orderWindow.isOpen
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                : 'border-amber-200 bg-amber-50 text-amber-900'
+            }`}
+          >
+            {orderWindow.message} Window: {orderWindow.label}.
           </section>
 
           {isOnlineOrder ? (
@@ -660,7 +594,7 @@ Please confirm my order.`
               <h2 className="text-[15px] font-bold text-slate-900">
                 {isDineInOrder ? 'Dine In Details' : 'Takeaway Details'}
               </h2>
-              <Link href="/order" className="text-[12px] font-semibold text-[#E23744]">
+              <Link href="/order" className="text-[12px] font-semibold text-[#1F5A43]">
                 Change Order Type
               </Link>
             </div>
@@ -788,7 +722,6 @@ Please confirm my order.`
             </div>
           </section>
           )}
-          {couponSection}
         </div>
       </main>
 
@@ -802,7 +735,7 @@ Please confirm my order.`
         <button
           type="button"
           onClick={handlePrimaryAction}
-          className={`pointer-events-auto flex min-h-[60px] w-full max-w-[430px] touch-manipulation items-center justify-between rounded-full border border-white/25 bg-[#F25269] px-4 py-2 text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] active:bg-[#e0435a] ${
+          className={`pointer-events-auto flex min-h-[60px] w-full max-w-[430px] touch-manipulation items-center justify-between rounded-full border border-white/25 bg-[#1F5A43] px-4 py-2 text-white shadow-[0_14px_28px_rgba(31,90,67,0.32)] active:bg-[#174633] ${
             canPlaceOrder ? 'cursor-pointer active:scale-[0.99]' : 'cursor-pointer'
           }`}
         >

@@ -26,7 +26,7 @@ export default function LoadingScreen() {
       }}
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FBEC89]/8 blur-3xl" />
+        <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B07A49]/12 blur-3xl" />
       </div>
 
       <div className="flex flex-col items-center px-6">
@@ -55,7 +55,7 @@ export default function LoadingScreen() {
                   priority
                 />
                 <motion.div
-                  className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#FBEC89] to-transparent pointer-events-none"
+                  className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#D8C3A5] to-transparent pointer-events-none"
                   initial={{ top: '8%' }}
                   animate={{ top: '88%' }}
                   transition={{
@@ -65,32 +65,32 @@ export default function LoadingScreen() {
                     repeatDelay: 0.2
                   }}
                   style={{
-                    boxShadow: '0 0 14px rgba(251, 236, 137, 0.75), 0 0 26px rgba(251, 236, 137, 0.35)'
+                    boxShadow: '0 0 14px rgba(216, 195, 165, 0.75), 0 0 26px rgba(216, 195, 165, 0.35)'
                   }}
                 />
               </div>
             </div>
 
             <motion.div
-              className="absolute top-[5px] left-[5px] w-8 h-8 border-t-[3px] border-l-[3px] border-[#FBEC89] rounded-tl-[22px]"
+              className="absolute top-[5px] left-[5px] w-8 h-8 border-t-[3px] border-l-[3px] border-[#D8C3A5] rounded-tl-[22px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             />
             <motion.div
-              className="absolute top-[5px] right-[5px] w-8 h-8 border-t-[3px] border-r-[3px] border-[#FBEC89] rounded-tr-[22px]"
+              className="absolute top-[5px] right-[5px] w-8 h-8 border-t-[3px] border-r-[3px] border-[#D8C3A5] rounded-tr-[22px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             />
             <motion.div
-              className="absolute bottom-[5px] left-[5px] w-8 h-8 border-b-[3px] border-l-[3px] border-[#FBEC89] rounded-bl-[22px]"
+              className="absolute bottom-[5px] left-[5px] w-8 h-8 border-b-[3px] border-l-[3px] border-[#D8C3A5] rounded-bl-[22px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             />
             <motion.div
-              className="absolute bottom-[5px] right-[5px] w-8 h-8 border-b-[3px] border-r-[3px] border-[#FBEC89] rounded-br-[22px]"
+              className="absolute bottom-[5px] right-[5px] w-8 h-8 border-b-[3px] border-r-[3px] border-[#D8C3A5] rounded-br-[22px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}

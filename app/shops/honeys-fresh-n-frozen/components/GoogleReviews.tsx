@@ -89,7 +89,7 @@ export default function GoogleReviews() {
               className="rounded-[24px] p-4 animate-pulse border bg-white/95"
               style={{
                 height: '120px',
-                borderColor: 'rgba(251, 236, 137, 0.18)',
+                borderColor: 'rgba(216, 195, 165, 0.18)',
                 boxShadow: '0 14px 28px rgba(15, 23, 42, 0.08)',
               }}
             />
@@ -111,7 +111,7 @@ export default function GoogleReviews() {
           </div>
           <Link
             href="/reviews"
-            className="text-sm font-semibold text-white hover:text-white/90 transition-colors flex items-center gap-1"
+            className="text-sm font-semibold text-mango-green hover:text-mango-greenSoft transition-colors flex items-center gap-1"
           >
             View All
             <ChevronRight className="w-4 h-4" />
@@ -120,7 +120,7 @@ export default function GoogleReviews() {
         <div
           className="rounded-[24px] p-6 text-center bg-white/95"
           style={{
-            border: '1px solid rgba(251, 236, 137, 0.18)',
+            border: '1px solid rgba(216, 195, 165, 0.18)',
             boxShadow: '0 14px 28px rgba(15, 23, 42, 0.08)',
           }}
         >
@@ -151,7 +151,7 @@ export default function GoogleReviews() {
           </div>
           <Link
             href="/reviews"
-            className="text-sm font-semibold text-white hover:text-white/90 transition-colors flex items-center gap-1"
+            className="text-sm font-semibold text-mango-green hover:text-mango-greenSoft transition-colors flex items-center gap-1"
           >
             View All
             <ChevronRight className="w-4 h-4" />
@@ -161,7 +161,7 @@ export default function GoogleReviews() {
         <div
           className="rounded-[24px] p-6 bg-white/95"
           style={{
-            border: '1px solid rgba(251, 236, 137, 0.18)',
+            border: '1px solid rgba(216, 195, 165, 0.18)',
             boxShadow: '0 14px 28px rgba(15, 23, 42, 0.08)',
           }}
         >
@@ -172,7 +172,7 @@ export default function GoogleReviews() {
                   key={star}
                   className={`w-5 h-5 ${
                     star <= Math.round(reviewsData.rating)
-                      ? 'fill-yellow-400 text-yellow-400'
+                      ? 'fill-[#FFD43B] text-[#FFD43B]'
                       : 'text-gray-300'
                   }`}
                 />
@@ -183,14 +183,14 @@ export default function GoogleReviews() {
             </span>
           </div>
           <p className="text-sm text-slate-600 leading-relaxed">
-            {reviewsData.message || 'Google reviews are temporarily unavailable.'}
+            Live Google rating summary based on {reviewsData.totalReviews.toLocaleString()} reviews.
           </p>
 
           <div className="mt-4 space-y-3">
             <Link
               href="/reviews"
               className="block w-full font-semibold py-3.5 px-4 rounded-2xl shadow-[0_14px_28px_rgba(15,23,42,0.08)] hover:shadow-[0_18px_34px_rgba(15,23,42,0.1)] transition-all flex items-center justify-center gap-2 bg-white text-slate-900"
-              style={{ border: '1px solid rgba(251, 236, 137, 0.18)' }}
+              style={{ border: '1px solid rgba(216, 195, 165, 0.18)' }}
             >
               Open Reviews Page
               <ArrowRight className="w-4 h-4 text-slate-900" />
@@ -202,7 +202,7 @@ export default function GoogleReviews() {
                 rel="noopener noreferrer"
                 className="block w-full font-semibold py-3.5 px-4 rounded-2xl shadow-[0_18px_34px_rgba(30,77,61,0.28)] hover:shadow-[0_22px_40px_rgba(30,77,61,0.34)] transition-all flex items-center justify-center gap-2"
                 style={{
-                  background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)',
+                  background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)',
                   color: 'white',
                 }}
               >
@@ -228,7 +228,7 @@ export default function GoogleReviews() {
         </div>
         <Link
           href="/reviews"
-          className="text-sm font-semibold text-white hover:text-white/90 transition-colors flex items-center gap-1"
+          className="text-sm font-semibold text-mango-green hover:text-mango-greenSoft transition-colors flex items-center gap-1"
         >
           View All
           <ChevronRight className="w-4 h-4" />
@@ -242,7 +242,7 @@ export default function GoogleReviews() {
         transition={{ duration: 0.3, ease: 'easeOut' }}
         className="mb-5 rounded-[24px] p-5 bg-white/95"
         style={{
-          border: '1px solid rgba(251, 236, 137, 0.22)',
+          border: '1px solid rgba(216, 195, 165, 0.22)',
           boxShadow: '0 14px 28px rgba(15, 23, 42, 0.08)',
         }}
       >
@@ -250,18 +250,14 @@ export default function GoogleReviews() {
           <div>
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <div className="flex items-center gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => (
+                {[1, 2].map((star) => (
                   <Star
                     key={star}
-                    className={`w-5 h-5 ${
-                      star <= Math.round(reviewsData.rating)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-300'
-                    }`}
+                    className="w-5 h-5 fill-[#FFD43B] text-[#FFD43B]"
                   />
                 ))}
               </div>
-              <span className="text-slate-900 font-bold text-lg">
+              <span className="text-slate-900 font-extrabold text-lg">
                 {reviewsData.rating.toFixed(1)}
               </span>
             </div>
@@ -269,7 +265,7 @@ export default function GoogleReviews() {
               Based on {reviewsData.totalReviews.toLocaleString()} reviews on Google
             </p>
           </div>
-          <div className="rounded-full px-3 py-1.5 border border-[#FBEC89]/35 bg-[#fff8df] text-slate-700 text-xs font-semibold whitespace-nowrap">
+          <div className="rounded-full px-3 py-1.5 border border-[#FFD43B]/45 bg-[#fff8df] text-slate-900 text-xs font-extrabold whitespace-nowrap">
             Google
           </div>
         </div>
@@ -285,7 +281,7 @@ export default function GoogleReviews() {
             transition={{ delay: index * 0.05, duration: 0.3, ease: 'easeOut' }}
             className="rounded-[24px] p-[18px] hover:shadow-lg transition-all relative overflow-hidden bg-white/95"
             style={{
-              border: '1px solid rgba(251, 236, 137, 0.18)',
+              border: '1px solid rgba(216, 195, 165, 0.18)',
               boxShadow: '0 14px 28px rgba(15, 23, 42, 0.08)',
             }}
           >
@@ -303,7 +299,7 @@ export default function GoogleReviews() {
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center"
                   style={{
-                    background: 'linear-gradient(135deg, #2F6B55 0%, #1E4D3D 100%)',
+                    background: 'linear-gradient(135deg, #9A6A43 0%, #7B4A2D 100%)',
                   }}
                 >
                   <span className="text-white font-semibold text-sm">
@@ -322,7 +318,7 @@ export default function GoogleReviews() {
                         key={star}
                         className={`w-3.5 h-3.5 ${
                           star <= review.rating
-                            ? 'fill-yellow-400 text-yellow-400'
+                            ? 'fill-[#FFD43B] text-[#FFD43B]'
                             : 'text-gray-300'
                         }`}
                       />
@@ -351,7 +347,7 @@ export default function GoogleReviews() {
         <Link
           href="/reviews"
           className="block w-full font-semibold py-3.5 px-4 rounded-2xl shadow-[0_14px_28px_rgba(15,23,42,0.08)] hover:shadow-[0_18px_34px_rgba(15,23,42,0.1)] transition-all flex items-center justify-center gap-2 bg-white text-slate-900"
-          style={{ border: '1px solid rgba(251, 236, 137, 0.18)' }}
+          style={{ border: '1px solid rgba(216, 195, 165, 0.18)' }}
         >
           View All Reviews
           <ArrowRight className="w-4 h-4 text-slate-900" />
@@ -360,7 +356,7 @@ export default function GoogleReviews() {
           href="/reviews#write-review"
           className="block w-full font-semibold py-3.5 px-4 rounded-2xl shadow-[0_18px_34px_rgba(30,77,61,0.28)] hover:shadow-[0_22px_40px_rgba(30,77,61,0.34)] transition-all flex items-center justify-center gap-2"
           style={{
-            background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)',
+            background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)',
             color: 'white',
           }}
         >

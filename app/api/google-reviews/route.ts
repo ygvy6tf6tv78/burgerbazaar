@@ -26,6 +26,10 @@ interface GooglePlacesResponse {
 }
 
 function getFallbackRating() {
+  if ('fallbackRating' in shopConfig.google && typeof shopConfig.google.fallbackRating === 'number') {
+    return shopConfig.google.fallbackRating
+  }
+
   const badge = shopConfig.keywordBadges?.find((item) => item.toLowerCase().includes('google rating'))
   if (!badge) return 0
 
@@ -37,7 +41,10 @@ function getFallbackResponse(message: string) {
   return NextResponse.json(
     {
       rating: getFallbackRating(),
-      totalReviews: 0,
+      totalReviews:
+        'fallbackReviewCount' in shopConfig.google && typeof shopConfig.google.fallbackReviewCount === 'number'
+          ? shopConfig.google.fallbackReviewCount
+          : 0,
       reviews: [],
       googleUrl: shopConfig.google?.mapsUrl || shopConfig.google?.reviewsUrl,
       unavailable: true,
@@ -63,7 +70,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.env.GOOGLE_MAPS_API_KEY
 
     if (!apiKey) {
       return getFallbackResponse('Google reviews are temporarily unavailable.')

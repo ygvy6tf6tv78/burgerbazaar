@@ -29,8 +29,8 @@ export default function MenuPreview() {
             Our Menu
           </h2>
         </div>
-        <p className="text-sm sm:text-base text-slate-200 font-medium text-left tracking-wide">
-          Fresh • Pure Veg • Made with Care
+        <p className="text-sm sm:text-base text-slate-300/90 font-medium text-left tracking-wide">
+          Fresh kitchen • Bakery • Made with care
         </p>
       </motion.div>
 

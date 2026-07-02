@@ -105,7 +105,7 @@ export default function InstagramFeed() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-white">{feed.profileHandle}</p>
-            <p className="truncate text-xs text-slate-400">Posts, reels and updates from Mango</p>
+            <p className="truncate text-xs text-slate-400">Posts, reels and updates from The Sonnet Cafe</p>
           </div>
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] shadow-[0_10px_22px_rgba(221,42,123,0.24)] transition-transform group-hover:scale-105">
             <Instagram className="h-5 w-5 text-white" />

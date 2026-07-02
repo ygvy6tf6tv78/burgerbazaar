@@ -18,7 +18,7 @@ export default function MangoPayPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#1a1a1a] px-4">
-      <p className="text-center text-sm text-white/80">Opening payment…</p>
+      <p className="text-center text-sm text-white/80">Opening payment...</p>
     </main>
   )
 }

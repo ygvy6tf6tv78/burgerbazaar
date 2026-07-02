@@ -113,7 +113,7 @@ export const menuCategories = {
 }
 
 export function generateWhatsAppOrderMessage(item: MenuItem): string {
-  return `Hello Mango,
+  return `Hello The Sonnet Cafe,
 
 I would like to place an order.
 
@@ -142,7 +142,7 @@ export function generateWhatsAppCartMessage(cartItems: CartItem[], totalPrice: n
 
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.cartQuantity, 0)
 
-  return `Hello Mango,
+  return `Hello The Sonnet Cafe,
 
 I would like to place an order for the following items:
 

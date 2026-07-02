@@ -5,9 +5,10 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Share2 } from 'lucide-react'
+import { shopConfig } from '../config'
 
-// Gallery images from public/gallery folder (Mango)
+// Gallery images from public/gallery folder
 const galleryImages = [
   '/gallery/unnamed.webp',
   '/gallery/unnamed (1).webp',
@@ -38,6 +39,25 @@ export default function Gallery() {
     router.push('/gallery')
   }
 
+  const handleShareContact = async () => {
+    const shareText = `${shopConfig.name} - ${shopConfig.tagline}. Call ${shopConfig.contact.officePhone}. ${shopConfig.contact.address}`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shopConfig.name,
+          text: shareText,
+          url: shopConfig.url,
+        })
+        return
+      } catch {
+      }
+    }
+
+    await navigator.clipboard.writeText(`${shareText}\n${shopConfig.url}`)
+    alert('Contact copied to clipboard.')
+  }
+
   return (
     <section id="gallery" className="w-full max-w-md mx-auto pt-8 pb-6">
       <motion.div
@@ -53,7 +73,7 @@ export default function Gallery() {
           </h2>
         </div>
         <p className="text-sm sm:text-base text-slate-300/90 font-normal text-left">
-          Moments at Mango
+          Fresh kitchen moments from The Sonnet Cafe
         </p>
       </motion.div>
 
@@ -89,18 +109,28 @@ export default function Gallery() {
         transition={{ delay: 0.15, duration: 0.3 }}
         className="mt-5"
       >
-        <Link
-          href="/gallery"
-          onClick={() => {
-            if (typeof window !== 'undefined') {
-              sessionStorage.setItem('fromGallery', 'true')
-            }
-          }}
-          className="block w-full bg-mango-green hover:bg-mango-greenSoft text-white font-bold py-4 px-6 rounded-2xl shadow-[0_18px_34px_rgba(30,77,61,0.28)] hover:shadow-[0_22px_40px_rgba(30,77,61,0.34)] transition-all flex items-center justify-center gap-2"
-        >
-          View Gallery
-          <ArrowRight className="w-5 h-5" />
-        </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            href="/gallery"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                sessionStorage.setItem('fromGallery', 'true')
+              }
+            }}
+            className="bg-mango-green hover:bg-mango-greenSoft text-white font-bold py-4 px-4 rounded-2xl shadow-[0_18px_34px_rgba(122,74,45,0.26)] hover:shadow-[0_22px_40px_rgba(122,74,45,0.32)] transition-all flex items-center justify-center gap-2"
+          >
+            View Gallery
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+          <button
+            type="button"
+            onClick={handleShareContact}
+            className="bg-white text-mango-green font-bold py-4 px-4 rounded-2xl border border-[#B07A49]/50 shadow-[0_14px_28px_rgba(73,46,26,0.12)] hover:shadow-[0_18px_34px_rgba(73,46,26,0.16)] transition-all flex items-center justify-center gap-2"
+          >
+            <Share2 className="w-5 h-5" />
+            Share
+          </button>
+        </div>
       </motion.div>
     </section>
   )
