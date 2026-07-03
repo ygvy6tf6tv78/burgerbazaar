@@ -165,6 +165,7 @@ export default function Hero() {
                     alt="The Sonnet Cafe"
                     fill
                     className="object-cover"
+                    style={{ objectPosition: '58% 42%' }}
                     priority
                     sizes="(max-width: 448px) 100vw, 448px"
                     unoptimized

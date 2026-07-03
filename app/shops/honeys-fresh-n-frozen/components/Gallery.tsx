@@ -20,12 +20,6 @@ const galleryImages = [
   '/gallery/sonnet-gallery-08.jpeg',
   '/gallery/sonnet-gallery-09.jpeg',
   '/gallery/sonnet-gallery-10.jpeg',
-  '/gallery/unnamed.webp',
-  '/gallery/unnamed (1).webp',
-  '/gallery/unnamed (2).webp',
-  '/gallery/unnamed (3).webp',
-  '/gallery/unnamed (4).webp',
-  '/gallery/unnamed (5).webp',
 ]
 
 const visibleImages = galleryImages.slice(0, 4)
