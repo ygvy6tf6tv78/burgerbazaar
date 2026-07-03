@@ -380,7 +380,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                 style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
               >
                 <Image
-                  src="/gallery/unnamed.webp"
+                  src="/gallery/sonnet-gallery-03.jpeg"
                   alt="Gallery"
                   width={28}
                   height={28}
@@ -391,7 +391,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                 style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
               >
                 <Image
-                  src="/gallery/unnamed (1).webp"
+                  src="/gallery/sonnet-gallery-09.jpeg"
                   alt="Gallery"
                   width={28}
                   height={28}
