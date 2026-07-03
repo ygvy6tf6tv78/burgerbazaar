@@ -9,6 +9,16 @@ import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 
 // Gallery images from public/gallery folder
 const galleryImages = [
+  '/gallery/sonnet-gallery-01.jpeg',
+  '/gallery/sonnet-gallery-02.jpeg',
+  '/gallery/sonnet-gallery-03.jpeg',
+  '/gallery/sonnet-gallery-04.jpeg',
+  '/gallery/sonnet-gallery-05.jpeg',
+  '/gallery/sonnet-gallery-06.jpeg',
+  '/gallery/sonnet-gallery-07.jpeg',
+  '/gallery/sonnet-gallery-08.jpeg',
+  '/gallery/sonnet-gallery-09.jpeg',
+  '/gallery/sonnet-gallery-10.jpeg',
   '/gallery/unnamed.webp',
   '/gallery/unnamed (1).webp',
   '/gallery/unnamed (2).webp',

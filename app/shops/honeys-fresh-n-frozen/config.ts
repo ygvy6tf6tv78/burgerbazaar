@@ -127,10 +127,10 @@ export const shopConfig = {
   },
 
   payment: {
-    upiId: "",
+    upiId: "aliamurtza-1@okicici",
     upiName: "The Sonnet Cafe",
-    upiQrImageUrl: "",
-    scannerImage: "",
+    upiQrImageUrl: "/payments/sonnet-upi-qr.png",
+    scannerImage: "/payments/sonnet-upi-qr.png",
     bank: {
       bankName: "",
       accountNumberMasked: "",
@@ -138,7 +138,7 @@ export const shopConfig = {
       accountHolder: "",
       branchName: ""
     },
-    showScanner: false,
+    showScanner: true,
     showDownloadQR: true,
   },
 
