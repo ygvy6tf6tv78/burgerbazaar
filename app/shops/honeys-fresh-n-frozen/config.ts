@@ -16,7 +16,7 @@ export const shopConfig = {
   taglineShort: "Burgers worth getting messy for.",
   url: "https://burgerbazaar.onelink.cards",
   cardType: "B2C" as const,
-  keywordBadges: ["4.4 ★ Delivery Rating", "Smash Burgers", "Loaded Fries", "Zomato & Swiggy"] as string[],
+  keywordBadges: ["4.4 ★ Delivery Rating", "Smash Burgers", "Loaded Fries"] as string[],
 
   contact: {
     phones: ["9266855210"],
