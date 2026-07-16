@@ -10,16 +10,10 @@ import { shopConfig } from '../config'
 
 // Gallery images from public/gallery folder
 const galleryImages = [
-  '/gallery/sonnet-gallery-01.jpeg',
-  '/gallery/sonnet-gallery-02.jpeg',
-  '/gallery/sonnet-gallery-03.jpeg',
-  '/gallery/sonnet-gallery-04.jpeg',
-  '/gallery/sonnet-gallery-05.jpeg',
-  '/gallery/sonnet-gallery-06.jpeg',
-  '/gallery/sonnet-gallery-07.jpeg',
-  '/gallery/sonnet-gallery-08.jpeg',
-  '/gallery/sonnet-gallery-09.jpeg',
-  '/gallery/sonnet-gallery-10.jpeg',
+  '/burger-bazaar-smash.jpg',
+  '/burger-bazaar-veg.jpg',
+  '/burger-bazaar-fries.jpg',
+  '/burger-bazaar-dessert.jpg',
 ]
 
 const visibleImages = galleryImages.slice(0, 4)
@@ -73,11 +67,11 @@ export default function Gallery() {
       >
         <div className="section-title-accent mb-2">
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight text-left">
-            Gallery
+            Fresh from the Kitchen
           </h2>
         </div>
-        <p className="text-sm sm:text-base text-slate-300/90 font-normal text-left">
-          Fresh kitchen moments from The Sonnet Cafe
+        <p className="whitespace-nowrap text-sm sm:text-base text-slate-300/90 font-normal text-left tracking-tight">
+          Burgers • fries • desserts • kitchen moments.
         </p>
       </motion.div>
 
@@ -121,17 +115,25 @@ export default function Gallery() {
                 sessionStorage.setItem('fromGallery', 'true')
               }
             }}
-            className="bg-mango-green hover:bg-mango-greenSoft text-white font-bold py-4 px-4 rounded-2xl shadow-[0_18px_34px_rgba(122,74,45,0.26)] hover:shadow-[0_22px_40px_rgba(122,74,45,0.32)] transition-all flex items-center justify-center gap-2"
+            className="min-h-[48px] bg-mango-green hover:bg-mango-greenSoft text-white font-bold px-2.5 rounded-2xl shadow-[0_12px_24px_rgba(209,35,37,0.22)] hover:shadow-[0_16px_28px_rgba(209,35,37,0.28)] transition-all flex items-center justify-center gap-1.5"
           >
-            View Gallery
-            <ArrowRight className="w-5 h-5" />
+            <span className="flex -space-x-2 shrink-0" aria-hidden>
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+                <Image src="/burger-bazaar-logo.jpg" alt="" fill className="object-cover" sizes="28px" />
+              </span>
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+                <Image src="/burger-bazaar-header.jpg" alt="" fill className="object-cover" sizes="28px" />
+              </span>
+            </span>
+            <span className="whitespace-nowrap text-sm">View Gallery</span>
+            <ArrowRight className="w-4 h-4 shrink-0" />
           </Link>
           <button
             type="button"
             onClick={handleShareContact}
-            className="bg-white text-mango-green font-bold py-4 px-4 rounded-2xl border border-[#B07A49]/50 shadow-[0_14px_28px_rgba(73,46,26,0.12)] hover:shadow-[0_18px_34px_rgba(73,46,26,0.16)] transition-all flex items-center justify-center gap-2"
+            className="min-h-[48px] bg-white text-[#D12325] text-sm font-bold px-3 rounded-2xl border border-[#D12325]/35 shadow-[0_10px_20px_rgba(21,21,21,0.10)] hover:shadow-[0_14px_24px_rgba(209,35,37,0.14)] transition-all flex items-center justify-center gap-2"
           >
-            <Share2 className="w-5 h-5" />
+            <Share2 className="w-4 h-4" />
             Share
           </button>
         </div>

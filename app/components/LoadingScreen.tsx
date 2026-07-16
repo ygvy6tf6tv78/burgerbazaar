@@ -2,116 +2,108 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { siteConfig } from '../data/site'
+import { ArrowRight, Eye, Sparkles } from 'lucide-react'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 
-export default function LoadingScreen() {
+type PreviewGateProps = {
+  onEnter: () => void
+}
+
+export default function LoadingScreen({ onEnter }: PreviewGateProps) {
   return (
     <motion.div
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } }}
-      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-      style={{
-        background:
-          'linear-gradient(180deg, #0a0a0a 0%, #111111 100%)',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: '100vh',
-        width: '100vw'
-      }}
+      exit={{ opacity: 0, scale: 1.015, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } }}
+      className="fixed inset-0 z-[9999] flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[#151515] px-5 py-8"
     >
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B07A49]/12 blur-3xl" />
+      <div className="pointer-events-none absolute inset-0">
+        <Image
+          src="/burger-bazaar-header.jpg"
+          alt=""
+          fill
+          priority
+          className="scale-110 object-cover opacity-[0.16] blur-[5px]"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,0.72)_0%,rgba(21,21,21,0.92)_56%,#151515_100%)]" />
+        <div className="absolute left-1/2 top-[18%] h-80 w-80 -translate-x-1/2 rounded-full bg-[#D12325]/20 blur-[90px]" />
+        <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(rgba(255,255,255,.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.8)_1px,transparent_1px)] [background-size:32px_32px]" />
       </div>
 
-      <div className="flex flex-col items-center px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 12, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.55, ease: [0.22, 0.61, 0.36, 1] }}
-          className="relative mb-6"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.55, delay: 0.05, ease: [0.22, 0.61, 0.36, 1] }}
-            className="relative w-[164px] h-[164px] rounded-[24px] bg-[#f5f7fb] shadow-[0_20px_44px_rgba(0,0,0,0.22)] flex items-center justify-center overflow-hidden border border-white/45"
-          >
-            <div className="absolute inset-x-6 top-3 h-7 rounded-full bg-white/75 blur-lg" />
+      <motion.main
+        initial={{ opacity: 0, y: 18, scale: 0.975 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.65, ease: [0.22, 0.61, 0.36, 1] }}
+        className="relative w-full max-w-[420px] overflow-hidden rounded-[32px] border border-white/15 bg-[#FFF9F5] shadow-[0_32px_90px_rgba(0,0,0,0.48),0_12px_32px_rgba(209,35,37,0.16)]"
+      >
+        <div className="relative h-[150px] overflow-hidden bg-[#D12325]">
+          <Image
+            src="/burger-bazaar-header.jpg"
+            alt="Burger Bazaar preview"
+            fill
+            priority
+            className="object-cover"
+            style={{ objectPosition: '50% 29%' }}
+            sizes="420px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-black/20" />
+          <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/35 px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white backdrop-blur-md">
+            <Eye className="h-3.5 w-3.5" />
+            Preview mode
+          </div>
+        </div>
 
-            <div className="absolute inset-[7px] z-10 rounded-[20px] overflow-hidden bg-mango-green shadow-[0_18px_34px_rgba(0,0,0,0.2)]">
-              <div className="relative w-full h-full flex items-center justify-center">
-                <Image
-                  src={shopConfig.assets.logo}
-                  alt={`${shopConfig.name} Logo`}
-                  width={144}
-                  height={144}
-                  className="w-full h-full object-contain scale-[1.3]"
-                  priority
-                />
-                <motion.div
-                  className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#D8C3A5] to-transparent pointer-events-none"
-                  initial={{ top: '8%' }}
-                  animate={{ top: '88%' }}
-                  transition={{
-                    duration: 1.45,
-                    repeat: Infinity,
-                    ease: 'linear',
-                    repeatDelay: 0.2
-                  }}
-                  style={{
-                    boxShadow: '0 0 14px rgba(216, 195, 165, 0.75), 0 0 26px rgba(216, 195, 165, 0.35)'
-                  }}
-                />
-              </div>
+        <div className="relative px-6 pb-6 pt-[74px] sm:px-7 sm:pb-7">
+          <div className="absolute -top-14 left-6 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[28px] border-[5px] border-[#FFF9F5] bg-[#D12325] shadow-[0_16px_34px_rgba(21,21,21,0.22)]">
+            <Image
+              src={shopConfig.assets.logo}
+              alt={`${shopConfig.name} logo`}
+              width={112}
+              height={112}
+              className="h-full w-full object-contain"
+              priority
+            />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18, duration: 0.45 }}
+          >
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[#FBE8E8] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] text-[#D12325]">
+              <Sparkles className="h-3.5 w-3.5" />
+              Interactive concept
             </div>
 
-            <motion.div
-              className="absolute top-[5px] left-[5px] w-8 h-8 border-t-[3px] border-l-[3px] border-[#D8C3A5] rounded-tl-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-            <motion.div
-              className="absolute top-[5px] right-[5px] w-8 h-8 border-t-[3px] border-r-[3px] border-[#D8C3A5] rounded-tr-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-            <motion.div
-              className="absolute bottom-[5px] left-[5px] w-8 h-8 border-b-[3px] border-l-[3px] border-[#D8C3A5] rounded-bl-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-            <motion.div
-              className="absolute bottom-[5px] right-[5px] w-8 h-8 border-b-[3px] border-r-[3px] border-[#D8C3A5] rounded-br-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-          </motion.div>
-        </motion.div>
+            <h1 className="max-w-[340px] text-[30px] font-black leading-[1.06] tracking-[-0.035em] text-[#151515] sm:text-[34px]">
+              This experience is in preview mode.
+            </h1>
+            <p className="mt-4 text-[15px] font-medium leading-relaxed text-slate-600">
+              Explore a live demo of the Burger Bazaar OneLink experience—built to show how the final customer journey can look and feel.
+            </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-1"
-        >
-          <p className="text-[11px] text-slate-400 mb-2 tracking-[0.18em] uppercase">
-            Welcome to
-          </p>
-          <p className="text-[28px] leading-none font-bold text-white tracking-tight">
-            {siteConfig.name}
-          </p>
-        </motion.div>
-      </div>
+            <button
+              type="button"
+              onClick={onEnter}
+              className="group mt-6 flex min-h-[56px] w-full items-center justify-between rounded-2xl bg-[#D12325] px-5 text-left text-white shadow-[0_16px_34px_rgba(209,35,37,0.30)] transition-all hover:bg-[#B91F22] hover:shadow-[0_20px_40px_rgba(209,35,37,0.36)] active:scale-[0.985]"
+            >
+              <span>
+                <span className="block text-[15px] font-extrabold">Enter Live Demo</span>
+                <span className="block text-[11px] font-semibold text-white/75">Click to view the OneLink</span>
+              </span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#D12325] shadow-sm transition-transform duration-300 group-hover:translate-x-0.5">
+                <ArrowRight className="h-4.5 w-4.5" strokeWidth={2.4} />
+              </span>
+            </button>
+
+            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#D12325]" />
+              Preview only • Demo content
+            </div>
+          </motion.div>
+        </div>
+      </motion.main>
     </motion.div>
   )
 }

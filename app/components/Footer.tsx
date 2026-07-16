@@ -1,7 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { siteConfig } from '../data/site'
 
 export default function Footer() {
@@ -26,10 +25,7 @@ export default function Footer() {
               />
               <span>— your business, one link away.</span>
             </p>
-            <Link
-              href="https://repixelx.com/about"
-              target="_blank"
-              rel="noopener noreferrer"
+            <span
               className="text-xs transition-colors inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
               style={{
                 background: 'rgba(30, 30, 30, 0.8)',
@@ -37,8 +33,8 @@ export default function Footer() {
                 border: '1px solid rgba(255, 255, 255, 0.2)'
               }}
             >
-              Powered by RepixelX Studio
-            </Link>
+              Powered by OneLink
+            </span>
           </div>
         </div>
       </div>

@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, ChevronDown, MapPin, Minus, Plus, AlertCircle, CheckCircle2, X } from 'lucide-react'
+import { ArrowLeft, ChevronDown, MapPin, Minus, Plus, CheckCircle2, X } from 'lucide-react'
 import { type CartItem, generateWhatsAppCartMessage } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
-import { distanceKm } from '../lib/distance'
 import {
   MANGO_CART_KEY,
   MANGO_HANDOFF_TO_CHECKOUT,
@@ -72,9 +71,6 @@ export default function CheckoutPage() {
   const addressRef = useRef<HTMLTextAreaElement>(null)
   const mobileBlockRef = useRef<HTMLDivElement>(null)
 
-  const delivery = shopConfig.delivery
-  const radiusKm = delivery.radiusKm
-  const paymentPageUrl = `${shopConfig.url.replace(/\/$/, '')}/sonnet-pay`
   const isOnlineOrder = orderType === 'online'
   const isDineInOrder = orderType === 'dine-in'
   const isTakeawayOrder = orderType === 'takeaway'
@@ -83,15 +79,10 @@ export default function CheckoutPage() {
   const menuOrderHref =
     orderType === 'online' ? '/menu?mode=order' : `/menu?mode=order&type=${orderType}`
 
-  const distanceFromRestaurant = useMemo(() => {
-    if (userLat == null || userLng == null) return null
-    return distanceKm(userLat, userLng, delivery.restaurantLat, delivery.restaurantLng)
-  }, [userLat, userLng, delivery.restaurantLat, delivery.restaurantLng])
-
   const deliveryZone: DeliveryZone = useMemo(() => {
-    if (userLat == null || userLng == null || distanceFromRestaurant == null) return 'unset'
-    return distanceFromRestaurant <= radiusKm ? 'inside' : 'outside'
-  }, [userLat, userLng, distanceFromRestaurant, radiusKm])
+    if (userLat == null || userLng == null) return 'unset'
+    return 'inside'
+  }, [userLat, userLng])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -172,8 +163,8 @@ export default function CheckoutPage() {
     cart
       .map((item) => {
         const unitPrice = parseFloat(item.price.replace('₹', '').replace(',', '').split('/')[0].trim())
-        const lineTotal = (isNaN(unitPrice) ? 0 : unitPrice) * item.cartQuantity
-        return `• ${item.name}\n  ${item.quantity} × ${item.cartQuantity} = ₹${lineTotal.toFixed(0)}`
+        const priceLine = isNaN(unitPrice) ? 'Live price to be confirmed' : `₹${(unitPrice * item.cartQuantity).toFixed(0)}`
+        return `• ${item.name}\n  Quantity: ${item.cartQuantity} · ${priceLine}`
       })
       .join('\n\n')
 
@@ -183,11 +174,11 @@ export default function CheckoutPage() {
     if (isDineInOrder && !arrivalDisplayTime) return
     if (isTakeawayOrder && !pickupDisplayTime) return
 
-    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9596019296'
+    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9266855210'
     const e164 = phone.length === 10 ? `91${phone}` : phone
     const orderItems = formatOrderItems()
     const message = isDineInOrder
-      ? `Hi The Sonnet Cafe, I want to place a Dine In pre-order.
+      ? `Hi Burger Bazaar, I want to place a Dine In pre-order.
 
 Name: ${customerName.trim()}
 Phone: +91 ${mobileDigits}
@@ -195,18 +186,18 @@ Arrival Time: ${arrivalDisplayTime}
 Preferred Seating: ${preferredSeating.trim() || 'N/A'}
 Order Items:
 ${orderItems}
-Total: ₹${total.toFixed(0)}
+Final price: Please confirm
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
-      : `Hi The Sonnet Cafe, I want to place a Takeaway order.
+      : `Hi Burger Bazaar, I want to place a Takeaway order.
 
 Name: ${customerName.trim()}
 Phone: +91 ${mobileDigits}
 Pickup Time: ${pickupDisplayTime}
 Order Items:
 ${orderItems}
-Total: ₹${total.toFixed(0)}
+Final price: Please confirm
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
@@ -218,16 +209,14 @@ Please confirm my order.`
 
   const orderNow = () => {
     if (cart.length === 0) return
-    if (!mappedAddress.trim() || userLat == null || userLng == null || deliveryZone !== 'inside') return
+    if (!mappedAddress.trim()) return
     if (mobileDigits.length < MOBILE_DIGITS) return
-    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9596019296'
+    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9266855210'
     const e164 = phone.length === 10 ? `91${phone}` : phone
     const base = generateWhatsAppCartMessage(cart, payableTotal)
     const customer =
       `\n\nCustomer Details:\nCall this number: +91 ${mobileDigits}\n\n${fullAddressBlock}` +
-      `\n\n(Map distance ~${distanceFromRestaurant?.toFixed(1)} km from restaurant)` +
-      `\n\nPlease confirm this order.` +
-      `\n\n---\nFor customer: After order confirmation, please pay here:\n${paymentPageUrl}`
+      `\n\nPlease confirm delivery availability and the final price for this order.`
     window.open(getWhatsAppLink(e164, `${base}${customer}`), '_blank')
     clearCheckoutSession()
     setCart([])
@@ -238,7 +227,7 @@ Please confirm my order.`
 
     if (!window.isSecureContext) {
       setLocationStatus(
-        'Location requires a secure HTTPS link. Please try on sonnet.onelink.cards because GPS may not work on localhost HTTP.'
+        'Location requires HTTPS. You can type your delivery address below when GPS is unavailable.'
       )
       return
     }
@@ -265,21 +254,11 @@ Please confirm my order.`
           if (data?.address || data?.mapUrl) {
             setMappedAddress(locationAddressText(data?.address, data?.mapUrl))
             setMappedMapUrl(typeof data?.mapUrl === 'string' ? data.mapUrl : mapsUrlForCoords(latitude, longitude))
-            const d = distanceKm(latitude, longitude, delivery.restaurantLat, delivery.restaurantLng)
-            setLocationStatus(
-              d <= radiusKm
-                ? `You’re within our delivery zone (~${d.toFixed(1)} km).`
-                : `This pin is ~${d.toFixed(1)} km away — outside our ${radiusKm} km delivery area.`
-            )
+            setLocationStatus('Location saved. Burger Bazaar will confirm delivery availability on WhatsApp.')
           } else {
             setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
             setMappedMapUrl(mapsUrlForCoords(latitude, longitude))
-            const d = distanceKm(latitude, longitude, delivery.restaurantLat, delivery.restaurantLng)
-            setLocationStatus(
-              d <= radiusKm
-                ? `Location saved (~${d.toFixed(1)} km). Add details below.`
-                : `Outside ${radiusKm} km delivery (~${d.toFixed(1)} km).`
-            )
+            setLocationStatus('Location saved. Add your complete address below.')
           }
         } catch {
           setLocationStatus('Could not load full address — GPS pin is still saved.')
@@ -318,10 +297,7 @@ Please confirm my order.`
     (isOnlineOrder
       ? cart.length > 0 &&
         mobileDigits.length === MOBILE_DIGITS &&
-        mappedAddress.trim() &&
-        userLat != null &&
-        userLng != null &&
-        deliveryZone === 'inside'
+        mappedAddress.trim()
       : cart.length > 0 &&
         customerName.trim().length > 1 &&
         mobileDigits.length === MOBILE_DIGITS &&
@@ -337,10 +313,6 @@ Please confirm my order.`
       if (isTakeawayOrder && !pickupDisplayTime) return 'Select pickup time.'
       return null
     }
-    if (userLat == null || userLng == null) {
-      return 'Tap “Use current location” and allow location when your browser asks.'
-    }
-    if (deliveryZone === 'outside') return 'We don’t deliver to this pin — it’s outside our zone.'
     if (!mappedAddress.trim()) return 'Add your delivery address in the box above.'
     if (mobileDigits.length < MOBILE_DIGITS) return 'Enter your 10-digit mobile number.'
     return null
@@ -357,8 +329,7 @@ Please confirm my order.`
       if (cart.length === 0) return
       if (!isOnlineOrder) {
         if (mobileDigits.length < MOBILE_DIGITS) scrollFieldIntoView(mobileBlockRef.current)
-      } else if (userLat == null || userLng == null) scrollFieldIntoView(locationBlockRef.current)
-      else if (!mappedAddress.trim()) scrollFieldIntoView(addressRef.current)
+      } else if (!mappedAddress.trim()) scrollFieldIntoView(addressRef.current)
       else if (mobileDigits.length < MOBILE_DIGITS) scrollFieldIntoView(mobileBlockRef.current)
       return
     }
@@ -371,7 +342,7 @@ Please confirm my order.`
   }
 
   return (
-    <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden bg-[#1F5A43]">
+    <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden bg-[#151515]">
       {toast && (
         <div
           className="fixed left-0 right-0 top-0 z-[10001] flex justify-center px-3 pt-[max(0.5rem,env(safe-area-inset-top))]"
@@ -431,24 +402,24 @@ Please confirm my order.`
                         <p className="mt-0.5 text-xs text-slate-500">{item.price}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="inline-flex h-9 items-center rounded-xl border border-[#B99A75] bg-[#F4E9DC] px-2">
+                        <div className="inline-flex h-9 items-center rounded-xl border border-[#E8D7D2] bg-[#FFF9F5] px-2">
                           <button
                             type="button"
                             onClick={() => updateQty(item.id, item.cartQuantity - 1)}
-                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#1F5A43] active:opacity-70"
+                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#D12325] active:opacity-70"
                           >
                             <Minus className="h-3.5 w-3.5" />
                           </button>
-                          <span className="w-7 text-center text-sm font-bold text-[#1F5A43]">{item.cartQuantity}</span>
+                          <span className="w-7 text-center text-sm font-bold text-[#D12325]">{item.cartQuantity}</span>
                           <button
                             type="button"
                             onClick={() => updateQty(item.id, item.cartQuantity + 1)}
-                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#1F5A43] active:opacity-70"
+                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#D12325] active:opacity-70"
                           >
                             <Plus className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <p className="mt-1 text-sm font-semibold text-slate-800">₹{lineTotal.toFixed(0)}</p>
+                        <p className="mt-1 text-sm font-semibold text-slate-800">{isNaN(unitPrice) ? 'Live price' : `₹${lineTotal.toFixed(0)}`}</p>
                       </div>
                     </div>
                   )
@@ -459,7 +430,7 @@ Please confirm my order.`
             <Link
               href={menuOrderHref}
               onClick={() => writeHandoffToMenuFromCheckout(cart, orderType)}
-              className="mt-2.5 inline-flex touch-manipulation items-center rounded-full border border-[#B99A75] bg-[#F4E9DC] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#1F5A43] active:scale-[0.98]"
+              className="mt-2.5 inline-flex touch-manipulation items-center rounded-full border border-[#E8D7D2] bg-[#FFF9F5] px-3 py-1.5 text-[13px] font-semibold leading-none text-[#D12325] active:scale-[0.98]"
             >
               + Add more items
             </Link>
@@ -479,7 +450,7 @@ Please confirm my order.`
           <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-[15px] font-bold text-slate-900">Delivery</h2>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">Within {radiusKm} km</span>
+              <span className="rounded-full bg-[#FBE8E8] px-2.5 py-0.5 text-[11px] font-semibold text-[#991B1E]">Confirm on WhatsApp</span>
             </div>
 
             <div ref={locationBlockRef} className="mt-2.5 rounded-2xl border border-slate-200 bg-slate-50/50 p-2.5">
@@ -488,9 +459,6 @@ Please confirm my order.`
                 {userLat != null && userLng != null ? (
                   <>
                     Saved
-                    {distanceFromRestaurant != null && (
-                      <span className="text-slate-500"> · ~{distanceFromRestaurant.toFixed(1)} km</span>
-                    )}
                   </>
                 ) : (
                   <span>Tap the button below.</span>
@@ -510,16 +478,10 @@ Please confirm my order.`
               {deliveryZone === 'inside' && userLat != null && (
                 <div className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-emerald-200/90 bg-gradient-to-b from-emerald-50 to-emerald-100/80 px-3 py-2 text-center text-[11px] font-medium text-emerald-900 shadow-sm">
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                  <span>We deliver here</span>
+                  <span>Location saved</span>
                 </div>
               )}
 
-              {deliveryZone === 'outside' && userLat != null && (
-                <div className="mt-1.5 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-[11px] leading-snug text-amber-950">
-                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                  <span>Sorry — outside our {radiusKm} km area.</span>
-                </div>
-              )}
             </div>
 
             <div className="mt-3">
@@ -598,7 +560,7 @@ Please confirm my order.`
               <h2 className="text-[15px] font-bold text-slate-900">
                 {isDineInOrder ? 'Dine In Details' : 'Takeaway Details'}
               </h2>
-              <Link href="/order" className="text-[12px] font-semibold text-[#1F5A43]">
+              <Link href="/order" className="text-[12px] font-semibold text-[#D12325]">
                 Change Order Type
               </Link>
             </div>
@@ -739,7 +701,7 @@ Please confirm my order.`
         <button
           type="button"
           onClick={handlePrimaryAction}
-          className={`pointer-events-auto flex min-h-[60px] w-full max-w-[430px] touch-manipulation items-center justify-between rounded-full border border-white/25 bg-[#1F5A43] px-4 py-2 text-white shadow-[0_14px_28px_rgba(31,90,67,0.32)] active:bg-[#174633] ${
+          className={`pointer-events-auto flex min-h-[60px] w-full max-w-[430px] touch-manipulation items-center justify-between rounded-full border border-white/20 bg-[#D12325] px-4 py-2 text-white shadow-[0_14px_28px_rgba(209,35,37,0.30)] active:bg-[#991B1E] ${
             canPlaceOrder ? 'cursor-pointer active:scale-[0.99]' : 'cursor-pointer'
           }`}
         >
@@ -767,7 +729,7 @@ Please confirm my order.`
               </span>
             </span>
             <span className="min-w-0 text-left text-[16px] font-semibold leading-tight text-white drop-shadow-sm">
-              {totalItems} {totalItems === 1 ? 'item' : 'items'} · ₹{payableTotal.toFixed(0)}
+              {totalItems} {totalItems === 1 ? 'item' : 'items'} · Live price
             </span>
           </span>
           <span className="shrink-0 pl-1 text-right leading-tight">

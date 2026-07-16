@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -19,7 +19,7 @@ export default function Hero() {
   const actionsRowRef = useRef<ActionsRowRef>(null)
 
   const headerImages = [
-    '/sonnet-header.jpeg',
+    '/burger-bazaar-header.jpg',
   ]
 
   const handleFlip = (e?: React.MouseEvent, forceFlip = false) => {
@@ -43,14 +43,18 @@ export default function Hero() {
     }, 850) // Slightly longer than animation duration (0.8s)
   }
 
-  const handleOpenPayments = () => {
+  const handleOpenPayments = useCallback(() => {
+    if (!shopConfig.payment.upiId) {
+      window.alert('Burger Bazaar payment details will be added once verified.')
+      return
+    }
     if (isFlipping) return
     setIsFlipping(true)
     setCurrentFace('payment')
     setTimeout(() => {
       setIsFlipping(false)
     }, 850)
-  }
+  }, [isFlipping])
 
   const handleBackFromPayment = () => {
     if (isFlipping) return
@@ -69,7 +73,7 @@ export default function Hero() {
       const t = setTimeout(handleOpenPayments, 150)
       return () => clearTimeout(t)
     }
-  }, [])
+  }, [handleOpenPayments])
 
   // Legacy: ?pay=1 (prefer share link /mango-pay → home + openPayment)
   useEffect(() => {
@@ -110,9 +114,9 @@ export default function Hero() {
           <div 
           className="rounded-[24px] shadow-2xl relative cursor-pointer overflow-hidden"
           style={{
-            background: 'linear-gradient(165deg, #D8C3A5 0%, #F4E9DC 18%, #ffffff 45%, #FAF5EF 70%, #ffffff 100%)',
-            border: '1px solid rgba(216, 195, 165, 0.45)',
-            boxShadow: '0 22px 60px rgba(216, 195, 165, 0.16), 0 10px 28px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
+            background: 'linear-gradient(165deg, #FBE8E8 0%, #FFF9F5 22%, #ffffff 48%, #FFF9F5 76%, #ffffff 100%)',
+            border: '1px solid #E8D7D2',
+            boxShadow: '0 22px 60px rgba(209, 35, 37, 0.10), 0 10px 28px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
             minHeight: '580px',
             boxSizing: 'border-box'
           }}
@@ -140,7 +144,7 @@ export default function Hero() {
               transition={{ duration: 0.3, delay: 0.4 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={(e) => { e.stopPropagation(); handleFlip(e); }}
+              onClick={(e) => { e.stopPropagation(); handleFlip(e, true); }}
               className="absolute top-4 right-4 z-10 text-xs font-semibold text-slate-700 bg-white/90 hover:bg-white px-3 py-2 rounded-full shadow-lg cursor-pointer transition-all flex items-center gap-1.5 touch-manipulation border border-amber-200/60"
               style={{ WebkitTapHighlightColor: 'transparent' }}
               aria-label={t('tapToFlip')}
@@ -162,10 +166,10 @@ export default function Hero() {
                 >
                   <Image
                     src={headerImages[headerImageIndex]}
-                    alt="The Sonnet Cafe"
+                    alt="Burger Bazaar"
                     fill
                     className="object-cover"
-                    style={{ objectPosition: '58% 42%' }}
+                    style={{ objectPosition: '50% 32%' }}
                     priority
                     sizes="(max-width: 448px) 100vw, 448px"
                     unoptimized
@@ -199,37 +203,6 @@ export default function Hero() {
                 e.preventDefault()
               }}
             >
-              {/* Instagram - Opens selector */}
-              {shopConfig.social?.instagram && (
-                <motion.button
-                  data-instagram-button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    e.preventDefault()
-                    window.open(shopConfig.social.instagram, '_blank', 'noopener,noreferrer')
-                  }}
-                  className="h-11 w-11 p-0.5 rounded-full shadow-2xl flex items-center justify-center overflow-hidden transition-all cursor-pointer touch-manipulation"
-                  style={{
-                    background: 'linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)',
-                    WebkitTapHighlightColor: 'transparent',
-                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                  }}
-                  title="Follow The Sonnet Cafe"
-                >
-                  <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                    <Image
-                      src="/social.png"
-                      alt="Instagram"
-                      width={44}
-                      height={44}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </motion.button>
-              )}
-              
               {/* WhatsApp - Opens Selector in Card */}
               <motion.button
                 data-whatsapp-button
@@ -285,14 +258,14 @@ export default function Hero() {
                   y: { duration: 5, repeat: Infinity, ease: 'easeInOut', repeatType: 'reverse' },
                 }}
               >
-                <div className="w-32 h-32 rounded-full flex items-center justify-center overflow-hidden bg-white p-1.5 border-2 border-slate-200/70 shadow-lg">
+                <div className="w-32 h-32 rounded-full flex items-center justify-center overflow-hidden bg-[#D12325] p-1.5 border-2 border-[#E8D7D2] shadow-lg">
                   <Image
                     src={shopConfig.assets.logo}
                     alt={`${shopConfig.name} Logo`}
                     width={128}
                     height={128}
                     className="w-full h-full object-contain"
-                    style={{ transform: 'scale(1.25)' }}
+                    style={{ transform: 'scale(1.04)' }}
                   />
                 </div>
               </motion.div>
@@ -307,7 +280,7 @@ export default function Hero() {
                 <h1 className="text-2xl font-black text-slate-900 mb-1 leading-tight tracking-tight">
                   {shopConfig.name}
                 </h1>
-                <p className="text-mango-green font-semibold text-[15px] mb-3">
+                <p className="font-semibold text-[15px] mb-3 text-[#D12325]">
                   {shopConfig.tagline}
                 </p>
                 {'keywordBadges' in shopConfig && Array.isArray(shopConfig.keywordBadges) && (
@@ -315,7 +288,7 @@ export default function Hero() {
                     {shopConfig.keywordBadges.map((badge: string) => (
                       <span
                         key={badge}
-                        className="inline-flex px-2.5 py-1 rounded-full bg-mango-lightGreen border border-mango-green/20 text-mango-green text-xs font-medium"
+                        className="inline-flex px-2.5 py-1 rounded-full bg-[#FBE8E8] border border-[#E8D7D2] text-[#D12325] text-xs font-medium"
                       >
                         {badge}
                       </span>
@@ -346,8 +319,8 @@ export default function Hero() {
         }
         faceInfo={
           <div
-            className="bg-gradient-to-br from-mango-green to-mango-greenSoft backdrop-blur-md rounded-[24px] shadow-2xl border-2 border-mango-green/50 cursor-pointer relative h-full overflow-hidden flex flex-col touch-manipulation"
-            style={{ minHeight: 'min(580px, 85dvh)', boxSizing: 'border-box', WebkitTapHighlightColor: 'transparent' }}
+            className="backdrop-blur-md rounded-[24px] shadow-2xl border-2 border-white/20 cursor-pointer relative h-full overflow-hidden flex flex-col touch-manipulation"
+            style={{ minHeight: 'min(580px, 85dvh)', boxSizing: 'border-box', WebkitTapHighlightColor: 'transparent', background: 'linear-gradient(135deg, #E13B3D 0%, #D12325 48%, #AD171A 100%)' }}
             onClick={(e) => {
               const t = e.target as HTMLElement
               if (t.closest('[data-no-info-flip]')) return
@@ -406,9 +379,9 @@ export default function Hero() {
                 </h2>
 
                 {/* Block 1: Location */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(216, 195, 165, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)' }}>
-                    <MapPin className="w-5 h-5 text-[#D8C3A5]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, #FFF9F4 0%, #FBE9E9 100%)', borderColor: 'rgba(209,35,37,0.3)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(209,35,37,0.22)]" style={{ background: 'linear-gradient(135deg, #D12325 0%, #991B1E 100%)' }}>
+                    <MapPin className="w-5 h-5 text-white" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Location</p>
@@ -417,30 +390,29 @@ export default function Hero() {
                 </div>
 
                 {/* Block 2: Services */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(216, 195, 165, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)' }}>
-                    <Store className="w-5 h-5 text-[#D8C3A5]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, #FFF9F4 0%, #FBE9E9 100%)', borderColor: 'rgba(209,35,37,0.3)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(209,35,37,0.22)]" style={{ background: 'linear-gradient(135deg, #D12325 0%, #991B1E 100%)' }}>
+                    <Store className="w-5 h-5 text-white" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Services</p>
-                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Dine-In • Delivery • Takeaway • Cafe & Bakery</p>
+                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Delivery • Takeaway • Smash Burgers • Loaded Fries</p>
                   </div>
                 </div>
 
                 {/* Block 3: Timings */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(216, 195, 165, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 100%)' }}>
-                    <Clock className="w-5 h-5 text-[#D8C3A5]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, #FFF9F4 0%, #FBE9E9 100%)', borderColor: 'rgba(209,35,37,0.3)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(209,35,37,0.22)]" style={{ background: 'linear-gradient(135deg, #D12325 0%, #991B1E 100%)' }}>
+                    <Clock className="w-5 h-5 text-white" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Timings</p>
-                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">12:00 PM – 10:30 PM</p>
-                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Last orders by 10:00 PM</p>
+                    <p className="text-xs sm:text-sm leading-relaxed text-slate-700">Check current availability on Zomato or Swiggy.</p>
                   </div>
                 </div>
 
                 {/* Google Map */}
-                <div className="w-full h-28 sm:h-32 rounded-[22px] overflow-hidden mb-4 pointer-events-none flex-shrink-0 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'rgba(255,255,255,0.94)', borderColor: 'rgba(216, 195, 165, 0.35)' }}>
+                <div className="w-full h-28 sm:h-32 rounded-[22px] overflow-hidden mb-4 pointer-events-none flex-shrink-0 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'rgba(255,255,255,0.94)', borderColor: 'rgba(209,35,37,0.28)' }}>
                   <iframe
                     src={`https://www.google.com/maps?q=${encodeURIComponent(shopConfig.contact.mapQuery)}&output=embed`}
                     width="100%"

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Phone, Download, MapPin, Star, X, BookOpenText, Utensils, Share2 } from 'lucide-react'
+import { Phone, Download, MapPin, X, Utensils, Share2, PackageCheck } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -74,7 +74,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
   }
 
   const handleWhatsApp = (person: ContactPerson) => {
-    const message = `Hello ${person.label}, I want to place an order. Please share today's fresh availability and rates.`
+    const message = `Hi ${person.label}, I want to order online: ${shopConfig.url}/menu?mode=order&type=online Please confirm today's availability and final price.`
     const whatsappLink = getWhatsAppLink(person.whatsappE164, message)
     window.open(whatsappLink, '_blank')
     setWhatsappSelectorOpen(false)
@@ -131,24 +131,14 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               setCallSelectorOpen(!callSelectorOpen)
               setWhatsappSelectorOpen(false)
             }}
-            className="w-full min-w-0 h-11 text-white font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden group"
+            className="w-full min-w-0 h-11 text-white font-semibold rounded-full transition-[filter,transform,box-shadow] duration-200 hover:brightness-105 hover:scale-[1.012] flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden group"
             style={{
-              background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 52%, #B07A49 100%)',
-              boxShadow: '0 8px 20px rgba(122, 74, 45, 0.34), 0 4px 8px rgba(73, 46, 26, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 12px 28px rgba(122, 74, 45, 0.42), 0 6px 12px rgba(73, 46, 26, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #9A6A43 0%, #7B4A2D 52%, #B07A49 100%)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 20px rgba(122, 74, 45, 0.34), 0 4px 8px rgba(73, 46, 26, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-              e.currentTarget.style.transform = 'translateY(-1px) scale(1)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 52%, #B07A49 100%)'
+              background: 'linear-gradient(135deg, #E13B3D 0%, #D12325 48%, #AD171A 100%)',
+              boxShadow: '0 8px 20px rgba(209, 35, 37, 0.28), 0 4px 8px rgba(21, 21, 21, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.20)',
+              WebkitTapHighlightColor: 'transparent'
             }}
           >
+            <span className="pointer-events-none absolute inset-x-4 top-0 h-[42%] rounded-full bg-gradient-to-b from-white/18 to-transparent" />
             <Phone className="w-4 h-4 relative z-10" style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' }} />
             <span className="text-sm font-bold relative z-10 truncate" style={{ fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' }}>{t('callNow')}</span>
           </Button>
@@ -158,8 +148,8 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             onClick={(e) => e.stopPropagation()}
             className="min-w-0 h-11 text-white font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden group"
             style={{
-              background: 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 52%, #B07A49 100%)',
-              boxShadow: '0 8px 20px rgba(122, 74, 45, 0.34), 0 4px 8px rgba(73, 46, 26, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              background: '#D12325',
+              boxShadow: '0 8px 20px rgba(209, 35, 37, 0.26), 0 4px 8px rgba(21, 21, 21, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.18)',
               fontSize: '14px',
               WebkitTapHighlightColor: 'transparent',
               transform: 'translateY(-1px)'
@@ -168,13 +158,13 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.boxShadow =
                 '0 12px 28px rgba(122, 74, 45, 0.42), 0 6px 12px rgba(73, 46, 26, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
               e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #9A6A43 0%, #7B4A2D 52%, #B07A49 100%)'
+              e.currentTarget.style.background = '#BC1F21'
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.boxShadow =
                 '0 8px 20px rgba(122, 74, 45, 0.34), 0 4px 8px rgba(73, 46, 26, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
               e.currentTarget.style.transform = 'translateY(-1px) scale(1)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #7B4A2D 0%, #9A6A43 52%, #B07A49 100%)'
+              e.currentTarget.style.background = '#D12325'
             }}
           >
             <Utensils className="w-4 h-4 shrink-0 relative z-10" strokeWidth={2.35} aria-hidden style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' }} />
@@ -182,17 +172,17 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           </Link>
         </div>
 
-        {/* Row 2: Dine/Pickup + View Menu */}
+        {/* Row 2: View Menu + Takeaway */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           <Link
-            href="/order"
+            href="/menu"
             onClick={(e) => e.stopPropagation()}
             className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
             style={{
               color: '#0F172A',
-              background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF7E6 100%)',
-              borderColor: 'rgba(233,196,106,0.55)',
-              boxShadow: '0 8px 18px rgba(176, 122, 73, 0.22), 0 4px 8px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+              background: '#FFFFFF',
+              borderColor: '#E8D7D2',
+              boxShadow: '0 8px 18px rgba(21,21,21,0.08), 0 4px 8px rgba(21,21,21,0.05), inset 0 1px 0 rgba(255,255,255,0.96)',
               borderRadius: '16px',
               fontSize: '14px',
               WebkitTapHighlightColor: 'transparent',
@@ -209,18 +199,18 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <Utensils className="w-4 h-4 shrink-0 text-[#7B4A2D]" strokeWidth={2.35} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Dine/Pickup</span>
+            <Image src="/menu-icon.png" alt="" aria-hidden width={20} height={20} className="h-5 w-5 shrink-0 object-contain" />
+            <span className="text-sm font-bold truncate" style={{ color: '#151515', fontSize: '14px' }}>View Menu</span>
           </Link>
           <Link
-            href="/menu"
+            href="/menu?mode=order&type=takeaway"
             onClick={(e) => e.stopPropagation()}
             className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
             style={{
               color: '#0F172A',
-              background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF7E6 100%)',
-              borderColor: 'rgba(233,196,106,0.55)',
-              boxShadow: '0 8px 18px rgba(176, 122, 73, 0.18), 0 4px 8px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+              background: '#FFFFFF',
+              borderColor: '#E8D7D2',
+              boxShadow: '0 8px 18px rgba(21,21,21,0.08), 0 4px 8px rgba(21,21,21,0.05), inset 0 1px 0 rgba(255,255,255,0.96)',
               borderRadius: '16px',
               fontSize: '14px',
               WebkitTapHighlightColor: 'transparent',
@@ -235,64 +225,29 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <BookOpenText className="w-4 h-4 shrink-0 text-[#7B4A2D]" strokeWidth={2.35} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
+            <PackageCheck className="w-4 h-4 shrink-0 text-[#D12325]" strokeWidth={2.35} aria-hidden />
+            <span className="text-sm font-bold truncate" style={{ color: '#151515', fontSize: '14px' }}>Takeaway</span>
           </Link>
         </div>
 
-        {/* Row 3: Payment + Zomato */}
+        {/* Row 3: Swiggy + Zomato */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          {onOpenPayments && (
-            <div className="min-w-0 relative">
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onOpenPayments()
-                }}
-                className="w-full min-w-0 h-11 bg-white/90 hover:bg-white text-slate-900 font-semibold rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border border-slate-200/90"
-                style={{
-                  background:
-                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)',
-                  boxShadow:
-                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-                  borderColor: 'rgba(255, 255, 255, 0.22)',
-                  borderRadius: '16px',
-                  fontSize: '14px',
-                  WebkitTapHighlightColor: 'transparent',
-                  transform: 'translateY(-1px)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 12px 28px rgba(21, 124, 130, 0.5), 0 6px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-                  e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.background =
-                    'radial-gradient(circle at 30% 30%, rgb(25, 140, 145) 0%, rgb(20, 130, 120) 40%, rgb(20, 25, 30) 100%)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
-                  e.currentTarget.style.transform = 'translateY(-1px)'
-                  e.currentTarget.style.background =
-                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)'
-                }}
-              >
-                <Image
-                  src="/icons8-bhim-48.png"
-                  alt="Payment"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 object-contain relative z-10"
-                  style={{ filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }}
-                />
-                <span
-                  className="text-sm font-bold relative z-10 truncate"
-                  style={{ color: '#FFFFFF', fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}
-                >
-                  {t('openPayment')}
-                </span>
-                </Button>
-            </div>
-          )}
+          <Link
+            href={shopConfig.social.swiggy}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 rounded-2xl transition-all flex items-center justify-center active:scale-[0.97] touch-manipulation hover:bg-[#FFF7F0]"
+            style={{
+              background: '#FFFFFF',
+              border: '2px solid #FC8019',
+              boxShadow: '0 8px 18px rgba(252,128,25,0.16), 0 3px 8px rgba(21,21,21,0.08)',
+              borderRadius: '16px',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <Image src="/swiggy-logo.png" alt="Swiggy" width={112} height={35} className="h-[28px] w-auto object-contain" />
+          </Link>
           {shopConfig.social?.zomato && (
             <Link
               href={shopConfig.social.zomato}
@@ -300,7 +255,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               className="min-w-0 h-11 rounded-2xl transition-all flex items-center justify-center active:scale-[0.97] touch-manipulation hover:opacity-95"
               style={{
                 background: '#E23744',
-                boxShadow: '0 8px 18px rgba(226, 55, 68, 0.36), 0 3px 8px rgba(73, 46, 26, 0.12)',
+                boxShadow: '0 8px 18px rgba(226, 55, 68, 0.36), 0 3px 8px rgba(21,21,21,0.10)',
                 borderRadius: '16px',
                 WebkitTapHighlightColor: 'transparent'
               }}
@@ -317,124 +272,57 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           )}
         </div>
 
-        {/* Row 4: Instagram + Gallery */}
+        {/* Row 4: Payment + Instagram */}
+        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+          {onOpenPayments && (
+            <Button
+              onClick={(e) => { e.stopPropagation(); onOpenPayments() }}
+              className="w-full min-w-0 h-11 text-white font-semibold rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border"
+              style={{
+                background: 'radial-gradient(circle at 30% 30%, rgb(21,124,130) 0%, rgb(15,118,110) 40%, rgb(17,19,21) 100%)',
+                boxShadow: '0 8px 20px rgba(21,124,130,0.4), 0 4px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15)',
+                borderColor: 'rgba(255,255,255,0.22)',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <Image src="/icons8-bhim-48.png" alt="Payment" width={16} height={16} className="h-4 w-4 object-contain" style={{ filter: 'brightness(0) invert(1)' }} />
+              <span className="text-sm font-bold">{t('openPayment')}</span>
+            </Button>
+          )}
+          <a
+            data-instagram-button
+            href={shopConfig.social.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 bg-white hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border border-[#E8D7D2]"
+            style={{ boxShadow: '0 8px 16px rgba(225,48,108,0.15), 0 4px 8px rgba(21,21,21,0.08)' }}
+          >
+            <Image src="/instagram-logo-transparent.webp" alt="Instagram" width={30} height={30} className="h-7 w-7 object-contain" />
+            <span className="text-sm font-bold text-[#151515]">Instagram</span>
+          </a>
+        </div>
+
+        {/* Row 5: Location + Gallery */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           <Button
-            data-instagram-button
-            onClick={(e) => {
-              e.stopPropagation()
-              setInstagramSelectorOpen(!instagramSelectorOpen)
-              setCallSelectorOpen(false)
-              setWhatsappSelectorOpen(false)
-            }}
-            className="w-full min-w-0 h-11 bg-white/90 hover:bg-white text-slate-900 font-semibold rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border border-slate-200/90"
-            style={{
-              boxShadow: '0 8px 16px rgba(225, 48, 108, 0.16), 0 4px 8px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 10px 20px rgba(225, 48, 108, 0.22), 0 6px 12px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 8px 16px rgba(225, 48, 108, 0.16), 0 4px 8px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
+            onClick={handleDirections}
+            className="w-full min-w-0 h-11 bg-white hover:bg-[#FFF7F7] rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border"
+            style={{ borderColor: 'rgba(209,35,37,0.34)', boxShadow: '0 10px 20px rgba(209,35,37,0.14), 0 4px 9px rgba(21,21,21,0.10), inset 0 1px 0 #fff' }}
           >
-            <Image
-              src="/instagram-logo-transparent.webp"
-              alt=""
-              width={28}
-              height={28}
-              className="h-7 w-7 shrink-0 object-contain"
-            />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Instagram</span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FBE8E8]">
+              <MapPin className="h-[18px] w-[18px] text-[#D12325]" strokeWidth={2.5} />
+            </span>
+            <span className="text-sm font-bold text-[#151515]">Location</span>
           </Button>
           <Link
             href="/gallery"
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
-            style={{
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              WebkitTapHighlightColor: 'transparent',
-              fontSize: '14px',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <div className="flex items-center -space-x-1.5 relative z-10">
-              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center overflow-hidden relative"
-                style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
-              >
-                <Image
-                  src="/gallery/sonnet-gallery-03.jpeg"
-                  alt="Gallery"
-                  width={28}
-                  height={28}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center overflow-hidden relative"
-                style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
-              >
-                <Image
-                  src="/gallery/sonnet-gallery-09.jpeg"
-                  alt="Gallery"
-                  width={28}
-                  height={28}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Gallery</span>
-          </Link>
-        </div>
-
-        {/* Row 5: Reviews + Location */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Link
-            href="/reviews"
             onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
-            style={{
-              color: '#0F172A',
-              background: '#FFFFFF',
-              boxShadow: '0 8px 16px rgba(245, 158, 11, 0.18), 0 4px 8px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 22px rgba(245, 158, 11, 0.24), 0 6px 12px rgba(73, 46, 26, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(245, 158, 11, 0.18), 0 4px 8px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <Star className="w-4 h-4" style={{ color: '#F59E0B' }} fill="#F59E0B" />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Reviews</span>
-          </Link>
-          <Button
-            onClick={handleDirections}
             className="w-full min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
             style={{
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+              background: '#FFF9F5',
+              border: '1px solid #E8D7D2',
+              boxShadow: '0 8px 16px rgba(21, 21, 21, 0.08), 0 4px 8px rgba(209, 35, 37, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
               borderRadius: '16px',
               fontSize: '14px',
               WebkitTapHighlightColor: 'transparent',
@@ -449,18 +337,25 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <MapPin className="w-4 h-4" style={{ color: '#EF4444', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }} />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Location</span>
-          </Button>
+            <span className="flex items-center -space-x-1.5" aria-hidden>
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+                <Image src="/burger-bazaar-logo.jpg" alt="" fill className="object-cover" sizes="28px" />
+              </span>
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+                <Image src="/burger-bazaar-header.jpg" alt="" fill className="object-cover" sizes="28px" />
+              </span>
+            </span>
+            <span className="text-sm font-bold truncate" style={{ color: '#151515', fontSize: '14px' }}>Gallery</span>
+          </Link>
         </div>
 
         {/* Row 6: Save Contact + Share Card */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0 actions-row-bottom">
           <Button
             onClick={handleSaveContact}
-            className="w-full min-w-0 h-11 bg-white/90 hover:bg-white backdrop-blur-md text-[#7B4A2D] rounded-2xl border-2 border-[#B07A49]/70 hover:border-[#7B4A2D]/90 relative overflow-hidden transition-all touch-manipulation"
+            className="w-full min-w-0 h-11 bg-[#FFF9F5] hover:bg-white backdrop-blur-md text-[#D12325] rounded-2xl border-2 border-[#D12325] relative overflow-hidden transition-all touch-manipulation"
             style={{
-              boxShadow: '0 8px 18px rgba(122, 74, 45, 0.20), 0 4px 8px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              boxShadow: '0 8px 18px rgba(209, 35, 37, 0.14), 0 4px 8px rgba(21, 21, 21, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
               borderRadius: '16px',
               fontSize: '14px',
               WebkitTapHighlightColor: 'transparent',
@@ -475,7 +370,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-[#B07A49]/25 to-transparent animate-[shimmer_2s_infinite] pointer-events-none" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-[#D12325]/10 to-transparent animate-[shimmer_2s_infinite] pointer-events-none" />
             <div className="relative z-10 flex items-center justify-center gap-2">
               <Download className="w-4 h-4" />
               <span className="text-sm font-bold truncate" style={{ fontSize: '14px' }}>{t('saveContact')}</span>
@@ -489,15 +384,15 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             }}
             className="min-w-0 h-11 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation hover:opacity-95 border-2"
             style={{
-              background: '#FFFFFF',
-              borderColor: '#B07A49',
-              boxShadow: '0 8px 18px rgba(122, 74, 45, 0.18), 0 4px 8px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              background: '#FFF9F5',
+              borderColor: '#D12325',
+              boxShadow: '0 8px 18px rgba(209, 35, 37, 0.14), 0 4px 8px rgba(21, 21, 21, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
               borderRadius: '16px',
               WebkitTapHighlightColor: 'transparent'
             }}
           >
-            <Share2 className="w-4 h-4 text-[#7B4A2D]" />
-            <span className="text-sm font-bold text-[#7B4A2D]">Share Card</span>
+            <Share2 className="w-4 h-4 text-[#D12325]" />
+            <span className="text-sm font-bold text-[#D12325]">Share Card</span>
           </Button>
         </div>
 
@@ -663,8 +558,8 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-sm font-bold text-slate-800 mb-1">@the.sonnet.cafe</div>
-                        <div className="text-xs text-slate-600">@the.sonnet.cafe</div>
+                        <div className="text-sm font-bold text-slate-800 mb-1">@burgerbazaarjammu</div>
+                        <div className="text-xs text-slate-600">Burger Bazaar Jammu</div>
                       </div>
                     </motion.button>
                   )}

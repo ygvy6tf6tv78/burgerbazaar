@@ -9,16 +9,10 @@ import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 
 // Gallery images from public/gallery folder
 const galleryImages = [
-  '/gallery/sonnet-gallery-01.jpeg',
-  '/gallery/sonnet-gallery-02.jpeg',
-  '/gallery/sonnet-gallery-03.jpeg',
-  '/gallery/sonnet-gallery-04.jpeg',
-  '/gallery/sonnet-gallery-05.jpeg',
-  '/gallery/sonnet-gallery-06.jpeg',
-  '/gallery/sonnet-gallery-07.jpeg',
-  '/gallery/sonnet-gallery-08.jpeg',
-  '/gallery/sonnet-gallery-09.jpeg',
-  '/gallery/sonnet-gallery-10.jpeg',
+  '/burger-bazaar-header.jpg',
+  '/burger-bazaar-header.jpg',
+  '/burger-bazaar-header.jpg',
+  '/burger-bazaar-header.jpg',
 ]
 
 // No videos – show banner when on Videos tab
@@ -91,9 +85,9 @@ export default function GalleryPage() {
 
   return (
     <>
-      <main className="relative min-h-screen overflow-x-hidden pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]" style={{ backgroundColor: '#efd8bc' }}>
+      <main className="relative min-h-screen overflow-x-hidden pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]" style={{ backgroundColor: '#151515' }}>
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#B07A49]/20 blur-3xl" />
+          <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#D12325]/20 blur-3xl" />
           <div className="absolute top-[18rem] -left-20 h-64 w-64 rounded-full bg-mango-green/12 blur-3xl" />
           <div className="absolute bottom-[12rem] right-[-4rem] h-72 w-72 rounded-full bg-white/45 blur-3xl" />
         </div>
@@ -106,12 +100,12 @@ export default function GalleryPage() {
           }}
         >
           <div className="max-w-md mx-auto px-1 pb-3 relative z-10">
-            <div className="rounded-[28px] border border-[#B07A49]/25 bg-white/70 shadow-[0_20px_40px_rgba(73,46,26,0.12)] px-3 sm:px-4 py-3.5">
+            <div className="rounded-[28px] border border-[#D12325]/20 bg-white/90 shadow-[0_20px_40px_rgba(21,21,21,0.12)] px-3 sm:px-4 py-3.5">
               <div className="relative flex items-center justify-between">
                 <Link
                   href="/"
                   prefetch
-                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[#B07A49]/30 bg-white transition-colors hover:bg-[#f8ead8] active:scale-[0.97] touch-manipulation shadow-[0_10px_20px_rgba(73,46,26,0.10)]"
+                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[#D12325]/25 bg-white transition-colors hover:bg-[#FBE8E8] active:scale-[0.97] touch-manipulation shadow-[0_10px_20px_rgba(21,21,21,0.10)]"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     if (typeof window !== 'undefined') {
@@ -126,13 +120,13 @@ export default function GalleryPage() {
                   <h1 className="text-lg sm:text-xl font-bold text-[#302318] tracking-tight">Gallery</h1>
                 </div>
 
-                <div className="rounded-full border border-[#B07A49]/30 bg-white px-3 py-1.5 text-xs font-semibold text-[#6f5137] shadow-[0_10px_20px_rgba(73,46,26,0.10)]">
+                <div className="rounded-full border border-[#D12325]/25 bg-white px-3 py-1.5 text-xs font-semibold text-[#991B1E] shadow-[0_10px_20px_rgba(21,21,21,0.10)]">
                   {activeTab === 'photos' ? `${galleryImages.length} Photos` : `${galleryVideos.length} Videos`}
                 </div>
               </div>
 
               <div className="mt-3 pl-[3px]">
-                <p className="text-sm text-[#6f5137]">Fresh kitchen moments at The Sonnet Cafe</p>
+                <p className="text-sm text-[#777777]">Smash burgers, loaded fries, desserts and Burger Bazaar moments.</p>
               </div>
             </div>
           </div>
@@ -143,13 +137,13 @@ export default function GalleryPage() {
             <div className="section-shell-inner p-5 sm:p-6">
               <div className="mb-5">
                 <div className="section-title-accent mb-2">
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#302318]">Gallery Collection</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#171717]">Fresh from the Kitchen</h2>
                 </div>
-                <p className="text-sm text-[#6f5137]">Browse cafe, bakery and menu moments from The Sonnet Cafe.</p>
+                <p className="text-sm text-[#777777]">Browse Burger Bazaar packaging, kitchen and delivery moments.</p>
                 <button
                   type="button"
                   onClick={handleShareContact}
-                  className="mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-2xl bg-white text-[#7B4A2D] font-bold border border-[#B07A49]/45 shadow-[0_14px_28px_rgba(73,46,26,0.12)]"
+                  className="mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-2xl bg-white text-[#D12325] font-bold border border-[#D12325]/35 shadow-[0_14px_28px_rgba(21,21,21,0.12)]"
                 >
                   <Share2 className="w-5 h-5" />
                   Share
@@ -163,7 +157,7 @@ export default function GalleryPage() {
                   className={`flex-1 px-5 py-3.5 rounded-2xl font-semibold text-sm sm:text-base transition-all ${
                     activeTab === 'photos'
                       ? 'bg-mango-green text-white shadow-[0_16px_30px_rgba(30,77,61,0.28)]'
-                      : 'bg-white text-[#6f5137] hover:bg-[#f8ead8] border border-[#B07A49]/30'
+                      : 'bg-white text-[#151515] hover:bg-[#FBE8E8] border border-[#D12325]/25'
                   }`}
                 >
                   <span className="flex items-center justify-center gap-2.5">
@@ -177,7 +171,7 @@ export default function GalleryPage() {
                   className={`flex-1 px-5 py-3.5 rounded-2xl font-semibold text-sm sm:text-base transition-all ${
                     activeTab === 'videos'
                       ? 'bg-mango-green text-white shadow-[0_16px_30px_rgba(30,77,61,0.28)]'
-                      : 'bg-white text-[#6f5137] hover:bg-[#f8ead8] border border-[#B07A49]/30'
+                      : 'bg-white text-[#151515] hover:bg-[#FBE8E8] border border-[#D12325]/25'
                   }`}
                 >
                   <span className="flex items-center justify-center gap-2.5">

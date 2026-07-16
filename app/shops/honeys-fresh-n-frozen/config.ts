@@ -1,7 +1,7 @@
-// Shop Configuration for The Sonnet Cafe
+// Shop Configuration for Burger Bazaar
 // All shop-specific data lives here
 
-export type ContactPersonLabel = "The Sonnet Cafe"
+export type ContactPersonLabel = "Burger Bazaar"
 
 export interface ContactPerson {
   label: ContactPersonLabel
@@ -11,126 +11,121 @@ export interface ContactPerson {
 }
 
 export const shopConfig = {
-  name: "The Sonnet Cafe",
-  tagline: "Fresh kitchen • Cafe plates • Bakery",
-  taglineShort: "Fresh food, made with care.",
-  url: "https://sonnet.onelink.cards",
+  name: "Burger Bazaar",
+  tagline: "Big bites. Bold flavours. Built fresh.",
+  taglineShort: "Burgers worth getting messy for.",
+  url: "https://burgerbazaar.onelink.cards",
   cardType: "B2C" as const,
-  keywordBadges: ["4.8 ★ Google Rating", "46 Google reviews", "Fresh kitchen", "Orders 12 PM–10 PM"] as string[],
+  keywordBadges: ["4.4 ★ Delivery Rating", "Smash Burgers", "Loaded Fries", "Zomato & Swiggy"] as string[],
 
   contact: {
-    phones: ["9596019296"],
+    phones: ["9266855210"],
     email: "",
-    address: "The Qureshies, 160, Rajbagh, Srinagar, Jammu and Kashmir 190008",
-    locationLine: "Located at The Qureshies, Rajbagh, Srinagar. Fresh orders are open from 12:00 PM to 10:00 PM.",
-    mapQuery: "The Sonnet Cafe The Qureshies 160 Rajbagh Srinagar 190008",
-    storeHours: "Open daily from 12:00 PM. Delivery orders close at 10:00 PM.",
-    storeHoursStatus: "Opens 12 PM",
-    officePhone: "9596019296",
+    address: "CHC, Door 10040, 1st Floor, Street 101, Ward 50, Sector 4, Zone 3, Channi Himmat, Jammu",
+    locationLine: "Delivery kitchen in Channi Himmat, Jammu, serving smash burgers, fried chicken burgers, loaded fries and desserts.",
+    mapQuery: "Burger Bazaar Channi Himmat Jammu",
+    storeHours: "Delivery-only outlet in Channi Himmat, Jammu.",
+    storeHoursStatus: "Delivery only",
+    officePhone: "9266855210",
   },
 
   contactPersons: [
     {
-      label: "The Sonnet Cafe" as ContactPersonLabel,
-      phoneE164: "919596019296",
-      phoneDisplay: "095960 19296",
-      whatsappE164: "919596019296",
+      label: "Burger Bazaar" as ContactPersonLabel,
+      phoneE164: "919266855210",
+      phoneDisplay: "092668 55210",
+      whatsappE164: "919266855210",
     },
   ] as ContactPerson[],
 
   whatsapp: {
-    defaultPhone: "9596019296",
-    defaultMessage: "Hi The Sonnet Cafe, I would like to place an order. Please share today's fresh availability.",
+    defaultPhone: "9266855210",
+    defaultMessage: "Hi Burger Bazaar, I want to order online: https://burgerbazaar.onelink.cards/menu?mode=order&type=online Please confirm today's availability and final price.",
     showSelector: false,
-    selectorPersons: ["The Sonnet Cafe"] as ContactPersonLabel[],
+    selectorPersons: ["Burger Bazaar"] as ContactPersonLabel[],
   },
 
   social: {
     facebook: "",
-    instagram: "https://www.instagram.com/the.sonnet.cafe/",
-    instagramJammu: "https://www.instagram.com/the.sonnet.cafe/",
+    instagram: "https://www.instagram.com/burgerbazaarjammu/",
+    instagramJammu: "https://www.instagram.com/burgerbazaarjammu/",
     twitter: "",
     linkedin: "",
-    swiggy: "https://www.swiggy.com/restaurants/the-sonnet-rajbagh-srinagar-1328663/dineout?is_retargeting=true&media_source=GoogleReserve&utm_campaign=GoogleMap&utm_source=GoogleReserve",
-    zomato: "https://www.zomato.com/srinagar/restaurants?q=The%20Sonnet%20Cafe",
+    swiggy: "https://www.swiggy.com/search?query=Burger%20Bazaar",
+    zomato: "https://www.zomato.com/jammu/burger-bazaar-channi-himmat/order",
   },
 
   instagramFeed: {
-    title: "Follow on Instagram",
-    subtitle: "Fresh kitchen moments, bakery drops and cafe updates from Rajbagh.",
-    profileHandle: "@the.sonnet.cafe",
+    title: "Follow the Chaos",
+    subtitle: "New drops, loaded burgers, kitchen moments and offers from Burger Bazaar Jammu.",
+    profileHandle: "@burgerbazaarjammu",
     posts: [
       {
-        id: "sonnet-kitchen",
-        image: "/gallery/sonnet-gallery-03.jpeg",
-        caption: "A warm Sonnet corner made for coffee, bakery and slow cafe hours.",
+        id: "burger-bazaar-kitchen",
+        image: "/burger-bazaar-header.jpg",
+        caption: "Freshly packed and ready to pass the chaos.",
         mediaType: "post",
         pinned: true,
-        href: "https://www.instagram.com/the.sonnet.cafe/",
+        href: "https://www.instagram.com/burgerbazaarjammu/",
       },
       {
-        id: "sonnet-bakery",
-        image: "/gallery/sonnet-gallery-01.jpeg",
-        caption: "Coffee poured fresh, finished clean and served with bakery comfort.",
+        id: "burger-bazaar-smash",
+        image: "/burger-bazaar-header.jpg",
+        caption: "Smash burgers, loaded sides and bold drops from Burger Bazaar.",
         mediaType: "reel",
-        href: "https://www.instagram.com/the.sonnet.cafe/",
+        href: "https://www.instagram.com/burgerbazaarjammu/",
       },
       {
-        id: "sonnet-cafe",
-        image: "/gallery/sonnet-gallery-09.jpeg",
-        caption: "Quiet tables, warm lights and the brown-green Sonnet cafe mood.",
+        id: "burger-bazaar-buns",
+        image: "/burger-bazaar-header.jpg",
+        caption: "Housemade buns, signature sauces and serious cravings.",
         mediaType: "post",
-        href: "https://www.instagram.com/the.sonnet.cafe/",
+        href: "https://www.instagram.com/burgerbazaarjammu/",
       },
       {
-        id: "sonnet-orders",
-        image: "/gallery/sonnet-gallery-10.jpeg",
-        caption: "Fresh kitchen, soft seating and cafe updates from Rajbagh.",
+        id: "burger-bazaar-orders",
+        image: "/burger-bazaar-header.jpg",
+        caption: "Burger Bazaar orders packed carefully for delivery across Jammu.",
         mediaType: "post",
-        href: "https://www.instagram.com/the.sonnet.cafe/",
+        href: "https://www.instagram.com/burgerbazaarjammu/",
       },
     ] as Array<{ id: string; image: string; caption: string; mediaType: "post" | "reel"; pinned?: boolean; href: string }>,
   },
 
-  trustBadges: [
-    "4.8★ Google Rating",
-    "Fresh Kitchen",
-    "Fresh Chicken Daily",
-    "Dine-In, Delivery & Takeaway"
-  ] as string[],
+  trustBadges: ["Freshly Smashed", "Housemade Buns", "Veg & Non-Veg", "Delivery & Takeaway"] as string[],
 
   brands: [
     { name: "Fresh Kitchen", tagline: "", logo: "" },
-    { name: "Google Rated 4.8", tagline: "", logo: "" },
-    { name: "Dine-In Reservations", tagline: "", logo: "" },
+    { name: "Housemade Buns", tagline: "", logo: "" },
+    { name: "Packed to Travel", tagline: "", logo: "" },
     { name: "Order Online", tagline: "", logo: "" },
     { name: "Made After Order", tagline: "", logo: "" },
   ],
 
   about: {
-    title: "Welcome to The Sonnet Cafe",
-    shortDescription: "A Rajbagh cafe and bakery built around fresh kitchen prep, fresh chicken, warm bakery desserts, coffee, shakes and comfort plates made close to order time.",
+    title: "Welcome to Burger Bazaar",
+    shortDescription: "Freshly smashed burgers, housemade buns and bold flavours made for serious cravings. Every order is prepared fresh and packed carefully for delivery or takeaway across Jammu.",
   },
   menuUrl: "/menu",
-  menuPdfUrl: "/sonnet-menu.pdf",
+  menuPdfUrl: "",
 
   delivery: {
-    restaurantLat: 34.0669,
-    restaurantLng: 74.8196,
-    radiusKm: 3.5,
-    label: "The Sonnet Cafe, Rajbagh, Srinagar",
+    restaurantLat: 0,
+    restaurantLng: 0,
+    radiusKm: 0,
+    label: "Burger Bazaar, Channi Himmat, Jammu",
   },
 
   ordering: {
-    opensAt: "12:00 PM",
-    closesAt: "10:00 PM",
+    opensAt: "Check live availability",
+    closesAt: "on Zomato or Swiggy",
   },
 
   payment: {
-    upiId: "aliamurtza-1@okicici",
-    upiName: "The Sonnet Cafe",
-    upiQrImageUrl: "/payments/sonnet-upi-qr.png",
-    scannerImage: "/payments/sonnet-upi-qr.png",
+    upiId: "",
+    upiName: "Burger Bazaar",
+    upiQrImageUrl: "",
+    scannerImage: "",
     bank: {
       bankName: "",
       accountNumberMasked: "",
@@ -138,22 +133,22 @@ export const shopConfig = {
       accountHolder: "",
       branchName: ""
     },
-    showScanner: true,
-    showDownloadQR: true,
+    showScanner: false,
+    showDownloadQR: false,
   },
 
   google: {
-    placeId: "ChIJNV8GIZmP4TgRY4lEDqVd8BA",
-    mapsUrl: "https://www.google.com/maps/place/?q=place_id:ChIJNV8GIZmP4TgRY4lEDqVd8BA",
-    reviewsUrl: "https://search.google.com/local/writereview?placeid=ChIJNV8GIZmP4TgRY4lEDqVd8BA",
-    fallbackRating: 4.8,
-    fallbackReviewCount: 46,
+    placeId: "",
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Burger%20Bazaar%20Channi%20Himmat%20Jammu",
+    reviewsUrl: "https://www.zomato.com/jammu/burger-bazaar-channi-himmat/order",
+    fallbackRating: 0,
+    fallbackReviewCount: 0,
   },
 
   seo: {
-    title: "The Sonnet Cafe Rajbagh Srinagar | Sonnet Onelink Menu, Orders & Reviews",
-    description: "The Sonnet Cafe Onelink - 4.8 rated cafe and bakery in Rajbagh, Srinagar. View menu, order online, call, get directions, Zomato, Google reviews and fresh kitchen updates.",
-    keywords: "The Sonnet, the sonnet, The Sonnet Cafe, the sonnet cafe, Sonnet, sonnet, The Sonnet Cafe Srinagar, The Sonnet Cafe Rajbagh, Sonnet Cafe Srinagar, Sonnet Cafe Rajbagh, Sonnet Onelink, The Sonnet Onelink, sonnet.onelink.cards, Rajbagh cafe, Srinagar cafe, Srinagar bakery, cafe bakery Rajbagh, fresh kitchen Srinagar, The Qureshies Rajbagh cafe, Sonnet Cafe menu, Sonnet Cafe order online, Sonnet Cafe Google reviews",
+    title: "Burger Bazaar Jammu | Smash Burgers, Loaded Fries & Delivery",
+    description: "Burger Bazaar OneLink for smash burgers, fried chicken burgers, loaded fries, desserts, delivery and takeaway in Channi Himmat, Jammu.",
+    keywords: "Burger Bazaar, Burger Bazaar Jammu, Burger Bazaar Channi Himmat, smash burgers Jammu, fried chicken burgers Jammu, loaded fries Jammu, burger delivery Jammu",
   },
 
   credits: {
@@ -174,13 +169,13 @@ export const shopConfig = {
   },
 
   assets: {
-    logo: "/sonnet-logo.png",
+    logo: "/burger-bazaar-logo.jpg",
     gallery: "/shops/honeys-fresh-n-frozen/assets/gallery/",
     qr: "",
   },
 
   catalog: [] as Array<{ id: string; title: string; description: string; logo: string; details: string; images: string[] }>,
-  brochures: [{ href: "/sonnet-menu.pdf", title: "Full Menu PDF" }] as Array<{ href: string; title: string }>,
+  brochures: [] as Array<{ href: string; title: string }>,
 }
 
 export type ShopConfig = typeof shopConfig

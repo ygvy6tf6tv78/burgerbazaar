@@ -2,17 +2,26 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, CakeSlice, Leaf, Sandwich, UtensilsCrossed, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'
 import { menuCategories } from '../menu'
 
-// Show only 4 categories on home section (Burger & Pizza, Sandwich, Momos, Wraps)
+// Keep the existing four-card preview using verified Burger Bazaar categories.
 const previewCategories: (keyof typeof menuCategories)[] = [
-  'burgerPizza',
-  'sandwichSalad',
-  'momos',
-  'wraps',
+  'smashBurgers',
+  'vegBurgers',
+  'friesSides',
+  'desserts',
 ]
+
+const previewAssets: Record<(typeof previewCategories)[number], { image: string; icon: LucideIcon }> = {
+  combos: { image: '/burger-bazaar-smash.jpg', icon: UtensilsCrossed },
+  smashBurgers: { image: '/burger-bazaar-smash.jpg', icon: Sandwich },
+  friedChickenBurgers: { image: '/burger-bazaar-smash.jpg', icon: Sandwich },
+  vegBurgers: { image: '/burger-bazaar-veg.jpg', icon: Leaf },
+  friesSides: { image: '/burger-bazaar-fries.jpg', icon: UtensilsCrossed },
+  desserts: { image: '/burger-bazaar-dessert.jpg', icon: CakeSlice },
+}
 
 export default function MenuPreview() {
   return (
@@ -26,17 +35,19 @@ export default function MenuPreview() {
       >
         <div className="section-title-accent mb-3">
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight text-left">
-            Our Menu
+            Explore the Menu
           </h2>
         </div>
-        <p className="text-sm sm:text-base text-slate-300/90 font-medium text-left tracking-wide">
-          Fresh kitchen • Bakery • Made with care
+        <p className="whitespace-nowrap text-sm sm:text-base text-slate-300/90 font-medium text-left tracking-tight">
+          Burgers • loaded sides • desserts • made fresh.
         </p>
       </motion.div>
 
       <div className="grid grid-cols-2 gap-3.5 mb-6">
         {previewCategories.map((key, index) => {
           const category = menuCategories[key]
+          const asset = previewAssets[key]
+          const CategoryIcon = asset.icon
           return (
             <Link key={key} href={`/menu?cat=${key}`} className="block">
               <motion.div
@@ -47,7 +58,7 @@ export default function MenuPreview() {
                 className="relative aspect-square rounded-[24px] overflow-hidden cursor-pointer group border border-white/10 shadow-[0_16px_32px_rgba(0,0,0,0.22)] transition-all duration-300"
               >
                 <Image
-                  src={category.image}
+                  src={asset.image}
                   alt={category.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -61,11 +72,11 @@ export default function MenuPreview() {
                     background: 'linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.82) 28%, rgba(0,0,0,0.54) 55%, rgba(0,0,0,0.18) 82%, rgba(0,0,0,0.04) 100%)',
                   }}
                 />
-                <div className="absolute top-3 right-3 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center z-10 bg-white/15 border border-white/25 shadow-lg backdrop-blur-md">
-                  <span className="text-xl sm:text-2xl">{category.icon}</span>
+                <div className="absolute top-3 right-3 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center z-10 bg-white/92 border border-white shadow-lg backdrop-blur-md">
+                  <CategoryIcon className="h-5 w-5 sm:h-6 sm:w-6 text-[#D12325]" strokeWidth={2.25} aria-hidden />
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-3.5 sm:p-4 z-10">
-                  <h3 className="text-white font-bold text-base sm:text-lg mb-0.5 leading-tight line-clamp-2" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.85)' }}>
+                  <h3 className="whitespace-nowrap text-white font-bold text-[15px] sm:text-[17px] mb-0.5 leading-tight" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.85)' }}>
                     {category.name}
                   </h3>
                   <p className="text-slate-300 text-xs sm:text-sm font-medium leading-snug mb-2.5 line-clamp-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>

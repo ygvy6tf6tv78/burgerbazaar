@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Moon, Sun, ChevronsLeftRight, BookOpenText, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, ChevronsLeftRight, BookOpenText, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ShoppingBag, PackageCheck } from 'lucide-react'
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -17,38 +17,21 @@ import {
   writeOrderType,
   type MangoOrderType,
 } from '../lib/cart-session'
-import { getOrderWindowState, type OrderWindowState } from '../lib/order-hours'
 
 type MenuCategoryKey = keyof typeof menuCategories
 
 const categoryKeys: MenuCategoryKey[] = [
-  'sandwichSalad',
-  'momos',
-  'burgerPizza',
-  'pastaMaggiFries',
-  'healthyDrinks',
-  'wraps',
-  'mojitosSmoothies',
-  'shakesIceCream',
-  'starters',
-  'hotBeverages',
-  'riceNoodlesSoups',
   'combos',
-  'mainCourse',
-  'thali',
+  'smashBurgers',
+  'friedChickenBurgers',
+  'vegBurgers',
+  'friesSides',
   'desserts',
-  'icedCoffee',
-  'shakes',
-  'coolers',
-  'signatureDrinks',
-  'healthyBlends',
-  'icedTea',
-  'teaKehwa',
 ]
 
 // PDF menu in public – opens in phone preview / browser
-const MENU_PDF_URL = '/sonnet-menu.pdf'
-const defaultOrderMessage = "Hi The Sonnet Cafe, I'd like to order from the menu. Please share today's fresh availability."
+const MENU_PDF_URL = 'https://www.zomato.com/jammu/burger-bazaar-channi-himmat/order'
+const defaultOrderMessage = "Hi Burger Bazaar, I'd like to order from the menu. Please confirm availability and live prices."
 
 /** Document scroll — same pattern as /reviews (no nested 100dvh scroller; avoids mobile “half cut” viewport). */
 function scrollElementTopOnPage(element: HTMLElement, paddingTop = 8, behavior: ScrollBehavior = 'auto') {
@@ -79,9 +62,9 @@ function MenuPageInner() {
   const [lastAddedItemId, setLastAddedItemId] = useState<string | null>(null)
   const [cartBarPulse, setCartBarPulse] = useState(false)
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
+  const [showOrderTypeMenu, setShowOrderTypeMenu] = useState(false)
   const [expandedOrderCategory, setExpandedOrderCategory] = useState<MenuCategoryKey | null>(initialCat)
   const [activeFilter, setActiveFilter] = useState<'all' | 'under150' | 'under300' | 'quickBites' | 'meals' | 'drinks' | 'desserts' | 'combos'>('all')
-  const [orderWindow, setOrderWindow] = useState<OrderWindowState>(() => getOrderWindowState())
   const categoryScrollerRef = useRef<HTMLDivElement | null>(null)
   const categoryRefs = useRef<Partial<Record<MenuCategoryKey, HTMLButtonElement | null>>>({})
   const orderSectionRefs = useRef<Partial<Record<MenuCategoryKey, HTMLElement | null>>>({})
@@ -165,26 +148,16 @@ function MenuPageInner() {
     }
   }, [])
 
-  useEffect(() => {
-    setOrderWindow(getOrderWindowState())
-    const interval = window.setInterval(() => setOrderWindow(getOrderWindowState()), 60000)
-    return () => window.clearInterval(interval)
-  }, [])
-
   const currentCategory = menuCategories[activeCategory]
   const currentItemCount = currentCategory.items.length
 
   const openWhatsApp = () => {
-    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9596019296'
+    const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9266855210'
     const e164 = phone.length === 10 ? `91${phone}` : phone
     window.open(getWhatsAppLink(e164, defaultOrderMessage), '_blank')
   }
 
   const addToCart = (menuItem: MenuItem) => {
-    if (!orderWindow.isOpen) {
-      alert(orderWindow.message)
-      return
-    }
     setCart((prev) => {
       const existing = prev.find((item) => item.id === menuItem.id)
       if (existing) return prev.map((item) => item.id === menuItem.id ? { ...item, cartQuantity: item.cartQuantity + 1 } : item)
@@ -226,10 +199,10 @@ function MenuPageInner() {
           if (activeFilter === 'all') return true
           if (activeFilter === 'under150') return price > 0 && price <= 150
           if (activeFilter === 'under300') return price > 0 && price <= 300
-          if (activeFilter === 'quickBites') return ['burgerPizza', 'sandwichSalad', 'momos', 'pastaMaggiFries', 'wraps', 'starters', 'mojitosSmoothies'].includes(key)
-          if (activeFilter === 'meals') return ['mainCourse', 'riceNoodlesSoups', 'thali', 'combos', 'healthyDrinks', 'shakesIceCream'].includes(key)
-          if (activeFilter === 'drinks') return ['desserts', 'icedCoffee', 'shakes', 'coolers', 'signatureDrinks', 'healthyBlends', 'icedTea', 'teaKehwa'].includes(key)
-          if (activeFilter === 'desserts') return ['hotBeverages'].includes(key)
+          if (activeFilter === 'quickBites') return ['smashBurgers', 'friedChickenBurgers', 'vegBurgers', 'friesSides'].includes(key)
+          if (activeFilter === 'meals') return ['combos'].includes(key)
+          if (activeFilter === 'drinks') return false
+          if (activeFilter === 'desserts') return ['desserts'].includes(key)
           if (activeFilter === 'combos') return ['combos'].includes(key)
           return true
         })
@@ -290,10 +263,6 @@ function MenuPageInner() {
   }, [activeFilter, isOrderMode, filteredOrderCategories])
 
   const goToCheckout = () => {
-    if (!orderWindow.isOpen) {
-      alert(orderWindow.message)
-      return
-    }
     writeHandoffToCheckout(cart, orderType)
     router.push('/checkout')
   }
@@ -311,18 +280,18 @@ function MenuPageInner() {
   }
 
   return (
-    <div className={`relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden ${isLightMode ? 'bg-white' : 'bg-[#1a1a1a]'}`}>
+    <div className={`relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden ${isLightMode ? 'bg-[#FFF9F4]' : 'bg-[#151515]'}`}>
       <main
         className={`relative min-h-screen ${isOrderMode ? (cart.length > 0 ? 'pb-[calc(9rem+env(safe-area-inset-bottom))]' : 'pb-[calc(5.5rem+env(safe-area-inset-bottom))]') : 'pb-24'} transition-colors duration-300 w-full max-w-full pl-[max(0.25rem,env(safe-area-inset-left))] pr-[max(0.25rem,env(safe-area-inset-right))] ${
           isLightMode
-            ? 'bg-gradient-to-b from-white via-[#fffaf1] to-white text-slate-900'
-            : 'bg-[radial-gradient(circle_at_top,rgba(176,122,73,0.16),transparent_20rem),linear-gradient(180deg,#111111_0%,#1a1a1a_42%,#0f0f0f_100%)] text-white'
+            ? 'bg-gradient-to-b from-[#FFF9F4] via-[#FBE9E9] to-white text-slate-900'
+            : 'bg-[radial-gradient(circle_at_top,rgba(209,35,37,0.16),transparent_20rem),linear-gradient(180deg,#151515_0%,#1D1D1D_42%,#101010_100%)] text-white'
         }`}
       >
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className={`absolute -top-14 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl ${isLightMode ? 'bg-[#D8C3A5]/20' : 'bg-[#D8C3A5]/10'}`} />
-          <div className={`absolute top-[22rem] -left-20 h-64 w-64 rounded-full blur-3xl ${isLightMode ? 'bg-[#B07A49]/12' : 'bg-[#E9C46A]/10'}`} />
-          <div className={`absolute bottom-[18rem] right-[-5rem] h-72 w-72 rounded-full blur-3xl ${isLightMode ? 'bg-[#D8C3A5]/15' : 'bg-white/[0.05]'}`} />
+          <div className={`absolute -top-14 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl ${isLightMode ? 'bg-[#D12325]/14' : 'bg-[#D12325]/12'}`} />
+          <div className={`absolute top-[22rem] -left-20 h-64 w-64 rounded-full blur-3xl ${isLightMode ? 'bg-[#991B1E]/10' : 'bg-[#D12325]/10'}`} />
+          <div className={`absolute bottom-[18rem] right-[-5rem] h-72 w-72 rounded-full blur-3xl ${isLightMode ? 'bg-[#D12325]/10' : 'bg-white/[0.05]'}`} />
         </div>
 
         <div
@@ -334,7 +303,7 @@ function MenuPageInner() {
           <div className={`w-full max-w-md mx-auto px-2 sm:px-3 ${isOrderMode ? 'pb-2' : 'pb-3'}`}>
             <div
               className={`rounded-[28px] px-2.5 sm:px-3 py-3 border transition-colors duration-300 ${
-                isLightMode ? 'border-amber-200/70 bg-white shadow-sm' : 'border-[#B07A49]/25 bg-white/[0.07] shadow-[0_18px_40px_rgba(0,0,0,0.28)]'
+                isLightMode ? 'border-[#E8D7D2] bg-white shadow-sm' : 'border-[#D12325]/25 bg-white/[0.07] shadow-[0_18px_40px_rgba(0,0,0,0.28)]'
               }`}
             >
               <div className="flex items-center justify-between relative">
@@ -370,7 +339,7 @@ function MenuPageInner() {
                     onClick={() => setIsLightMode((v) => !v)}
                       className={`z-10 relative inline-flex h-8 w-14 items-center rounded-full border transition-colors touch-manipulation ${
                       isLightMode
-                        ? 'border-[#D8C3A5] bg-slate-100 shadow-[0_6px_16px_rgba(73,46,26,0.10)]'
+                        ? 'border-[#E8D7D2] bg-[#FFF9F5] shadow-[0_6px_16px_rgba(21,21,21,0.10)]'
                         : 'border-white/15 bg-slate-800 shadow-[0_10px_24px_rgba(0,0,0,0.35)]'
                     }`}
                     aria-label={isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
@@ -410,29 +379,23 @@ function MenuPageInner() {
                   }`}
                 >
                   <BookOpenText className="w-4 h-4 shrink-0" />
-                  View PDF Menu
+                  View Official Menu
                 </a>
               </div>}
 
               <div className="mt-4">
                 {isOrderMode && (
-                  <>
-                    <Link
-                      href="/order"
-                      className="mb-3 inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-semibold leading-none text-slate-700 shadow-sm active:scale-[0.98]"
-                    >
-                      Change Order Type
-                    </Link>
-                    <div
-                      className={`mb-3 rounded-2xl border px-3 py-2 text-[12px] font-semibold leading-snug ${
-                        orderWindow.isOpen
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                          : 'border-amber-200 bg-amber-50 text-amber-900'
-                      }`}
-                    >
-                      {orderWindow.message} Window: {orderWindow.label}.
-                    </div>
-                  </>
+                  <button
+                    type="button"
+                    onClick={() => setShowOrderTypeMenu(true)}
+                    className="mb-3 flex w-full items-center justify-between rounded-2xl border border-[#E8D7D2] bg-white px-3.5 py-3 text-left shadow-[0_10px_22px_rgba(21,21,21,0.08)] transition-all hover:border-[#D12325]/35 active:scale-[0.99]"
+                  >
+                    <span>
+                      <span className="block text-[11px] font-extrabold uppercase tracking-wide text-[#D12325]">Change Order Type</span>
+                      <span className="mt-0.5 block text-sm font-bold text-slate-900">{orderType === 'takeaway' ? 'Takeaway' : 'Order Online'}</span>
+                    </span>
+                    <ChevronDown className="h-5 w-5 text-slate-500" />
+                  </button>
                 )}
                 <AnimatePresence>
                   {!isOrderMode && showSlideHint && (
@@ -443,9 +406,9 @@ function MenuPageInner() {
                       transition={{ duration: 0.25 }}
                       className="flex items-center justify-center gap-2 mb-3 py-2 px-3 rounded-xl text-sm font-medium"
                       style={{
-                        background: isLightMode ? 'rgba(122, 74, 45, 0.08)' : 'rgba(176,122,73,0.12)',
-                        border: `1px solid ${isLightMode ? 'rgba(122, 74, 45, 0.2)' : 'rgba(176,122,73,0.24)'}`,
-                        color: isLightMode ? '#7B4A2D' : 'rgba(255,255,255,0.95)',
+                        background: isLightMode ? 'rgba(209,35,37,0.08)' : 'rgba(209,35,37,0.12)',
+                        border: `1px solid ${isLightMode ? 'rgba(209,35,37,0.2)' : 'rgba(209,35,37,0.24)'}`,
+                        color: isLightMode ? '#D12325' : 'rgba(255,255,255,0.95)',
                       }}
                     >
                       <ChevronsLeftRight className="w-4 h-4 shrink-0" aria-hidden />
@@ -465,8 +428,8 @@ function MenuPageInner() {
 	                        onClick={() => scrollCategoryStrip('left')}
 	                        className={`inline-flex h-7 items-center gap-1 rounded-full border px-2 text-[10px] font-extrabold uppercase tracking-wide transition-colors ${
 	                          isLightMode
-	                            ? 'border-[#D8C3A5] bg-white text-[#7B4A2D] shadow-sm hover:bg-[#FFF7E8]'
-	                            : 'border-[#E9C46A]/35 bg-white/[0.08] text-[#F8E08E] hover:bg-white/[0.12]'
+	                            ? 'border-[#E8D7D2] bg-white text-[#D12325] shadow-sm hover:bg-[#FBE8E8]'
+	                            : 'border-[#D12325]/35 bg-white/[0.08] text-[#FFB4B5] hover:bg-white/[0.12]'
 	                        }`}
 	                        aria-label="Scroll categories left"
 	                      >
@@ -478,8 +441,8 @@ function MenuPageInner() {
 	                        onClick={() => scrollCategoryStrip('right')}
 	                        className={`inline-flex h-7 items-center gap-1 rounded-full border px-2 text-[10px] font-extrabold uppercase tracking-wide transition-colors ${
 	                          isLightMode
-	                            ? 'border-[#D8C3A5] bg-white text-[#7B4A2D] shadow-sm hover:bg-[#FFF7E8]'
-	                            : 'border-[#E9C46A]/35 bg-white/[0.08] text-[#F8E08E] hover:bg-white/[0.12]'
+	                            ? 'border-[#E8D7D2] bg-white text-[#D12325] shadow-sm hover:bg-[#FBE8E8]'
+	                            : 'border-[#D12325]/35 bg-white/[0.08] text-[#FFB4B5] hover:bg-white/[0.12]'
 	                        }`}
 	                        aria-label="Scroll categories right"
 	                      >
@@ -507,7 +470,7 @@ function MenuPageInner() {
 	                            whileTap={{ scale: 0.97 }}
 	                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
 	                              isActive
-	                                ? 'bg-[#B07A49] text-white border-[#E9C46A] shadow-[0_8px_22px_rgba(176,122,73,0.34)] ring-1 ring-[#E9C46A]/35'
+	                                ? 'bg-[#D12325] text-white border-[#D12325] shadow-[0_8px_22px_rgba(209,35,37,0.30)] ring-1 ring-[#D12325]/25'
 	                                : isLightMode
 	                                  ? 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
 	                                  : 'bg-white/[0.08] text-white/92 border-white/[0.14] hover:bg-white/[0.12] shadow-[0_6px_18px_rgba(0,0,0,0.35)]'
@@ -531,27 +494,26 @@ function MenuPageInner() {
                     <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
                       {[
                         { id: 'all', label: 'All' },
-                        { id: 'under150', label: 'Under ₹150' },
-                        { id: 'under300', label: 'Under ₹300' },
-                        { id: 'quickBites', label: 'Quick Bites' },
-                        { id: 'meals', label: 'Meals' },
-                        { id: 'drinks', label: 'Drinks' },
+                        { id: 'quickBites', label: 'Burgers & Sides' },
+                        { id: 'meals', label: 'Combo Meals' },
                         { id: 'desserts', label: 'Desserts' },
-                        { id: 'combos', label: 'Combos' },
                       ].map((filter) => (
                         <button
                           key={filter.id}
                           type="button"
                           onClick={() => setActiveFilter(filter.id as typeof activeFilter)}
-                          className={`h-9 shrink-0 px-3.5 rounded-full text-sm font-semibold whitespace-nowrap border transition-colors touch-manipulation ${
+                          className={`h-10 shrink-0 px-4 rounded-xl text-sm font-bold whitespace-nowrap border transition-all touch-manipulation ${
                             activeFilter === filter.id
-                              ? 'bg-[#B07A49] text-white border-[#E9C46A] shadow-[0_8px_22px_rgba(176,122,73,0.30)]'
+                              ? 'bg-white text-[#D12325] border-2 border-[#D12325] shadow-[0_8px_20px_rgba(209,35,37,0.16)] ring-2 ring-[#D12325]/10'
                               : isLightMode
-                                ? 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-white'
+                                ? 'bg-white text-slate-700 border-slate-200 shadow-sm hover:border-slate-300'
                                 : 'bg-white/[0.08] text-white/90 border-white/[0.15] hover:bg-white/[0.12]'
                           }`}
                         >
-                          {filter.label}
+                          <span className="inline-flex items-center gap-1.5">
+                            {activeFilter === filter.id && <Check className="h-3.5 w-3.5" />}
+                            {filter.label}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -563,7 +525,7 @@ function MenuPageInner() {
 	                        <button
 	                          type="button"
 	                          onClick={() => scrollCategoryStrip('left')}
-	                          className="inline-flex h-7 items-center gap-1 rounded-full border border-[#D8C3A5] bg-white px-2 text-[10px] font-extrabold uppercase tracking-wide text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
+	                          className="inline-flex h-7 items-center gap-1 rounded-full border border-[#E8D7D2] bg-white px-2 text-[10px] font-extrabold uppercase tracking-wide text-[#D12325] shadow-sm transition-colors hover:bg-[#FBE8E8]"
 	                          aria-label="Scroll categories left"
 	                        >
 	                          <ChevronLeft className="h-3.5 w-3.5" />
@@ -572,7 +534,7 @@ function MenuPageInner() {
 	                        <button
 	                          type="button"
 	                          onClick={() => scrollCategoryStrip('right')}
-	                          className="inline-flex h-7 items-center gap-1 rounded-full border border-[#D8C3A5] bg-white px-2 text-[10px] font-extrabold uppercase tracking-wide text-[#7B4A2D] shadow-sm transition-colors hover:bg-[#FFF7E8]"
+	                          className="inline-flex h-7 items-center gap-1 rounded-full border border-[#E8D7D2] bg-white px-2 text-[10px] font-extrabold uppercase tracking-wide text-[#D12325] shadow-sm transition-colors hover:bg-[#FBE8E8]"
 	                          aria-label="Scroll categories right"
 	                        >
 	                          Right
@@ -593,7 +555,7 @@ function MenuPageInner() {
 	                              whileTap={{ scale: 0.97 }}
 	                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
 	                                isActive
-	                                  ? 'bg-[#B07A49] text-white border-[#E9C46A] shadow-[0_8px_22px_rgba(176,122,73,0.34)] ring-1 ring-[#E9C46A]/35'
+	                                  ? 'bg-[#D12325] text-white border-[#D12325] shadow-[0_8px_22px_rgba(209,35,37,0.30)] ring-1 ring-[#D12325]/25'
 	                                  : 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
 	                              }`}
 	                            >
@@ -667,8 +629,8 @@ function MenuPageInner() {
                       className={`w-full overflow-hidden rounded-[28px] border transition-all duration-200 ${
                         isLightMode
                           ? isOpen
-                            ? 'border-[#B07A49]/45 bg-white shadow-[0_18px_40px_rgba(122,74,45,0.14)] ring-1 ring-[#E9C46A]/30'
-                            : 'border-[#D8C3A5]/70 bg-white shadow-[0_10px_24px_rgba(73,46,26,0.08)] hover:border-[#B07A49]/45'
+                            ? 'border-[#D12325]/40 bg-white shadow-[0_18px_40px_rgba(209,35,37,0.12)] ring-1 ring-[#D12325]/20'
+                            : 'border-[#E8D7D2] bg-white shadow-[0_10px_24px_rgba(21,21,21,0.08)] hover:border-[#D12325]/35'
                           : isOpen
                             ? 'border-white/20 bg-white/[0.08] shadow-lg ring-1 ring-white/10'
                             : 'border-white/10 bg-white/[0.06] hover:bg-white/[0.08]'
@@ -689,10 +651,10 @@ function MenuPageInner() {
                           scheduleScrollToOrderSection(key)
                         }}
                         className={`flex w-full items-center gap-3 px-4 py-4 text-left touch-manipulation active:bg-slate-50/80 ${
-	                          isLightMode ? 'bg-[#FFFCF7] hover:bg-[#FFF7E8]' : 'bg-white/[0.04] hover:bg-white/[0.07]'
+	                          isLightMode ? 'bg-[#FFF9F5] hover:bg-[#FBE8E8]' : 'bg-white/[0.04] hover:bg-white/[0.07]'
                         }`}
                       >
-	                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(73,46,26,0.14)] ring-1 ring-[#D8C3A5]/70">
+	                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(21,21,21,0.14)] ring-1 ring-[#E8D7D2]">
                           <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="56px" unoptimized />
                         </span>
                         <div className="min-w-0 flex-1">
@@ -709,8 +671,8 @@ function MenuPageInner() {
                           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
                             isLightMode
                               ? isOpen
-	                                ? 'bg-[#7B4A2D] text-white'
-	                                : 'bg-white text-[#7B4A2D] shadow-sm ring-1 ring-[#D8C3A5]/80'
+	                                ? 'bg-[#D12325] text-white'
+	                                : 'bg-white text-[#D12325] shadow-sm ring-1 ring-[#D12325]/25'
                               : isOpen
                                 ? 'bg-white/25 text-white'
                                 : 'bg-white/10 text-white'
@@ -742,9 +704,9 @@ function MenuPageInner() {
                                     style={
                                       isLightMode
                                         ? {
-	                                            background: 'linear-gradient(145deg, #ffffff 0%, #fffaf1 58%, #ffffff 100%)',
-	                                            border: '1px solid rgba(216, 195, 165, 0.72)',
-	                                            boxShadow: '0 14px 30px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.96)',
+	                                            background: 'linear-gradient(145deg, #ffffff 0%, #FFF9F5 58%, #ffffff 100%)',
+	                                            border: '1px solid #E8D7D2',
+	                                            boxShadow: '0 14px 30px rgba(21,21,21,0.09), inset 0 1px 0 rgba(255,255,255,0.96)',
                                           }
                                         : {
                                             background: 'radial-gradient(circle at 100% 0%, rgba(176,122,73,0.16), transparent 9rem), linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.045))',
@@ -756,12 +718,17 @@ function MenuPageInner() {
                                     <div className="p-4 relative z-10">
                                       <h3 className={`text-[15px] font-bold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
                                       <p className={`text-sm font-semibold mt-1 ${isLightMode ? 'text-slate-700' : 'text-white/85'}`}>{item.price}</p>
+                                      {item.description && (
+                                        <p className={`mt-2 line-clamp-2 text-[12px] font-medium leading-relaxed ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
+                                          {item.description}
+                                        </p>
+                                      )}
                                       {item.quantity && item.quantity !== '1 portion' && (
                                         <p className={`text-xs mt-1 ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.quantity}</p>
                                       )}
                                       <div className="mt-3 flex justify-end">
                                         {inCartQty > 0 ? (
-                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: 'linear-gradient(135deg,#B07A49,#7B4A2D)', color: '#FFFFFF' }}>
+                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: 'linear-gradient(135deg,#D12325,#991B1E)', color: '#FFFFFF' }}>
                                             <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="w-6 h-6 rounded-full flex items-center justify-center text-white">
                                               <Minus className="w-4 h-4" />
                                             </button>
@@ -779,13 +746,13 @@ function MenuPageInner() {
                                             transition={{ duration: 0.28, ease: 'easeOut' }}
                                             className="relative overflow-hidden h-10 min-w-[120px] rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 border-2"
                                             style={{
-                                              borderColor: '#E9C46A',
-                                              color: isLightMode ? '#7B4A2D' : '#F8E08E',
-	                                              background: isLightMode ? 'linear-gradient(135deg,#FFFFFF,#FFF7E8)' : 'rgba(176,122,73,0.12)',
+                                              borderColor: '#D12325',
+                                              color: isLightMode ? '#D12325' : '#FFF9F4',
+	                                              background: isLightMode ? 'linear-gradient(135deg,#FFFFFF,#FBE9E9)' : 'rgba(209,35,37,0.12)',
                                             }}
                                           >
                                             {lastAddedItemId === item.id && (
-                                              <span className="absolute inset-0 rounded-xl bg-[#E9C46A]/15 animate-ping" />
+                                              <span className="absolute inset-0 rounded-xl bg-[#D12325]/15 animate-ping" />
                                             )}
                                             <span className="relative z-10 inline-flex items-center gap-1.5">
                                               ADD
@@ -828,9 +795,9 @@ function MenuPageInner() {
                       style={
                         isLightMode
                           ? {
-	                              background: 'linear-gradient(145deg, #ffffff 0%, #fffaf1 54%, #ffffff 100%)',
-	                              border: '1px solid rgba(216, 195, 165, 0.72)',
-	                              boxShadow: '0 14px 30px rgba(73, 46, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
+	                              background: 'linear-gradient(145deg, #ffffff 0%, #FFF9F5 54%, #ffffff 100%)',
+	                              border: '1px solid #E8D7D2',
+	                              boxShadow: '0 14px 30px rgba(21,21,21,0.09), inset 0 1px 0 rgba(255,255,255,0.92)',
                             }
                           : {
                               background: 'radial-gradient(circle at 100% 0%, rgba(176,122,73,0.18), transparent 8rem), linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.04))',
@@ -842,16 +809,21 @@ function MenuPageInner() {
                       <div className="p-4 flex flex-col flex-1 min-h-0 gap-0 relative z-10">
                         <div className="flex items-center justify-end gap-2 shrink-0 flex-wrap">
                           <span
-	                            className={`rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-[#7B4A2D] border-[#D8C3A5] shadow-[0_6px_14px_rgba(73,46,26,0.08)]' : 'bg-[#E9C46A] text-[#1a1a1a] border-[#FFE8A3] shadow-[0_8px_18px_rgba(233,196,106,0.22)]'}`}
+	                            className={`rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-[#D12325] border-[#E8D7D2] shadow-[0_6px_14px_rgba(21,21,21,0.08)]' : 'bg-[#D12325] text-white border-[#FF787A] shadow-[0_8px_18px_rgba(209,35,37,0.22)]'}`}
                           >
                             {item.price}
                           </span>
                         </div>
                         <h3
-                          className={`text-[14px] sm:text-[15px] font-bold leading-snug line-clamp-3 flex-1 min-h-0 mt-3 overflow-hidden break-words ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}
+                          className={`text-[14px] sm:text-[15px] font-bold leading-snug line-clamp-2 min-h-0 mt-3 overflow-hidden break-words ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}
                         >
                           {item.name}
                         </h3>
+                        {item.description && (
+                          <p className={`mt-2 line-clamp-2 text-[11px] font-medium leading-relaxed ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
+                            {item.description}
+                          </p>
+                        )}
                         {item.quantity && item.quantity !== '1 portion' && (
                           <p className={`text-[11px] mt-1.5 truncate shrink-0 font-medium ${isLightMode ? 'text-slate-600' : 'text-white/55'}`}>{item.quantity}</p>
                         )}
@@ -864,6 +836,61 @@ function MenuPageInner() {
           </div>
         </div>
       </main>
+
+      <AnimatePresence>
+        {isOrderMode && showOrderTypeMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100002] flex items-end justify-center bg-black/45 p-3 backdrop-blur-[2px]"
+            onClick={() => setShowOrderTypeMenu(false)}
+          >
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 24, opacity: 0 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              className="mb-[max(0.5rem,env(safe-area-inset-bottom))] w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_24px_60px_rgba(0,0,0,0.28)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <div>
+                  <p className="text-lg font-extrabold text-slate-950">Change Order Type</p>
+                  <p className="text-xs font-medium text-slate-500">Choose how you want your order.</p>
+                </div>
+                <button type="button" onClick={() => setShowOrderTypeMenu(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-700">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <Link
+                  href="/menu?mode=order&type=online"
+                  onClick={() => {
+                    writeOrderType('online')
+                    setShowOrderTypeMenu(false)
+                  }}
+                  className={`flex min-h-[108px] flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-all ${orderType === 'online' ? 'border-[#D12325] bg-[#FBE8E8] text-[#D12325] ring-2 ring-[#D12325]/10' : 'border-slate-200 bg-white text-slate-800'}`}
+                >
+                  <ShoppingBag className="h-6 w-6" />
+                  <span className="text-sm font-extrabold">Order Online</span>
+                </Link>
+                <Link
+                  href="/menu?mode=order&type=takeaway"
+                  onClick={() => {
+                    writeOrderType('takeaway')
+                    setShowOrderTypeMenu(false)
+                  }}
+                  className={`flex min-h-[108px] flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-all ${orderType === 'takeaway' ? 'border-[#D12325] bg-[#FBE8E8] text-[#D12325] ring-2 ring-[#D12325]/10' : 'border-slate-200 bg-white text-slate-800'}`}
+                >
+                  <PackageCheck className="h-6 w-6" />
+                  <span className="text-sm font-extrabold">Takeaway</span>
+                </Link>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {isOrderMode && showCategoryMenu && (
@@ -910,10 +937,10 @@ function MenuPageInner() {
                       }}
                       className="w-full px-4 py-3.5 text-left flex items-center justify-between border-b border-slate-100/90 last:border-b-0"
                     >
-                      <span className={`text-[16px] font-semibold ${isActive ? 'text-[#7B4A2D]' : 'text-slate-800'}`}>
+                      <span className={`text-[16px] font-semibold ${isActive ? 'text-[#D12325]' : 'text-slate-800'}`}>
                         {cat.name}
                       </span>
-                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[#7B4A2D]' : 'text-slate-500'}`}>
+                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[#D12325]' : 'text-slate-500'}`}>
                         {cat.items.length}
                       </span>
                     </button>
@@ -944,11 +971,11 @@ function MenuPageInner() {
                   onClick={goToCheckout}
                   animate={cartBarPulse ? { scale: [1, 1.02, 1] } : { scale: 1 }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_32px_rgba(176,122,73,0.34)] flex items-center justify-between px-4 border border-[#E9C46A]/40"
-                  style={{ background: 'linear-gradient(135deg,#B07A49,#7B4A2D)' }}
+                  className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_32px_rgba(209,35,37,0.30)] flex items-center justify-between px-4 border border-[#D12325]/40"
+                  style={{ background: 'linear-gradient(135deg,#D12325,#991B1E)' }}
                 >
 	                  <span className="flex min-w-0 items-center gap-2.5">
-	                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/95 text-[13px] font-extrabold text-[#7B4A2D] shadow-sm">
+	                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/95 text-[13px] font-extrabold text-[#D12325] shadow-sm">
 	                      {getTotalItems()}
 	                    </span>
 	                    <span className="min-w-0 text-left">
@@ -956,7 +983,7 @@ function MenuPageInner() {
 	                        {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'} added
 	                      </span>
 	                      <span className="block text-[12px] font-semibold text-white/80">
-	                        Total ₹{getTotalPrice().toFixed(0)}
+	                        Live price confirmed at checkout
 	                      </span>
 	                    </span>
 	                  </span>

@@ -1,32 +1,32 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Sparkles, Utensils, ChefHat, Heart } from 'lucide-react'
+import { Flame, Sandwich, PackageCheck, Salad } from 'lucide-react'
 
 const services = [
   {
     id: 'service-1',
-    icon: Sparkles,
-    title: 'Fresh Kitchen',
-    description: 'Food is prepared close to order time in a clean, cared-for kitchen.',
+    icon: Flame,
+    title: 'Smashed Fresh',
+    description: 'Every burger is prepared fresh after the order is received.',
   },
   {
     id: 'service-2',
-    icon: Utensils,
-    title: 'Fresh Chicken Daily',
-    description: 'Chicken plates are built around fresh stock and balanced cafe-style flavours.',
+    icon: Sandwich,
+    title: 'Housemade Buns',
+    description: 'Soft housemade buns made to hold every loaded bite together.',
   },
   {
     id: 'service-3',
-    icon: ChefHat,
-    title: 'Comfort, Not Confusion',
-    description: 'Starters, soups, burgers, pizzas, mains, rice meals, bakery desserts and drinks are grouped for quick reading.',
+    icon: PackageCheck,
+    title: 'Packed to Travel',
+    description: 'Every order is packed carefully for delivery and takeaway.',
   },
   {
     id: 'service-4',
-    icon: Heart,
-    title: 'Rated 4.8 on Google',
-    description: 'A Rajbagh favourite for dine-in, takeaway and direct online ordering.',
+    icon: Salad,
+    title: 'Veg & Non-Veg',
+    description: 'Strong options for both vegetarian and non-vegetarian cravings.',
   },
 ]
 
@@ -42,15 +42,15 @@ export default function Services() {
       <div className="mb-6">
         <div className="section-title-accent mb-2">
             <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight text-left">
-            Why The Sonnet Cafe?
+            Why Burger Bazaar?
           </h2>
         </div>
-        <p className="text-sm sm:text-base text-slate-300/90 font-normal text-left">
-          Fresh food • Bakery • Mains • Direct Orders
+        <p className="whitespace-nowrap text-sm sm:text-base text-slate-300/90 font-normal text-left tracking-tight">
+          Freshly prepared • Bold flavours • Built for delivery
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-3.5">
         {services.map((service, index) => {
           const IconComponent = service.icon
           return (
@@ -60,27 +60,27 @@ export default function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.05, duration: 0.3, ease: 'easeOut' }}
-              className="group relative rounded-[25px] p-5 overflow-hidden"
+              className="group relative rounded-[25px] p-5 overflow-hidden transition-transform duration-300 hover:-translate-y-0.5"
               style={{
-                background: 'linear-gradient(135deg, #D8C3A5 0%, #F4E9DC 35%, #ffffff 72%, #FAF5EF 100%)',
-                border: '1px solid rgba(216, 195, 165, 0.44)',
-                boxShadow: '0 10px 28px rgba(15, 23, 42, 0.08), 0 2px 10px rgba(216, 195, 165, 0.12)',
+                background: 'linear-gradient(135deg, #FBE9E9 0%, #FFF9F4 35%, #ffffff 72%, #FFF9F4 100%)',
+                border: '1px solid rgba(209, 35, 37, 0.28)',
+                boxShadow: '0 14px 32px rgba(15, 23, 42, 0.10), 0 4px 14px rgba(209, 35, 37, 0.11)',
               }}
             >
               <div className="absolute inset-x-0 top-0 h-20 opacity-65 pointer-events-none bg-gradient-to-b from-white/85 to-transparent" />
-              <div className="absolute right-4 top-4 text-[10px] font-bold tracking-[0.22em] text-slate-400">
+              <div className="absolute right-4 top-4 rounded-full border border-[#D12325]/15 bg-white/80 px-2 py-1 text-[9px] font-black tracking-[0.18em] text-[#D12325] shadow-sm">
                   {String(index + 1).padStart(2, '0')}
               </div>
 
               <div className="relative z-10 flex items-start gap-4 transition-all duration-300 group-hover:-translate-y-0.5">
                 <div
-                  className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#D8C3A5]/60"
+                  className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#D12325]/30"
                   style={{
-                    background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, #D8C3A5 100%)',
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, #FBE9E9 100%)',
                     boxShadow: '0 8px 18px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255,255,255,0.92)',
                   }}
                 >
-                  <IconComponent className="w-7 h-7 relative z-10" style={{ color: '#7B4A2D' }} strokeWidth={2} />
+                  <IconComponent className="w-7 h-7 relative z-10" style={{ color: '#D12325' }} strokeWidth={2} />
                 </div>
 
                 <div className="flex-1 relative z-10 pr-7">

@@ -94,12 +94,12 @@ const config: Config = {
           green: '#228B22',
         },
         mango: {
-          primary: '#7B4A2D',
-          primarySoft: '#B07A49',
-          green: '#7B4A2D',
-          greenSoft: '#9A6A43',
-          lightGreen: '#F3E3CF',
-          textDark: '#302318',
+          primary: '#D12325',
+          primarySoft: '#991B1E',
+          green: '#D12325',
+          greenSoft: '#991B1E',
+          lightGreen: '#FBE9E9',
+          textDark: '#171717',
         },
       },
       borderRadius: {
