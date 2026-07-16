@@ -19,27 +19,27 @@ export default function LoadingScreen() {
       <div className="relative flex h-[390px] w-full max-w-[390px] items-center justify-center">
         <motion.div
           initial={{ opacity: 0, x: '-50%', y: 0, scale: 0.9 }}
-          animate={{ opacity: [0, 1, 1, 1, 0], x: '-50%', y: [0, 0, 0, -68, -92], scale: [0.9, 1, 1, 0.98, 0.94] }}
-          transition={{ duration: 3.22, times: [0, 0.15, 0.40, 0.72, 1], ease: [0.22, 0.61, 0.36, 1] }}
-          className="absolute left-1/2 top-[34px] h-[190px] w-[270px]"
+          animate={{ opacity: [0, 1, 1, 1, 1, 0], x: '-50%', y: [0, 0, 0, -64, -82, -90], scale: [0.9, 1, 1, 1, 0.98, 0.95] }}
+          transition={{ duration: 3.8, times: [0, 0.12, 0.40, 0.62, 0.78, 1], ease: [0.22, 0.61, 0.36, 1] }}
+          className="absolute left-1/2 top-[16px] z-10 h-[225px] w-[330px]"
         >
-          <Image src="/burger-loader-top.png" alt="" fill priority className="object-contain" sizes="270px" />
+          <Image src="/burger-loader-top.png" alt="" fill priority className="object-contain" sizes="330px" />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, x: '-50%', y: 0, scale: 0.9 }}
-          animate={{ opacity: [0, 1, 1, 1, 0], x: '-50%', y: [0, 0, 0, 68, 92], scale: [0.9, 1, 1, 0.98, 0.94] }}
-          transition={{ delay: 0.08, duration: 3.14, times: [0, 0.15, 0.39, 0.71, 1], ease: [0.22, 0.61, 0.36, 1] }}
-          className="absolute left-1/2 top-[120px] h-[150px] w-[278px]"
+          animate={{ opacity: [0, 1, 1, 1, 1, 0], x: '-50%', y: [0, 0, 0, 64, 82, 90], scale: [0.9, 1, 1, 1, 0.98, 0.95] }}
+          transition={{ delay: 0.06, duration: 3.74, times: [0, 0.12, 0.39, 0.61, 0.78, 1], ease: [0.22, 0.61, 0.36, 1] }}
+          className="absolute left-1/2 top-[108px] z-10 h-[210px] w-[380px]"
         >
-          <Image src="/burger-loader-bottom.png" alt="" fill priority className="object-contain" sizes="278px" />
+          <Image src="/burger-loader-bottom.png" alt="" fill priority className="object-contain" sizes="380px" />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.58, rotate: -3 }}
-          animate={{ opacity: [0, 0, 0, 1, 1, 1], scale: [0.58, 0.58, 0.7, 1, 1.13, 1.08], rotate: [-3, -3, -3, 0, 1.5, 0] }}
-          transition={{ duration: 3.62, times: [0, 0.35, 0.48, 0.64, 0.84, 1], ease: [0.22, 0.61, 0.36, 1] }}
-          className="relative z-10 h-[180px] w-[320px] drop-shadow-[0_22px_42px_rgba(0,0,0,0.55)]"
+          initial={{ opacity: 0, scale: 0.54, rotate: -2 }}
+          animate={{ opacity: [0, 0, 0, 1, 1, 1], scale: [0.54, 0.54, 0.68, 1, 1.12, 1.08], rotate: [-2, -2, -2, 0, 1.2, 0] }}
+          transition={{ duration: 3.8, times: [0, 0.60, 0.68, 0.78, 0.90, 1], ease: [0.22, 0.61, 0.36, 1] }}
+          className="relative z-0 h-[184px] w-[326px] drop-shadow-[0_22px_42px_rgba(0,0,0,0.55)]"
         >
           <Image src="/burger-loader-wordmark.png" alt="Burger Bazaar" fill priority className="object-contain" sizes="320px" />
         </motion.div>
@@ -47,8 +47,8 @@ export default function LoadingScreen() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: [0, 0, 1, 1], y: [8, 8, 0, 0] }}
-          transition={{ duration: 3.62, times: [0, 0.60, 0.74, 1] }}
-          className="absolute bottom-1 left-0 right-0 text-center"
+          transition={{ duration: 3.8, times: [0, 0.76, 0.86, 1] }}
+          className="absolute bottom-1 left-0 right-0 z-20 text-center"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-white/70">Loading the chaos</p>
           <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">Powered by OneLink</p>
