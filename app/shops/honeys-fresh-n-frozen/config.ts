@@ -62,7 +62,7 @@ export const shopConfig = {
     posts: [
       {
         id: "burger-bazaar-kitchen",
-        image: "/burger-bazaar-header.jpg",
+        image: "/burger-bazaar-brand-3.jpg",
         caption: "Freshly packed and ready to pass the chaos.",
         mediaType: "post",
         pinned: true,
@@ -70,21 +70,21 @@ export const shopConfig = {
       },
       {
         id: "burger-bazaar-smash",
-        image: "/burger-bazaar-header.jpg",
+        image: "/burger-bazaar-brand-2.jpg",
         caption: "Smash burgers, loaded sides and bold drops from Burger Bazaar.",
         mediaType: "reel",
         href: "https://www.instagram.com/burgerbazaarjammu/",
       },
       {
         id: "burger-bazaar-buns",
-        image: "/burger-bazaar-header.jpg",
+        image: "/burger-bazaar-brand-1.jpg",
         caption: "Housemade buns, signature sauces and serious cravings.",
         mediaType: "post",
         href: "https://www.instagram.com/burgerbazaarjammu/",
       },
       {
         id: "burger-bazaar-orders",
-        image: "/burger-bazaar-header.jpg",
+        image: "/burger-bazaar-brand-4.jpg",
         caption: "Burger Bazaar orders packed carefully for delivery across Jammu.",
         mediaType: "post",
         href: "https://www.instagram.com/burgerbazaarjammu/",
@@ -107,7 +107,7 @@ export const shopConfig = {
     shortDescription: "Freshly smashed burgers, housemade buns and bold flavours made for serious cravings. Every order is prepared fresh and packed carefully for delivery or takeaway across Jammu.",
   },
   menuUrl: "/menu",
-  menuPdfUrl: "",
+  menuPdfUrl: "/burger-bazaar-menu.pdf",
 
   delivery: {
     restaurantLat: 0,

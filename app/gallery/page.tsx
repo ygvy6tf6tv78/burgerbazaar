@@ -4,15 +4,18 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, ChevronLeft, ChevronRight, X, Image as ImageIcon, Video, Share2 } from 'lucide-react'
-import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
+import { ArrowLeft, ChevronLeft, ChevronRight, X, Image as ImageIcon, Video } from 'lucide-react'
 
 // Gallery images from public/gallery folder
 const galleryImages = [
-  '/burger-bazaar-header.jpg',
-  '/burger-bazaar-header.jpg',
-  '/burger-bazaar-header.jpg',
-  '/burger-bazaar-header.jpg',
+  '/burger-bazaar-brand-1.jpg',
+  '/burger-bazaar-brand-2.jpg',
+  '/burger-bazaar-brand-3.jpg',
+  '/burger-bazaar-brand-4.jpg',
+  '/burger-bazaar-menu-smash.jpeg',
+  '/burger-bazaar-menu-veg.jpeg',
+  '/burger-bazaar-menu-fries.jpeg',
+  '/burger-bazaar-menu-dessert.jpeg',
 ]
 
 // No videos – show banner when on Videos tab
@@ -70,42 +73,29 @@ export default function GalleryPage() {
     setPhotoIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))
   }
 
-  const handleShareContact = async () => {
-    const shareText = `${shopConfig.name} - ${shopConfig.tagline}. Call ${shopConfig.contact.officePhone}. ${shopConfig.contact.address}`
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: shopConfig.name, text: shareText, url: shopConfig.url })
-        return
-      } catch {
-      }
-    }
-    await navigator.clipboard.writeText(`${shareText}\n${shopConfig.url}`)
-    alert('Contact copied to clipboard.')
-  }
-
   return (
     <>
       <main className="relative min-h-screen overflow-x-hidden pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]" style={{ backgroundColor: '#151515' }}>
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#D12325]/20 blur-3xl" />
           <div className="absolute top-[18rem] -left-20 h-64 w-64 rounded-full bg-mango-green/12 blur-3xl" />
-          <div className="absolute bottom-[12rem] right-[-4rem] h-72 w-72 rounded-full bg-white/45 blur-3xl" />
+          <div className="absolute bottom-[12rem] right-[-4rem] h-72 w-72 rounded-full bg-[#D12325]/10 blur-3xl" />
         </div>
 
         <div
           className="sticky top-0 z-20 backdrop-blur-xl"
           style={{
             paddingTop: 'max(0.45rem, env(safe-area-inset-top))',
-            background: 'linear-gradient(180deg, rgba(255,248,238,0.94) 0%, rgba(246,230,209,0.72) 100%)',
+            background: 'linear-gradient(180deg, rgba(21,21,21,0.98) 0%, rgba(21,21,21,0.82) 100%)',
           }}
         >
           <div className="max-w-md mx-auto px-1 pb-3 relative z-10">
-            <div className="rounded-[28px] border border-[#D12325]/20 bg-white/90 shadow-[0_20px_40px_rgba(21,21,21,0.12)] px-3 sm:px-4 py-3.5">
+            <div className="px-1 py-3.5">
               <div className="relative flex items-center justify-between">
                 <Link
                   href="/"
                   prefetch
-                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[#D12325]/25 bg-white transition-colors hover:bg-[#FBE8E8] active:scale-[0.97] touch-manipulation shadow-[0_10px_20px_rgba(21,21,21,0.10)]"
+                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/15 bg-white/10 transition-colors hover:bg-white/15 active:scale-[0.97] touch-manipulation backdrop-blur-md"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     if (typeof window !== 'undefined') {
@@ -113,42 +103,28 @@ export default function GalleryPage() {
                     }
                   }}
                 >
-                  <ArrowLeft className="h-5 w-5 shrink-0 text-[#302318]" strokeWidth={2.25} aria-hidden />
+                  <ArrowLeft className="h-5 w-5 shrink-0 text-white" strokeWidth={2.25} aria-hidden />
                 </Link>
 
                 <div className="pointer-events-none absolute inset-x-0 text-center">
-                  <h1 className="text-lg sm:text-xl font-bold text-[#302318] tracking-tight">Gallery</h1>
+                  <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">Gallery</h1>
                 </div>
 
-                <div className="rounded-full border border-[#D12325]/25 bg-white px-3 py-1.5 text-xs font-semibold text-[#991B1E] shadow-[0_10px_20px_rgba(21,21,21,0.10)]">
+                <div className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
                   {activeTab === 'photos' ? `${galleryImages.length} Photos` : `${galleryVideos.length} Videos`}
                 </div>
               </div>
 
               <div className="mt-3 pl-[3px]">
-                <p className="text-sm text-[#777777]">Smash burgers, loaded fries, desserts and Burger Bazaar moments.</p>
+                <p className="text-sm text-white/65">Food, fire and Burger Bazaar moments.</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="max-w-md mx-auto py-4 sm:py-6 relative z-10">
-          <div className="section-shell section-shell-light">
-            <div className="section-shell-inner p-5 sm:p-6">
-              <div className="mb-5">
-                <div className="section-title-accent mb-2">
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#171717]">Fresh from the Kitchen</h2>
-                </div>
-                <p className="text-sm text-[#777777]">Browse Burger Bazaar packaging, kitchen and delivery moments.</p>
-                <button
-                  type="button"
-                  onClick={handleShareContact}
-                  className="mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-2xl bg-white text-[#D12325] font-bold border border-[#D12325]/35 shadow-[0_14px_28px_rgba(21,21,21,0.12)]"
-                >
-                  <Share2 className="w-5 h-5" />
-                  Share
-                </button>
-              </div>
+          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-[#FFF9F5] shadow-[0_24px_54px_rgba(0,0,0,0.32)]">
+            <div className="p-4 sm:p-5">
 
               <div className="flex gap-3 mb-5">
                 <motion.button
@@ -182,14 +158,14 @@ export default function GalleryPage() {
               </div>
 
               {activeTab === 'photos' && galleryImages.length > 0 && (
-                <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="columns-2 gap-2.5 sm:gap-3">
                   {galleryImages.map((imageSrc, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.2, delay: index * 0.03 }}
-                      className="rounded-[22px] shadow-[0_18px_34px_rgba(0,0,0,0.24)] aspect-square overflow-hidden cursor-pointer group hover:shadow-xl hover:-translate-y-1 transition-all relative border border-white/10"
+                      className={`relative mb-2.5 break-inside-avoid overflow-hidden rounded-[20px] border border-black/5 shadow-[0_14px_28px_rgba(0,0,0,0.18)] cursor-pointer group transition-all hover:-translate-y-0.5 hover:shadow-xl ${index < 4 ? 'aspect-[4/5]' : 'aspect-video'}`}
                       onClick={() => openLightbox(index)}
                     >
                       <Image

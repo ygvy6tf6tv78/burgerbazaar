@@ -5,15 +5,14 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Share2 } from 'lucide-react'
-import { shopConfig } from '../config'
+import { ArrowRight } from 'lucide-react'
 
 // Gallery images from public/gallery folder
 const galleryImages = [
-  '/burger-bazaar-smash.jpg',
-  '/burger-bazaar-veg.jpg',
-  '/burger-bazaar-fries.jpg',
-  '/burger-bazaar-dessert.jpg',
+  '/burger-bazaar-menu-smash.jpeg',
+  '/burger-bazaar-menu-veg.jpeg',
+  '/burger-bazaar-brand-4.jpg',
+  '/burger-bazaar-brand-2.jpg',
 ]
 
 const visibleImages = galleryImages.slice(0, 4)
@@ -35,25 +34,6 @@ export default function Gallery() {
       sessionStorage.setItem('fromGallery', 'true')
     }
     router.push('/gallery')
-  }
-
-  const handleShareContact = async () => {
-    const shareText = `${shopConfig.name} - ${shopConfig.tagline}. Call ${shopConfig.contact.officePhone}. ${shopConfig.contact.address}`
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shopConfig.name,
-          text: shareText,
-          url: shopConfig.url,
-        })
-        return
-      } catch {
-      }
-    }
-
-    await navigator.clipboard.writeText(`${shareText}\n${shopConfig.url}`)
-    alert('Contact copied to clipboard.')
   }
 
   return (
@@ -107,7 +87,7 @@ export default function Gallery() {
         transition={{ delay: 0.15, duration: 0.3 }}
         className="mt-5"
       >
-        <div className="grid grid-cols-2 gap-2">
+        <div>
           <Link
             href="/gallery"
             onClick={() => {
@@ -115,27 +95,19 @@ export default function Gallery() {
                 sessionStorage.setItem('fromGallery', 'true')
               }
             }}
-            className="min-h-[48px] bg-mango-green hover:bg-mango-greenSoft text-white font-bold px-2.5 rounded-2xl shadow-[0_12px_24px_rgba(209,35,37,0.22)] hover:shadow-[0_16px_28px_rgba(209,35,37,0.28)] transition-all flex items-center justify-center gap-1.5"
+            className="min-h-[50px] w-full bg-mango-green hover:bg-mango-greenSoft text-white font-bold px-4 rounded-2xl shadow-[0_12px_24px_rgba(209,35,37,0.22)] hover:shadow-[0_16px_28px_rgba(209,35,37,0.28)] transition-all flex items-center justify-center gap-2"
           >
             <span className="flex -space-x-2 shrink-0" aria-hidden>
               <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
-                <Image src="/burger-bazaar-logo.jpg" alt="" fill className="object-cover" sizes="28px" />
+                <Image src="/burger-bazaar-sticker.png" alt="" fill className="object-contain p-0.5" sizes="28px" />
               </span>
               <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
-                <Image src="/burger-bazaar-header.jpg" alt="" fill className="object-cover" sizes="28px" />
+                <Image src="/burger-bazaar-menu-smash.jpeg" alt="" fill className="object-cover" sizes="28px" />
               </span>
             </span>
             <span className="whitespace-nowrap text-sm">View Gallery</span>
             <ArrowRight className="w-4 h-4 shrink-0" />
           </Link>
-          <button
-            type="button"
-            onClick={handleShareContact}
-            className="min-h-[48px] bg-white text-[#D12325] text-sm font-bold px-3 rounded-2xl border border-[#D12325]/35 shadow-[0_10px_20px_rgba(21,21,21,0.10)] hover:shadow-[0_14px_24px_rgba(209,35,37,0.14)] transition-all flex items-center justify-center gap-2"
-          >
-            <Share2 className="w-4 h-4" />
-            Share
-          </button>
         </div>
       </motion.div>
     </section>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { ArrowRight, Instagram, Play, Pin } from 'lucide-react'
+import { ArrowRight, Play, Pin } from 'lucide-react'
 import { shopConfig } from '../config'
 
 type FeedPost = {
@@ -107,8 +107,8 @@ export default function InstagramFeed() {
             <p className="truncate text-sm font-semibold text-white">{feed.profileHandle}</p>
             <p className="truncate text-xs text-slate-400">Posts, reels and updates from Burger Bazaar Jammu</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] shadow-[0_10px_22px_rgba(221,42,123,0.24)] transition-transform group-hover:scale-105">
-            <Instagram className="h-5 w-5 text-white" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white p-2 shadow-[0_10px_22px_rgba(221,42,123,0.24)] transition-transform group-hover:scale-105">
+            <Image src="/instagram-official.png" alt="Instagram" width={24} height={24} className="h-6 w-6 object-contain" />
           </div>
         </a>
       </motion.div>
@@ -155,7 +155,7 @@ export default function InstagramFeed() {
                     </>
                   ) : (
                     <>
-                      <Instagram className="w-3.5 h-3.5" />
+                      <Image src="/instagram-official.png" alt="" width={14} height={14} className="h-3.5 w-3.5 object-contain" aria-hidden />
                       Post
                     </>
                   )}
@@ -196,12 +196,14 @@ export default function InstagramFeed() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.12, duration: 0.3 }}
-        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 px-6 py-4 font-semibold text-white shadow-[0_18px_34px_rgba(221,42,123,0.18)] transition-all hover:shadow-[0_22px_40px_rgba(221,42,123,0.24)]"
+        className="mt-5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[18px] border-0 px-6 py-4 font-bold text-white shadow-[0_18px_34px_rgba(221,42,123,0.22)] outline outline-1 outline-white/15 transition-all hover:shadow-[0_22px_40px_rgba(221,42,123,0.28)]"
         style={{
           background: 'linear-gradient(90deg, #833AB4 0%, #DD2A7B 52%, #F58529 100%)',
         }}
       >
-        <Instagram className="w-5 h-5" />
+        <span className="grid h-8 w-8 place-items-center rounded-full bg-white p-1.5 shadow-sm">
+          <Image src="/instagram-official.png" alt="Instagram" width={22} height={22} className="h-full w-full object-contain" />
+        </span>
         View Full Instagram
         <ArrowRight className="w-4 h-4" />
       </motion.a>

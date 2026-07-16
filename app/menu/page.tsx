@@ -21,17 +21,18 @@ import {
 type MenuCategoryKey = keyof typeof menuCategories
 
 const categoryKeys: MenuCategoryKey[] = [
-  'combos',
   'smashBurgers',
   'friedChickenBurgers',
-  'vegBurgers',
-  'friesSides',
+  'dirtyFries',
+  'wings',
+  'combos',
   'desserts',
+  'drinks',
 ]
 
 // PDF menu in public – opens in phone preview / browser
-const MENU_PDF_URL = 'https://www.zomato.com/jammu/burger-bazaar-channi-himmat/order'
-const defaultOrderMessage = "Hi Burger Bazaar, I'd like to order from the menu. Please confirm availability and live prices."
+const MENU_PDF_URL = shopConfig.menuPdfUrl
+const defaultOrderMessage = "Hi Burger Bazaar, I'd like to order from the menu. Please confirm availability."
 
 /** Document scroll — same pattern as /reviews (no nested 100dvh scroller; avoids mobile “half cut” viewport). */
 function scrollElementTopOnPage(element: HTMLElement, paddingTop = 8, behavior: ScrollBehavior = 'auto') {
@@ -199,9 +200,9 @@ function MenuPageInner() {
           if (activeFilter === 'all') return true
           if (activeFilter === 'under150') return price > 0 && price <= 150
           if (activeFilter === 'under300') return price > 0 && price <= 300
-          if (activeFilter === 'quickBites') return ['smashBurgers', 'friedChickenBurgers', 'vegBurgers', 'friesSides'].includes(key)
+          if (activeFilter === 'quickBites') return ['smashBurgers', 'friedChickenBurgers', 'dirtyFries', 'wings'].includes(key)
           if (activeFilter === 'meals') return ['combos'].includes(key)
-          if (activeFilter === 'drinks') return false
+          if (activeFilter === 'drinks') return key === 'drinks'
           if (activeFilter === 'desserts') return ['desserts'].includes(key)
           if (activeFilter === 'combos') return ['combos'].includes(key)
           return true
@@ -379,7 +380,7 @@ function MenuPageInner() {
                   }`}
                 >
                   <BookOpenText className="w-4 h-4 shrink-0" />
-                  View Official Menu
+                  View PDF Menu
                 </a>
               </div>}
 
@@ -458,7 +459,7 @@ function MenuPageInner() {
                   </p>
 	                )}
 	                {!isOrderMode && (
-		                  <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
+		                  <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide py-1 pl-0.5 pr-6 scroll-px-3" style={{ WebkitMaskImage: 'linear-gradient(to right, #000 0%, #000 calc(100% - 28px), transparent 100%)', maskImage: 'linear-gradient(to right, #000 0%, #000 calc(100% - 28px), transparent 100%)' }}>
 	                      {categoryKeys.map((key) => {
 	                        const cat = menuCategories[key]
 	                        const isActive = activeCategory === key
@@ -481,7 +482,7 @@ function MenuPageInner() {
 	                                isLightMode ? 'ring-black/10' : 'ring-white/25'
 	                              }`}
 	                            >
-	                              <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
+	                              <Image src={cat.image} alt={cat.name} fill className="object-contain p-0.5" sizes="26px" unoptimized />
 	                            </span>
 	                            <span className="leading-tight">{cat.name}</span>
 	                          </motion.button>
@@ -497,6 +498,7 @@ function MenuPageInner() {
                         { id: 'quickBites', label: 'Burgers & Sides' },
                         { id: 'meals', label: 'Combo Meals' },
                         { id: 'desserts', label: 'Desserts' },
+                        { id: 'drinks', label: 'Drinks' },
                       ].map((filter) => (
                         <button
                           key={filter.id}
@@ -542,7 +544,7 @@ function MenuPageInner() {
 	                        </button>
 	                      </div>
 	                    </div>
-		                    <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 px-0.5">
+		                    <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide py-1 pl-0.5 pr-6 scroll-px-3" style={{ WebkitMaskImage: 'linear-gradient(to right, #000 0%, #000 calc(100% - 28px), transparent 100%)', maskImage: 'linear-gradient(to right, #000 0%, #000 calc(100% - 28px), transparent 100%)' }}>
 	                        {categoryKeys.map((key) => {
 	                          const cat = menuCategories[key]
 	                          const isActive = activeCategory === key
@@ -560,7 +562,7 @@ function MenuPageInner() {
 	                              }`}
 	                            >
 	                              <span className="relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ring-black/10">
-	                                <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
+	                                <Image src={cat.image} alt={cat.name} fill className="object-contain p-0.5" sizes="26px" unoptimized />
 	                              </span>
 	                              <span className="leading-tight">{cat.name}</span>
 	                            </motion.button>
@@ -593,7 +595,7 @@ function MenuPageInner() {
                     isLightMode ? 'bg-white/90 ring-black/10' : 'bg-white/10 ring-white/25'
                   }`}
                 >
-                  <Image src={currentCategory.image} alt="" fill className="object-cover" sizes="40px" unoptimized />
+                  <Image src={currentCategory.image} alt="" fill className="object-contain p-1" sizes="40px" unoptimized />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className={`truncate text-[15px] font-semibold tracking-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
@@ -655,7 +657,7 @@ function MenuPageInner() {
                         }`}
                       >
 	                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(21,21,21,0.14)] ring-1 ring-[#E8D7D2]">
-                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="56px" unoptimized />
+                          <Image src={cat.image} alt={cat.name} fill className="object-contain p-1.5" sizes="56px" unoptimized />
                         </span>
                         <div className="min-w-0 flex-1">
                           <span className={`block truncate text-[17px] font-extrabold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
@@ -717,9 +719,9 @@ function MenuPageInner() {
                                   >
                                     <div className="p-4 relative z-10">
                                       <h3 className={`text-[15px] font-bold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
-                                      <p className={`text-sm font-semibold mt-1 ${isLightMode ? 'text-slate-700' : 'text-white/85'}`}>{item.price}</p>
+                                      <p className={`mt-1 text-[17px] font-extrabold tracking-tight ${isLightMode ? 'text-[#D12325]' : 'text-white'}`}>{item.price}</p>
                                       {item.description && (
-                                        <p className={`mt-2 line-clamp-2 text-[12px] font-medium leading-relaxed ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
+                                        <p className={`mt-2 line-clamp-3 text-[13px] font-medium leading-5 ${isLightMode ? 'text-slate-600' : 'text-white/65'}`}>
                                           {item.description}
                                         </p>
                                       )}
@@ -728,12 +730,12 @@ function MenuPageInner() {
                                       )}
                                       <div className="mt-3 flex justify-end">
                                         {inCartQty > 0 ? (
-                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: 'linear-gradient(135deg,#D12325,#991B1E)', color: '#FFFFFF' }}>
-                                            <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="w-6 h-6 rounded-full flex items-center justify-center text-white">
+                                          <div className={`h-11 min-w-[132px] rounded-[14px] flex items-center justify-between px-1.5 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: 'linear-gradient(135deg,#D12325,#991B1E)', color: '#FFFFFF' }}>
+                                            <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="flex h-8 w-9 items-center justify-center rounded-[10px] bg-white/15 text-white">
                                               <Minus className="w-4 h-4" />
                                             </button>
                                             <span className="text-sm font-bold tabular-nums">{inCartQty}</span>
-                                            <button type="button" onClick={() => addToCart(item)} className="w-6 h-6 rounded-full flex items-center justify-center text-white">
+                                            <button type="button" onClick={() => addToCart(item)} className="flex h-8 w-9 items-center justify-center rounded-[10px] bg-white/15 text-white">
                                               <Plus className="w-4 h-4" />
                                             </button>
                                           </div>
@@ -744,11 +746,10 @@ function MenuPageInner() {
                                             whileTap={{ scale: 0.97 }}
                                             animate={lastAddedItemId === item.id ? { scale: [1, 1.05, 1] } : { scale: 1 }}
                                             transition={{ duration: 0.28, ease: 'easeOut' }}
-                                            className="relative overflow-hidden h-10 min-w-[120px] rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 border-2"
+                                            className="relative h-11 min-w-[132px] overflow-hidden rounded-[14px] border-0 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(209,35,37,0.24)] flex items-center justify-center gap-1.5"
                                             style={{
-                                              borderColor: '#D12325',
-                                              color: isLightMode ? '#D12325' : '#FFF9F4',
-	                                              background: isLightMode ? 'linear-gradient(135deg,#FFFFFF,#FBE9E9)' : 'rgba(209,35,37,0.12)',
+                                              color: '#FFFFFF',
+	                                              background: 'linear-gradient(135deg,#D12325,#B91C1C)',
                                             }}
                                           >
                                             {lastAddedItemId === item.id && (
@@ -791,7 +792,7 @@ function MenuPageInner() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(index * 0.02, 0.15) }}
-                      className="group rounded-[24px] overflow-hidden border transition-all duration-300 relative flex flex-col min-h-[148px]"
+                      className="group rounded-[24px] overflow-hidden border transition-all duration-300 relative flex flex-col min-h-[168px]"
                       style={
                         isLightMode
                           ? {
@@ -809,7 +810,7 @@ function MenuPageInner() {
                       <div className="p-4 flex flex-col flex-1 min-h-0 gap-0 relative z-10">
                         <div className="flex items-center justify-end gap-2 shrink-0 flex-wrap">
                           <span
-	                            className={`rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-[#D12325] border-[#E8D7D2] shadow-[0_6px_14px_rgba(21,21,21,0.08)]' : 'bg-[#D12325] text-white border-[#FF787A] shadow-[0_8px_18px_rgba(209,35,37,0.22)]'}`}
+	                            className={`rounded-xl px-3 py-1.5 text-[14px] font-black tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-[#FBE8E8] text-[#D12325] border-[#D12325]/20 shadow-[0_6px_14px_rgba(209,35,37,0.10)]' : 'bg-[#D12325] text-white border-[#FF787A] shadow-[0_8px_18px_rgba(209,35,37,0.22)]'}`}
                           >
                             {item.price}
                           </span>
@@ -820,7 +821,7 @@ function MenuPageInner() {
                           {item.name}
                         </h3>
                         {item.description && (
-                          <p className={`mt-2 line-clamp-2 text-[11px] font-medium leading-relaxed ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
+                          <p className={`mt-2 line-clamp-3 text-[12px] font-medium leading-[1.55] ${isLightMode ? 'text-slate-600' : 'text-white/65'}`}>
                             {item.description}
                           </p>
                         )}
@@ -859,7 +860,7 @@ function MenuPageInner() {
                   <p className="text-lg font-extrabold text-slate-950">Change Order Type</p>
                   <p className="text-xs font-medium text-slate-500">Choose how you want your order.</p>
                 </div>
-                <button type="button" onClick={() => setShowOrderTypeMenu(false)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-700">
+                <button type="button" onClick={() => setShowOrderTypeMenu(false)} className="grid h-9 w-11 place-items-center rounded-xl bg-[#FBE8E8] text-[#D12325]">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -893,7 +894,7 @@ function MenuPageInner() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {isOrderMode && showCategoryMenu && (
+        {showCategoryMenu && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -915,7 +916,7 @@ function MenuPageInner() {
                 <button
                   type="button"
                   onClick={() => setShowCategoryMenu(false)}
-                  className="h-8 w-8 rounded-full bg-slate-100 text-slate-700 inline-flex items-center justify-center"
+                  className="inline-flex h-9 w-11 items-center justify-center rounded-xl bg-[#FBE8E8] text-[#D12325]"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -931,9 +932,13 @@ function MenuPageInner() {
                       type="button"
                       onClick={() => {
                         setActiveCategory(key)
-                        setExpandedOrderCategory(key)
                         setShowCategoryMenu(false)
-                        window.setTimeout(() => scrollToCategorySection(key), 200)
+                        if (isOrderMode) {
+                          setExpandedOrderCategory(key)
+                          window.setTimeout(() => scrollToCategorySection(key), 200)
+                        } else {
+                          window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100)
+                        }
                       }}
                       className="w-full px-4 py-3.5 text-left flex items-center justify-between border-b border-slate-100/90 last:border-b-0"
                     >
@@ -953,7 +958,6 @@ function MenuPageInner() {
       </AnimatePresence>
 
       {isOrderMode && (
-        <>
           <AnimatePresence>
             {cart.length > 0 && (
               <motion.div
@@ -971,11 +975,12 @@ function MenuPageInner() {
                   onClick={goToCheckout}
                   animate={cartBarPulse ? { scale: [1, 1.02, 1] } : { scale: 1 }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_32px_rgba(209,35,37,0.30)] flex items-center justify-between px-4 border border-[#D12325]/40"
+                  className="pointer-events-auto w-full max-w-[430px] h-[64px] rounded-[20px] text-white shadow-[0_16px_34px_rgba(209,35,37,0.34)] flex items-center justify-between px-3 border border-white/15"
                   style={{ background: 'linear-gradient(135deg,#D12325,#991B1E)' }}
                 >
 	                  <span className="flex min-w-0 items-center gap-2.5">
-	                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/95 text-[13px] font-extrabold text-[#D12325] shadow-sm">
+	                    <span className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-white px-2.5 text-[13px] font-extrabold text-[#D12325] shadow-sm">
+	                      <ShoppingBag className="h-4 w-4" />
 	                      {getTotalItems()}
 	                    </span>
 	                    <span className="min-w-0 text-left">
@@ -983,21 +988,22 @@ function MenuPageInner() {
 	                        {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'} added
 	                      </span>
 	                      <span className="block text-[12px] font-semibold text-white/80">
-	                        Live price confirmed at checkout
+	                        Menu total ₹{getTotalPrice()}
 	                      </span>
 	                    </span>
 	                  </span>
-	                  <span className="shrink-0 text-[15px] font-extrabold">Checkout &gt;</span>
+	                  <span className="shrink-0 rounded-xl bg-white/15 px-3 py-2 text-[14px] font-extrabold">View Bag →</span>
 	                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
+      )}
 
-          <AnimatePresence>
-            {!showCategoryMenu && (
+      <AnimatePresence>
+        {!showCategoryMenu && (
               <div
                 className={`pointer-events-none fixed inset-x-0 z-[10000] mx-auto flex w-full max-w-[430px] justify-end ${
-                  cart.length > 0
+                  isOrderMode && cart.length > 0
                     ? 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))]'
                     : 'bottom-[max(0.75rem,env(safe-area-inset-bottom))]'
                 }`}
@@ -1013,19 +1019,17 @@ function MenuPageInner() {
                   transition={{ duration: 0.25, ease: 'easeOut' }}
                   onClick={() => setShowCategoryMenu(true)}
                   whileTap={{ scale: 0.97 }}
-                  className="pointer-events-auto h-11 rounded-full shadow-[0_14px_30px_rgba(15,23,42,0.38)] text-white px-4 inline-flex items-center gap-2.5 border border-white/20 touch-manipulation"
-                  style={{ background: 'linear-gradient(135deg, #334155, #0f172a)' }}
+                  className="pointer-events-auto h-12 rounded-[16px] shadow-[0_14px_30px_rgba(209,35,37,0.34)] text-white px-4 inline-flex items-center gap-2.5 border border-white/15 touch-manipulation"
+                  style={{ background: 'linear-gradient(135deg, #D12325, #991B1E)' }}
                 >
-                  <span className="w-6 h-6 rounded-full bg-white/20 inline-flex items-center justify-center">
+                  <span className="inline-flex h-7 w-8 items-center justify-center rounded-lg bg-white/20">
                     <List className="w-4 h-4" />
                   </span>
                   <span className="text-sm font-semibold tracking-wide">Menu</span>
                 </motion.button>
               </div>
-            )}
-          </AnimatePresence>
-        </>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   )
 }

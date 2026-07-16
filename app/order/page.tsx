@@ -61,10 +61,10 @@ export default function OrderTypePage() {
                 <div className="flex items-center gap-3">
                   <span className="relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl border border-[#E8D7D2] bg-[#FBE8E8] shadow-[0_8px_18px_rgba(21,21,21,0.10)]">
                     <Image
-                      src="/burger-bazaar-logo.jpg"
+                      src="/burger-bazaar-sticker.png"
                       alt="Burger Bazaar"
                       fill
-                      className="object-cover"
+                      className="object-contain p-1"
                       sizes="48px"
                       priority={type === 'online'}
                     />
@@ -74,7 +74,7 @@ export default function OrderTypePage() {
                       {type === 'online' ? 'Order direct' : 'Quick pickup'}
                     </span>
                     <span className="mt-0.5 block text-[13px] font-semibold leading-4 text-slate-600">
-                      Availability and live price confirmed on order
+                      Menu pricing shown before you place the order
                     </span>
                   </span>
                 </div>

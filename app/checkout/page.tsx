@@ -186,7 +186,7 @@ Arrival Time: ${arrivalDisplayTime}
 Preferred Seating: ${preferredSeating.trim() || 'N/A'}
 Order Items:
 ${orderItems}
-Final price: Please confirm
+Menu total: ₹${payableTotal}
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
@@ -197,7 +197,7 @@ Phone: +91 ${mobileDigits}
 Pickup Time: ${pickupDisplayTime}
 Order Items:
 ${orderItems}
-Final price: Please confirm
+Menu total: ₹${payableTotal}
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
@@ -216,7 +216,7 @@ Please confirm my order.`
     const base = generateWhatsAppCartMessage(cart, payableTotal)
     const customer =
       `\n\nCustomer Details:\nCall this number: +91 ${mobileDigits}\n\n${fullAddressBlock}` +
-      `\n\nPlease confirm delivery availability and the final price for this order.`
+      `\n\nMenu total: ₹${payableTotal}. Please confirm delivery availability and the final payable amount.`
     window.open(getWhatsAppLink(e164, `${base}${customer}`), '_blank')
     clearCheckoutSession()
     setCart([])
@@ -352,7 +352,7 @@ Please confirm my order.`
             <span className="min-w-0 flex-1">{toast}</span>
             <button
               type="button"
-              className="shrink-0 rounded-lg p-1 text-white/80 hover:bg-white/10 hover:text-white"
+              className="shrink-0 rounded-lg bg-[#FBE8E8] p-1.5 text-[#D12325] hover:bg-white"
               aria-label="Dismiss"
               onClick={() => setToast(null)}
             >
@@ -402,19 +402,19 @@ Please confirm my order.`
                         <p className="mt-0.5 text-xs text-slate-500">{item.price}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="inline-flex h-9 items-center rounded-xl border border-[#E8D7D2] bg-[#FFF9F5] px-2">
+                        <div className="inline-flex h-11 items-center rounded-[14px] border border-[#D12325]/25 bg-[#FFF9F5] p-1">
                           <button
                             type="button"
                             onClick={() => updateQty(item.id, item.cartQuantity - 1)}
-                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#D12325] active:opacity-70"
+                            className="flex h-8 w-9 touch-manipulation items-center justify-center rounded-[10px] bg-[#FBE8E8] text-[#D12325] active:opacity-70"
                           >
                             <Minus className="h-3.5 w-3.5" />
                           </button>
-                          <span className="w-7 text-center text-sm font-bold text-[#D12325]">{item.cartQuantity}</span>
+                          <span className="w-8 text-center text-sm font-extrabold text-[#D12325]">{item.cartQuantity}</span>
                           <button
                             type="button"
                             onClick={() => updateQty(item.id, item.cartQuantity + 1)}
-                            className="flex h-5 w-5 touch-manipulation items-center justify-center rounded-full text-[#D12325] active:opacity-70"
+                            className="flex h-8 w-9 touch-manipulation items-center justify-center rounded-[10px] bg-[#D12325] text-white active:opacity-70"
                           >
                             <Plus className="h-3.5 w-3.5" />
                           </button>
@@ -709,27 +709,25 @@ Please confirm my order.`
             <span className="flex shrink-0 -space-x-2">
               <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
                 <Image
-                  src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=120&q=60"
+                  src="/burger-bazaar-sticker.png"
                   alt=""
                   width={28}
                   height={28}
-                  className="h-full w-full object-cover"
-                  unoptimized
+                  className="h-full w-full object-contain p-0.5"
                 />
               </span>
               <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
                 <Image
-                  src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=120&q=60"
+                  src="/burger-bazaar-sticker.png"
                   alt=""
                   width={28}
                   height={28}
-                  className="h-full w-full object-cover"
-                  unoptimized
+                  className="h-full w-full object-contain p-0.5"
                 />
               </span>
             </span>
             <span className="min-w-0 text-left text-[16px] font-semibold leading-tight text-white drop-shadow-sm">
-              {totalItems} {totalItems === 1 ? 'item' : 'items'} · Live price
+              {totalItems} {totalItems === 1 ? 'item' : 'items'} · ₹{payableTotal}
             </span>
           </span>
           <span className="shrink-0 pl-1 text-right leading-tight">

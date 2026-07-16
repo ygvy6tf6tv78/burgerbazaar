@@ -24,24 +24,24 @@ export default function GoogleReviews() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="relative min-h-[300px] overflow-hidden rounded-[28px] border border-white/15 shadow-[0_22px_48px_rgba(0,0,0,0.30)]"
+        className="relative min-h-[330px] overflow-hidden rounded-[28px] border border-white/15 shadow-[0_24px_54px_rgba(0,0,0,0.38)]"
       >
         <Image
-          src="/burger-bazaar-header.jpg"
+          src="/burger-bazaar-brand-2.jpg"
           alt="Burger Bazaar direct ordering"
           fill
-          className="scale-110 object-cover blur-[2px]"
+          className="object-cover"
           sizes="(max-width: 448px) 100vw, 448px"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(21,21,21,0.66)_0%,rgba(120,18,21,0.62)_52%,rgba(209,35,37,0.70)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.24)_0%,rgba(5,5,5,0.56)_42%,rgba(5,5,5,0.98)_100%)]" />
         <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/12 blur-3xl" />
         <div className="absolute inset-[1px] rounded-[27px] border border-white/10" />
 
-        <div className="relative z-10 flex min-h-[300px] flex-col justify-end p-5 sm:p-6">
+        <div className="relative z-10 flex min-h-[330px] flex-col justify-end p-5 sm:p-6">
           <span className="mb-auto w-fit rounded-full border border-white/20 bg-black/25 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-white backdrop-blur-md">
-            Direct from us
+            Burger Bazaar Direct
           </span>
-          <h3 className="text-2xl font-extrabold tracking-tight text-white">Direct Order</h3>
+          <h3 className="text-[28px] font-black tracking-[-0.03em] text-white">Direct Order</h3>
           <p className="mt-1.5 max-w-[330px] text-sm font-medium leading-relaxed text-white/85">
             View the menu and place your order directly with Burger Bazaar.
           </p>
@@ -53,7 +53,7 @@ export default function GoogleReviews() {
           </div>
           <Link
             href="/menu?mode=order&type=online"
-            className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-[#070707] px-4 text-sm font-extrabold text-white shadow-[0_18px_34px_rgba(0,0,0,0.42)] transition-all hover:bg-black active:scale-[0.985]"
+            className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-[#D12325] px-4 text-sm font-extrabold text-white shadow-[0_18px_34px_rgba(209,35,37,0.38)] transition-all hover:bg-[#B91C1C] active:scale-[0.985]"
           >
             Order Directly From Us
             <ArrowRight className="h-4 w-4" />

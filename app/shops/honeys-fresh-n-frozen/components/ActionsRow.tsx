@@ -277,11 +277,10 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           {onOpenPayments && (
             <Button
               onClick={(e) => { e.stopPropagation(); onOpenPayments() }}
-              className="w-full min-w-0 h-11 text-white font-semibold rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border"
+              className="w-full min-w-0 h-11 text-white font-semibold rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border-0"
               style={{
-                background: 'radial-gradient(circle at 30% 30%, rgb(21,124,130) 0%, rgb(15,118,110) 40%, rgb(17,19,21) 100%)',
-                boxShadow: '0 8px 20px rgba(21,124,130,0.4), 0 4px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15)',
-                borderColor: 'rgba(255,255,255,0.22)',
+                background: 'linear-gradient(135deg, #16858A 0%, #0F766E 55%, #115E59 100%)',
+                boxShadow: '0 8px 20px rgba(15,118,110,0.34), inset 0 1px 0 rgba(255,255,255,0.18)',
                 WebkitTapHighlightColor: 'transparent',
               }}
             >
@@ -298,7 +297,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             className="min-w-0 h-11 bg-white hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border border-[#E8D7D2]"
             style={{ boxShadow: '0 8px 16px rgba(225,48,108,0.15), 0 4px 8px rgba(21,21,21,0.08)' }}
           >
-            <Image src="/instagram-logo-transparent.webp" alt="Instagram" width={30} height={30} className="h-7 w-7 object-contain" />
+            <Image src="/instagram-official.png" alt="Instagram" width={30} height={30} className="h-7 w-7 object-contain" />
             <span className="text-sm font-bold text-[#151515]">Instagram</span>
           </a>
         </div>
@@ -339,10 +338,10 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           >
             <span className="flex items-center -space-x-1.5" aria-hidden>
               <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
-                <Image src="/burger-bazaar-logo.jpg" alt="" fill className="object-cover" sizes="28px" />
+                <Image src="/burger-bazaar-sticker.png" alt="" fill className="object-contain p-0.5" sizes="28px" />
               </span>
               <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
-                <Image src="/burger-bazaar-header.jpg" alt="" fill className="object-cover" sizes="28px" />
+                <Image src="/burger-bazaar-menu-smash.jpeg" alt="" fill className="object-cover" sizes="28px" />
               </span>
             </span>
             <span className="text-sm font-bold truncate" style={{ color: '#151515', fontSize: '14px' }}>Gallery</span>
@@ -422,7 +421,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                     className="p-2 rounded-full hover:bg-slate-100 transition-colors"
                     aria-label="Close"
                   >
-                    <X className="w-5 h-5 text-slate-600" />
+                    <X className="w-5 h-5 text-[#D12325]" />
                   </button>
                 </div>
                 <div className="flex gap-4 justify-center flex-wrap">
@@ -473,7 +472,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                     className="p-2 rounded-full hover:bg-slate-100 transition-colors"
                     aria-label="Close"
                   >
-                    <X className="w-5 h-5 text-slate-600" />
+                    <X className="w-5 h-5 text-[#D12325]" />
                   </button>
                 </div>
                 <div className="flex gap-4 justify-center flex-wrap">
@@ -526,7 +525,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                     className="p-2 rounded-full hover:bg-slate-100 transition-colors"
                     aria-label="Close"
                   >
-                    <X className="w-5 h-5 text-slate-600" />
+                    <X className="w-5 h-5 text-[#D12325]" />
                   </button>
                 </div>
                 <div className="flex gap-6 justify-center flex-wrap">
@@ -549,7 +548,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
                       >
                         <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
                           <Image
-                            src="/instagram-logo-transparent.webp"
+                            src="/instagram-official.png"
                             alt="Instagram"
                             width={72}
                             height={72}
