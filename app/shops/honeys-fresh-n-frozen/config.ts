@@ -110,9 +110,9 @@ export const shopConfig = {
   menuPdfUrl: "/burger-bazaar-menu.pdf",
 
   delivery: {
-    restaurantLat: 0,
-    restaurantLng: 0,
-    radiusKm: 0,
+    restaurantLat: 32.6806,
+    restaurantLng: 74.8708,
+    radiusKm: 5,
     label: "Burger Bazaar, Channi Himmat, Jammu",
   },
 
@@ -169,7 +169,7 @@ export const shopConfig = {
   },
 
   assets: {
-    logo: "/burger-bazaar-logo.jpg",
+    logo: "/burger-bazaar-logo-red.png",
     gallery: "/shops/honeys-fresh-n-frozen/assets/gallery/",
     qr: "",
   },

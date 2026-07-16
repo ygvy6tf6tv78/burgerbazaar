@@ -975,11 +975,10 @@ function MenuPageInner() {
                   onClick={goToCheckout}
                   animate={cartBarPulse ? { scale: [1, 1.02, 1] } : { scale: 1 }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="pointer-events-auto w-full max-w-[430px] h-[64px] rounded-[20px] text-white shadow-[0_16px_34px_rgba(209,35,37,0.34)] flex items-center justify-between px-3 border border-white/15"
-                  style={{ background: 'linear-gradient(135deg,#D12325,#991B1E)' }}
+                  className="pointer-events-auto flex h-[64px] w-full max-w-[430px] items-center justify-between rounded-full border border-[#D12325]/20 bg-white px-3 text-[#151515] shadow-[0_16px_36px_rgba(15,23,42,0.18)]"
                 >
 	                  <span className="flex min-w-0 items-center gap-2.5">
-	                    <span className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-white px-2.5 text-[13px] font-extrabold text-[#D12325] shadow-sm">
+	                    <span className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#FBE8E8] px-3 text-[13px] font-extrabold text-[#D12325]">
 	                      <ShoppingBag className="h-4 w-4" />
 	                      {getTotalItems()}
 	                    </span>
@@ -987,12 +986,12 @@ function MenuPageInner() {
 	                      <span className="block truncate text-[15px] font-extrabold">
 	                        {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'} added
 	                      </span>
-	                      <span className="block text-[12px] font-semibold text-white/80">
+	                      <span className="block text-[12px] font-semibold text-slate-500">
 	                        Menu total ₹{getTotalPrice()}
 	                      </span>
 	                    </span>
 	                  </span>
-	                  <span className="shrink-0 rounded-xl bg-white/15 px-3 py-2 text-[14px] font-extrabold">View Bag →</span>
+	                  <span className="shrink-0 rounded-full bg-[#D12325] px-4 py-2.5 text-[14px] font-extrabold text-white shadow-[0_8px_18px_rgba(209,35,37,0.25)]">Checkout →</span>
 	                </motion.button>
               </motion.div>
             )}
@@ -1019,10 +1018,10 @@ function MenuPageInner() {
                   transition={{ duration: 0.25, ease: 'easeOut' }}
                   onClick={() => setShowCategoryMenu(true)}
                   whileTap={{ scale: 0.97 }}
-                  className="pointer-events-auto h-12 rounded-[16px] shadow-[0_14px_30px_rgba(209,35,37,0.34)] text-white px-4 inline-flex items-center gap-2.5 border border-white/15 touch-manipulation"
+                  className="pointer-events-auto h-12 rounded-full shadow-[0_14px_30px_rgba(209,35,37,0.30)] text-white px-4 inline-flex items-center gap-2.5 border border-white/15 touch-manipulation"
                   style={{ background: 'linear-gradient(135deg, #D12325, #991B1E)' }}
                 >
-                  <span className="inline-flex h-7 w-8 items-center justify-center rounded-lg bg-white/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/20">
                     <List className="w-4 h-4" />
                   </span>
                   <span className="text-sm font-semibold tracking-wide">Menu</span>

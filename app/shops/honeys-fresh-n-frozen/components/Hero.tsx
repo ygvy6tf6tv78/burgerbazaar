@@ -277,37 +277,41 @@ export default function Hero() {
                   y: { duration: 5, repeat: Infinity, ease: 'easeInOut', repeatType: 'reverse' },
                 }}
               >
-                <div className="w-32 h-32 rounded-full flex items-center justify-center overflow-hidden bg-[#D12325] p-1.5 border-2 border-[#E8D7D2] shadow-lg">
+                <div className="relative w-32 h-32 rounded-full flex items-center justify-center overflow-hidden bg-[#D12325] border-2 border-[#FCA5A5] shadow-[0_18px_36px_rgba(209,35,37,0.28)]">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_24%,rgba(255,255,255,0.30),transparent_42%)]" />
                   <Image
-                    src={shopConfig.assets.logo}
+                    src="/burger-bazaar-logo-red.png"
                     alt={`${shopConfig.name} Logo`}
                     width={128}
                     height={128}
-                    className="w-full h-full object-contain"
-                    style={{ transform: 'scale(1.04)' }}
+                    className="w-full h-full object-cover scale-[1.08]"
                   />
                 </div>
               </motion.div>
 
               {/* Brand info - MANGO + subtitle + keyword badges */}
               <motion.div
-                className="pt-20 mb-4"
+                className="relative pt-20 mb-4"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.22, duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
               >
-                <h1 className="text-2xl font-black text-slate-900 mb-1 leading-tight tracking-tight">
+                <h1 className="mb-1 text-[30px] font-black leading-none tracking-[-0.045em] text-[#151515]">
                   {shopConfig.name}
                 </h1>
                 <p className="font-semibold text-[15px] mb-3 text-[#D12325]">
                   {shopConfig.tagline}
                 </p>
                 {'keywordBadges' in shopConfig && Array.isArray(shopConfig.keywordBadges) && (
-                  <div className="flex flex-wrap gap-1.5 mb-5">
+                  <div className="relative mb-5 flex flex-wrap gap-1.5 overflow-hidden rounded-2xl py-1">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 w-[72%] opacity-[0.075]" aria-hidden>
+                      <Image src="/burger-bazaar-wordmark-wide.png" alt="" fill className="object-cover object-left mix-blend-multiply blur-[0.5px]" sizes="300px" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-white" />
+                    </div>
                     {shopConfig.keywordBadges.map((badge: string) => (
                       <span
                         key={badge}
-                        className="inline-flex px-2.5 py-1 rounded-full bg-[#FBE8E8] border border-[#E8D7D2] text-[#D12325] text-xs font-medium"
+                        className="relative z-10 inline-flex px-2.5 py-1 rounded-full bg-[#FBE8E8]/90 backdrop-blur-sm border border-[#E8D7D2] text-[#D12325] text-xs font-medium"
                       >
                         {badge}
                       </span>

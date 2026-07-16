@@ -297,7 +297,9 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             className="min-w-0 h-11 bg-white hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border border-[#E8D7D2]"
             style={{ boxShadow: '0 8px 16px rgba(225,48,108,0.15), 0 4px 8px rgba(21,21,21,0.08)' }}
           >
-            <Image src="/instagram-official.png" alt="Instagram" width={30} height={30} className="h-7 w-7 object-contain" />
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-white p-1.5">
+              <Image src="/instagram-official.png" alt="Instagram" width={24} height={24} className="h-6 w-6 object-contain" />
+            </span>
             <span className="text-sm font-bold text-[#151515]">Instagram</span>
           </a>
         </div>
@@ -317,10 +319,10 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           <Link
             href="/gallery"
             onClick={(e) => e.stopPropagation()}
-            className="w-full min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
+            className="w-full min-w-0 h-11 bg-white backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
             style={{
-              background: '#FFF9F5',
-              border: '1px solid #E8D7D2',
+              background: '#FFFFFF',
+              border: '1px solid rgba(209,35,37,0.32)',
               boxShadow: '0 8px 16px rgba(21, 21, 21, 0.08), 0 4px 8px rgba(209, 35, 37, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
               borderRadius: '16px',
               fontSize: '14px',
@@ -337,10 +339,10 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             }}
           >
             <span className="flex items-center -space-x-1.5" aria-hidden>
-              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#FCA5A5] bg-white shadow-sm">
                 <Image src="/burger-bazaar-sticker.png" alt="" fill className="object-contain p-0.5" sizes="28px" />
               </span>
-              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#FCA5A5] bg-white shadow-sm">
                 <Image src="/burger-bazaar-menu-smash.jpeg" alt="" fill className="object-cover" sizes="28px" />
               </span>
             </span>

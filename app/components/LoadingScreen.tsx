@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { ArrowRight, Eye, Sparkles } from 'lucide-react'
-import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 
 type PreviewGateProps = {
   onEnter: () => void
@@ -19,14 +18,14 @@ export default function LoadingScreen({ onEnter }: PreviewGateProps) {
     >
       <div className="pointer-events-none absolute inset-0">
         <Image
-          src="/burger-bazaar-header.jpg"
+          src="/burger-bazaar-logo-red.png"
           alt=""
           fill
           priority
-          className="scale-110 object-cover opacity-[0.16] blur-[5px]"
+          className="scale-110 object-cover opacity-[0.28] blur-[12px]"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,0.72)_0%,rgba(21,21,21,0.92)_56%,#151515_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,8,8,0.58)_0%,rgba(15,15,15,0.88)_56%,#111_100%)]" />
         <div className="absolute left-1/2 top-[18%] h-80 w-80 -translate-x-1/2 rounded-full bg-[#D12325]/20 blur-[90px]" />
         <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(rgba(255,255,255,.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.8)_1px,transparent_1px)] [background-size:32px_32px]" />
       </div>
@@ -35,16 +34,15 @@ export default function LoadingScreen({ onEnter }: PreviewGateProps) {
         initial={{ opacity: 0, y: 18, scale: 0.975 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.65, ease: [0.22, 0.61, 0.36, 1] }}
-        className="relative w-full max-w-[420px] overflow-hidden rounded-[32px] border border-white/15 bg-[#FFF9F5] shadow-[0_32px_90px_rgba(0,0,0,0.48),0_12px_32px_rgba(209,35,37,0.16)]"
+        className="relative w-full max-w-[420px] overflow-hidden rounded-[32px] border border-white/15 bg-black/70 shadow-[0_32px_90px_rgba(0,0,0,0.58),0_12px_42px_rgba(209,35,37,0.28)] backdrop-blur-2xl"
       >
-        <div className="relative h-[150px] overflow-hidden bg-[#D12325]">
+        <div className="relative h-[215px] overflow-hidden bg-[#D12325]">
           <Image
-            src="/burger-bazaar-header.jpg"
+            src="/burger-bazaar-logo-red.png"
             alt="Burger Bazaar preview"
             fill
             priority
-            className="object-cover"
-            style={{ objectPosition: '50% 29%' }}
+            className="object-cover scale-[1.03]"
             sizes="420px"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-black/20" />
@@ -54,32 +52,22 @@ export default function LoadingScreen({ onEnter }: PreviewGateProps) {
           </div>
         </div>
 
-        <div className="relative px-6 pb-6 pt-[74px] sm:px-7 sm:pb-7">
-          <div className="absolute -top-14 left-6 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[28px] border-[5px] border-[#FFF9F5] bg-[#D12325] shadow-[0_16px_34px_rgba(21,21,21,0.22)]">
-            <Image
-              src={shopConfig.assets.logo}
-              alt={`${shopConfig.name} logo`}
-              width={112}
-              height={112}
-              className="h-full w-full object-contain"
-              priority
-            />
-          </div>
+        <div className="relative px-6 pb-6 pt-6 sm:px-7 sm:pb-7">
 
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.45 }}
           >
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[#FBE8E8] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] text-[#D12325]">
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] text-white">
               <Sparkles className="h-3.5 w-3.5" />
               Interactive concept
             </div>
 
-            <h1 className="max-w-[340px] text-[30px] font-black leading-[1.06] tracking-[-0.035em] text-[#151515] sm:text-[34px]">
+            <h1 className="max-w-[340px] text-[30px] font-black leading-[1.06] tracking-[-0.035em] text-white sm:text-[34px]">
               This experience is in preview mode.
             </h1>
-            <p className="mt-4 text-[15px] font-medium leading-relaxed text-slate-600">
+            <p className="mt-4 text-[15px] font-medium leading-relaxed text-white/65">
               Explore a live demo of the Burger Bazaar OneLink experience—built to show how the final customer journey can look and feel.
             </p>
 
@@ -97,7 +85,7 @@ export default function LoadingScreen({ onEnter }: PreviewGateProps) {
               </span>
             </button>
 
-            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-slate-400">
+            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.13em] text-white/45">
               <span className="h-1.5 w-1.5 rounded-full bg-[#D12325]" />
               Preview only • Demo content
             </div>

@@ -7,7 +7,7 @@ export interface OrderWindowState {
 export function getOrderWindowState(_date = new Date()): OrderWindowState {
   return {
     isOpen: true,
-    label: 'Check live availability',
-    message: 'Burger Bazaar will confirm current availability and final pricing.',
+    label: 'Direct ordering available',
+    message: 'Burger Bazaar direct ordering is open.',
   }
 }

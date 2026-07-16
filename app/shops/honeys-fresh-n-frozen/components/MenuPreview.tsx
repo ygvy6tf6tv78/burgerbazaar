@@ -16,8 +16,8 @@ const previewCategories: (keyof typeof menuCategories)[] = [
 
 const previewAssets: Record<(typeof previewCategories)[number], { image: string; icon: typeof Sandwich }> = {
   combos: { image: '/burger-bazaar-menu-smash.jpeg', icon: Sandwich },
-  smashBurgers: { image: '/burger-bazaar-menu-smash.jpeg', icon: Sandwich },
-  friedChickenBurgers: { image: '/burger-bazaar-menu-veg.jpeg', icon: Drumstick },
+  smashBurgers: { image: '/burger-bazaar-explore-smash.jpeg', icon: Sandwich },
+  friedChickenBurgers: { image: '/burger-bazaar-menu-smash.jpeg', icon: Drumstick },
   dirtyFries: { image: '/burger-bazaar-menu-fries.jpeg', icon: CookingPot },
   wings: { image: '/burger-bazaar-header.jpg', icon: Drumstick },
   desserts: { image: '/burger-bazaar-menu-dessert.jpeg', icon: CakeSlice },

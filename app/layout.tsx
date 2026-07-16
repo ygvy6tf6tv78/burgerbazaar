@@ -92,7 +92,7 @@ export default function RootLayout({
     description: siteConfig.seo.description,
     url: siteConfig.url,
     image: `${siteConfig.url}/burger-bazaar-header.jpg`,
-    logo: `${siteConfig.url}/burger-bazaar-logo.jpg`,
+    logo: `${siteConfig.url}/burger-bazaar-logo-red.png`,
     telephone: `+91${siteConfig.contact.phones[0]}`,
     email: siteConfig.contact.email,
     priceRange: '₹₹',

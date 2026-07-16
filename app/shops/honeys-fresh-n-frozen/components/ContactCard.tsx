@@ -95,7 +95,7 @@ export default function ContactCard() {
         >
           <div className="flex items-start gap-3 relative z-10">
             <div className="relative w-11 h-11 rounded-full flex-shrink-0 overflow-hidden border-2 border-white bg-white shadow-[0_8px_18px_rgba(209,35,37,0.22)]">
-              <Image src="/burger-bazaar-logo.jpg" alt="Burger Bazaar" fill className="object-cover" sizes="44px" />
+              <Image src="/burger-bazaar-logo-red.png" alt="Burger Bazaar" fill className="object-cover" sizes="44px" />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-slate-800 mb-1 text-base">Order Place</h3>

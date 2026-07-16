@@ -24,6 +24,18 @@ type TimeOption = '15 minutes' | '30 minutes' | '45 minutes' | '1 hour' | 'Custo
 const dineInArrivalOptions: TimeOption[] = ['15 minutes', '30 minutes', '45 minutes', '1 hour', 'Custom time']
 const takeawayPickupOptions = ['10 minutes', '15 minutes', '20 minutes', '30 minutes', '45 minutes', 'Custom time']
 const MOBILE_DIGITS = 10
+const COUPON_CODE = 'BAZAAR10'
+
+function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const toRadians = (value: number) => (value * Math.PI) / 180
+  const earthRadiusKm = 6371
+  const dLat = toRadians(lat2 - lat1)
+  const dLng = toRadians(lng2 - lng1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) ** 2
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
 
 function digitsOnly(s: string) {
   return s.replace(/\D/g, '')
@@ -56,6 +68,9 @@ export default function CheckoutPage() {
   const [pickupTime, setPickupTime] = useState('10 minutes')
   const [pickupCustomTime, setPickupCustomTime] = useState('')
   const [orderNotes, setOrderNotes] = useState('')
+  const [couponInput, setCouponInput] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null)
+  const [couponMessage, setCouponMessage] = useState('')
   const [mappedAddress, setMappedAddress] = useState('')
   const [mappedMapUrl, setMappedMapUrl] = useState('')
   const [flatHouse, setFlatHouse] = useState('')
@@ -81,7 +96,8 @@ export default function CheckoutPage() {
 
   const deliveryZone: DeliveryZone = useMemo(() => {
     if (userLat == null || userLng == null) return 'unset'
-    return 'inside'
+    const km = distanceKm(userLat, userLng, shopConfig.delivery.restaurantLat, shopConfig.delivery.restaurantLng)
+    return km <= shopConfig.delivery.radiusKm ? 'inside' : 'outside'
   }, [userLat, userLng])
 
   useEffect(() => {
@@ -136,7 +152,23 @@ export default function CheckoutPage() {
     }, 0)
   }, [cart])
   const totalItems = useMemo(() => cart.reduce((sum, item) => sum + item.cartQuantity, 0), [cart])
-  const payableTotal = total
+  const couponDiscount = useMemo(
+    () => (appliedCoupon === COUPON_CODE ? Math.min(Math.round(total * 0.1), 150) : 0),
+    [appliedCoupon, total]
+  )
+  const payableTotal = Math.max(0, total - couponDiscount)
+
+  const applyCoupon = () => {
+    const normalized = couponInput.trim().toUpperCase()
+    if (normalized === COUPON_CODE) {
+      setAppliedCoupon(COUPON_CODE)
+      setCouponInput(COUPON_CODE)
+      setCouponMessage('Coupon applied — 10% off, up to ₹150.')
+      return
+    }
+    setAppliedCoupon(null)
+    setCouponMessage('This coupon code is not valid.')
+  }
 
   const mobileDigits = useMemo(() => digitsOnly(mobile).slice(0, MOBILE_DIGITS), [mobile])
   const arrivalDisplayTime = arrivalTime === 'Custom time' ? arrivalCustomTime.trim() : arrivalTime
@@ -187,6 +219,7 @@ Preferred Seating: ${preferredSeating.trim() || 'N/A'}
 Order Items:
 ${orderItems}
 Menu total: ₹${payableTotal}
+${appliedCoupon ? `Coupon: ${appliedCoupon} (-₹${couponDiscount})` : 'Coupon: N/A'}
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
@@ -198,6 +231,7 @@ Pickup Time: ${pickupDisplayTime}
 Order Items:
 ${orderItems}
 Menu total: ₹${payableTotal}
+${appliedCoupon ? `Coupon: ${appliedCoupon} (-₹${couponDiscount})` : 'Coupon: N/A'}
 Notes: ${orderNotes.trim() || 'N/A'}
 
 Please confirm my order.`
@@ -216,7 +250,9 @@ Please confirm my order.`
     const base = generateWhatsAppCartMessage(cart, payableTotal)
     const customer =
       `\n\nCustomer Details:\nCall this number: +91 ${mobileDigits}\n\n${fullAddressBlock}` +
-      `\n\nMenu total: ₹${payableTotal}. Please confirm delivery availability and the final payable amount.`
+      `\n\nSubtotal: ₹${total}` +
+      (appliedCoupon ? `\nCoupon: ${appliedCoupon}\nDiscount: -₹${couponDiscount}` : '') +
+      `\nTotal payable: ₹${payableTotal}.`
     window.open(getWhatsAppLink(e164, `${base}${customer}`), '_blank')
     clearCheckoutSession()
     setCart([])
@@ -246,6 +282,7 @@ Please confirm my order.`
           const { latitude, longitude } = position.coords
           setUserLat(latitude)
           setUserLng(longitude)
+          const km = distanceKm(latitude, longitude, shopConfig.delivery.restaurantLat, shopConfig.delivery.restaurantLng)
           const response = await fetch(`/api/current-location?lat=${latitude}&lng=${longitude}`)
           if (!response.ok) {
             throw new Error('Could not fetch address')
@@ -254,7 +291,11 @@ Please confirm my order.`
           if (data?.address || data?.mapUrl) {
             setMappedAddress(locationAddressText(data?.address, data?.mapUrl))
             setMappedMapUrl(typeof data?.mapUrl === 'string' ? data.mapUrl : mapsUrlForCoords(latitude, longitude))
-            setLocationStatus('Location saved. Burger Bazaar will confirm delivery availability on WhatsApp.')
+            setLocationStatus(
+              km <= shopConfig.delivery.radiusKm
+                ? `Location saved — within the ${shopConfig.delivery.radiusKm} km delivery radius.`
+                : `This location is ${km.toFixed(1)} km away and outside our ${shopConfig.delivery.radiusKm} km delivery radius.`
+            )
           } else {
             setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
             setMappedMapUrl(mapsUrlForCoords(latitude, longitude))
@@ -297,7 +338,8 @@ Please confirm my order.`
     (isOnlineOrder
       ? cart.length > 0 &&
         mobileDigits.length === MOBILE_DIGITS &&
-        mappedAddress.trim()
+        mappedAddress.trim() &&
+        deliveryZone === 'inside'
       : cart.length > 0 &&
         customerName.trim().length > 1 &&
         mobileDigits.length === MOBILE_DIGITS &&
@@ -313,6 +355,8 @@ Please confirm my order.`
       if (isTakeawayOrder && !pickupDisplayTime) return 'Select pickup time.'
       return null
     }
+    if (userLat == null || userLng == null) return 'Tap “Use current location” to verify the 5 km delivery radius.'
+    if (deliveryZone === 'outside') return 'This location is outside Burger Bazaar’s 5 km delivery radius.'
     if (!mappedAddress.trim()) return 'Add your delivery address in the box above.'
     if (mobileDigits.length < MOBILE_DIGITS) return 'Enter your 10-digit mobile number.'
     return null
@@ -434,23 +478,14 @@ Please confirm my order.`
             >
               + Add more items
             </Link>
-          </section>
 
-          <section
-            className={`mt-3 rounded-3xl border p-3.5 text-[12px] font-semibold leading-snug shadow-[0_12px_24px_rgba(15,23,42,0.05)] ${
-              orderWindow.isOpen
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                : 'border-amber-200 bg-amber-50 text-amber-900'
-            }`}
-          >
-            {orderWindow.message} Window: {orderWindow.label}.
           </section>
 
           {isOnlineOrder ? (
           <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-[15px] font-bold text-slate-900">Delivery</h2>
-              <span className="rounded-full bg-[#FBE8E8] px-2.5 py-0.5 text-[11px] font-semibold text-[#991B1E]">Confirm on WhatsApp</span>
+              <span className="rounded-full bg-[#FBE8E8] px-2.5 py-0.5 text-[11px] font-semibold text-[#991B1E]">5 km delivery radius</span>
             </div>
 
             <div ref={locationBlockRef} className="mt-2.5 rounded-2xl border border-slate-200 bg-slate-50/50 p-2.5">
@@ -478,7 +513,12 @@ Please confirm my order.`
               {deliveryZone === 'inside' && userLat != null && (
                 <div className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-emerald-200/90 bg-gradient-to-b from-emerald-50 to-emerald-100/80 px-3 py-2 text-center text-[11px] font-medium text-emerald-900 shadow-sm">
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                  <span>Location saved</span>
+                  <span>Inside the {shopConfig.delivery.radiusKm} km delivery radius</span>
+                </div>
+              )}
+              {deliveryZone === 'outside' && userLat != null && (
+                <div className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center text-[11px] font-semibold text-red-800">
+                  Outside the {shopConfig.delivery.radiusKm} km delivery radius
                 </div>
               )}
 
@@ -688,6 +728,34 @@ Please confirm my order.`
             </div>
           </section>
           )}
+
+          <section className="mt-3 rounded-3xl border border-[#D12325]/20 bg-[#FFF9F5] p-4 shadow-[0_12px_24px_rgba(209,35,37,0.07)]">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <p className="text-[14px] font-extrabold text-slate-900">Apply coupon</p>
+                <p className="text-[11px] font-semibold text-[#D12325]">BAZAAR10 · 10% off up to ₹150</p>
+              </div>
+              {appliedCoupon && <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700">APPLIED</span>}
+            </div>
+            <div className="mt-3 flex gap-2">
+              <input
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                placeholder="Enter coupon code"
+                className="h-11 min-w-0 flex-1 rounded-xl border border-[#E8D7D2] bg-white px-3 text-[14px] font-bold uppercase tracking-wide text-slate-900 outline-none focus:border-[#D12325]"
+              />
+              <button type="button" onClick={applyCoupon} className="h-11 shrink-0 rounded-xl bg-[#151515] px-4 text-[12px] font-extrabold text-white active:scale-[0.98]">
+                Apply
+              </button>
+            </div>
+            {couponMessage && <p className={`mt-2 text-[11px] font-semibold ${appliedCoupon ? 'text-emerald-700' : 'text-[#D12325]'}`}>{couponMessage}</p>}
+            {couponDiscount > 0 && (
+              <div className="mt-3 flex items-center justify-between border-t border-[#E8D7D2] pt-3 text-[12px] font-bold">
+                <span className="text-slate-500">You save</span>
+                <span className="text-emerald-700">-₹{couponDiscount}</span>
+              </div>
+            )}
+          </section>
         </div>
       </main>
 
@@ -733,7 +801,7 @@ Please confirm my order.`
           <span className="shrink-0 pl-1 text-right leading-tight">
             <span className="block text-[15px] font-bold text-white">Place order</span>
             <span className="mt-0.5 block text-[11px] font-medium text-white/90">
-              {isOnlineOrder ? 'Pay by UPI' : 'Send on WhatsApp'}
+              Send on WhatsApp
             </span>
           </span>
         </button>

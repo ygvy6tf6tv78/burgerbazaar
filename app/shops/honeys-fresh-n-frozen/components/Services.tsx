@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Flame, Sandwich, PackageCheck, Salad } from 'lucide-react'
 
 const services = [
@@ -9,24 +10,28 @@ const services = [
     icon: Flame,
     title: 'Smashed Fresh',
     description: 'Every burger is prepared fresh after the order is received.',
+    image: '/burger-bazaar-explore-smash.jpeg',
   },
   {
     id: 'service-2',
     icon: Sandwich,
     title: 'Housemade Buns',
     description: 'Soft housemade buns made to hold every loaded bite together.',
+    image: '/burger-bazaar-brand-1.jpg',
   },
   {
     id: 'service-3',
     icon: PackageCheck,
     title: 'Packed to Travel',
     description: 'Every order is packed carefully for delivery and takeaway.',
+    image: '/burger-bazaar-header-food.jpg',
   },
   {
     id: 'service-4',
     icon: Salad,
     title: 'Veg & Non-Veg',
     description: 'Strong options for both vegetarian and non-vegetarian cravings.',
+    image: '/burger-bazaar-menu-fries.jpeg',
   },
 ]
 
@@ -67,6 +72,17 @@ export default function Services() {
                 boxShadow: '0 14px 32px rgba(15, 23, 42, 0.10), 0 4px 14px rgba(209, 35, 37, 0.11)',
               }}
             >
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-[62%] overflow-hidden" aria-hidden>
+                <Image
+                  src={service.image}
+                  alt=""
+                  fill
+                  className="scale-110 object-cover object-center opacity-[0.20] blur-[2px] saturate-[0.85]"
+                  sizes="280px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-white/65 to-[#FFF9F4]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-transparent to-white/45" />
+              </div>
               <div className="absolute inset-x-0 top-0 h-20 opacity-65 pointer-events-none bg-gradient-to-b from-white/85 to-transparent" />
               <div className="absolute right-4 top-4 rounded-full border border-[#D12325]/15 bg-white/80 px-2 py-1 text-[9px] font-black tracking-[0.18em] text-[#D12325] shadow-sm">
                   {String(index + 1).padStart(2, '0')}

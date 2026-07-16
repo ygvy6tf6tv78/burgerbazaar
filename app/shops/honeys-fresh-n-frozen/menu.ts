@@ -149,5 +149,5 @@ export function generateWhatsAppCartMessage(cartItems: CartItem[], totalPrice: n
 
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.cartQuantity, 0)
 
-  return `Hi Burger Bazaar,\n\nI would like to order:\n\n${itemsList}\n\n━━━━━━━━━━━━━━━━━━━━\nTotal items: ${totalItemsCount}\nMenu total: ₹${totalPrice}\n━━━━━━━━━━━━━━━━━━━━\n\nPlease confirm availability and the final order total. Thank you!`
+  return `Hi Burger Bazaar,\n\nI would like to order:\n\n${itemsList}\n\n━━━━━━━━━━━━━━━━━━━━\nTotal items: ${totalItemsCount}\nOrder total: ₹${totalPrice}\n━━━━━━━━━━━━━━━━━━━━\n\nPlease place this order. Thank you!`
 }

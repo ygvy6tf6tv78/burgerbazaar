@@ -136,7 +136,7 @@ export default function InstagramFeed() {
               />
               <div className="absolute inset-[1px] rounded-[25px] border border-white/10" />
               <div className="absolute inset-x-6 top-4 h-9 rounded-full bg-white/10 blur-2xl" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-black/22 to-black/0" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.03)_12%,rgba(0,0,0,0.38)_48%,rgba(0,0,0,0.985)_100%)]" />
 
               <div className="absolute left-4 right-4 top-4 flex items-center justify-between gap-2">
                 {post.pinned ? (
@@ -175,7 +175,7 @@ export default function InstagramFeed() {
                   </div>
                   <span className="text-xs font-medium text-white/80">{feed.profileHandle}</span>
                 </div>
-                <p className="text-sm font-semibold leading-snug text-white line-clamp-3">
+                <p className="line-clamp-2 text-[15px] font-bold leading-snug text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.75)]">
                   {post.caption}
                 </p>
                 <div className="mt-3 flex items-center justify-between">
@@ -196,12 +196,12 @@ export default function InstagramFeed() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.12, duration: 0.3 }}
-        className="mt-5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[18px] border-0 px-6 py-4 font-bold text-white shadow-[0_18px_34px_rgba(221,42,123,0.22)] outline outline-1 outline-white/15 transition-all hover:shadow-[0_22px_40px_rgba(221,42,123,0.28)]"
+        className="mt-5 flex h-[52px] w-full items-center justify-center gap-2 overflow-hidden rounded-[18px] border-0 px-6 font-bold text-white shadow-[0_18px_34px_rgba(221,42,123,0.22)] outline outline-1 outline-white/15 transition-all hover:shadow-[0_22px_40px_rgba(221,42,123,0.28)]"
         style={{
           background: 'linear-gradient(90deg, #833AB4 0%, #DD2A7B 52%, #F58529 100%)',
         }}
       >
-        <span className="grid h-8 w-8 place-items-center rounded-full bg-white p-1.5 shadow-sm">
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-white p-1.5 shadow-sm">
           <Image src="/instagram-official.png" alt="Instagram" width={22} height={22} className="h-full w-full object-contain" />
         </span>
         View Full Instagram

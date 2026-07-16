@@ -95,13 +95,13 @@ export default function Gallery() {
                 sessionStorage.setItem('fromGallery', 'true')
               }
             }}
-            className="min-h-[50px] w-full bg-mango-green hover:bg-mango-greenSoft text-white font-bold px-4 rounded-2xl shadow-[0_12px_24px_rgba(209,35,37,0.22)] hover:shadow-[0_16px_28px_rgba(209,35,37,0.28)] transition-all flex items-center justify-center gap-2"
+            className="min-h-[52px] w-full bg-mango-green hover:bg-mango-greenSoft text-white font-bold px-4 rounded-2xl shadow-[0_12px_24px_rgba(209,35,37,0.22)] hover:shadow-[0_16px_28px_rgba(209,35,37,0.28)] transition-all flex items-center justify-center gap-2"
           >
             <span className="flex -space-x-2 shrink-0" aria-hidden>
-              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#FCA5A5] bg-white shadow-sm">
                 <Image src="/burger-bazaar-sticker.png" alt="" fill className="object-contain p-0.5" sizes="28px" />
               </span>
-              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm">
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#FCA5A5] bg-white shadow-sm">
                 <Image src="/burger-bazaar-menu-smash.jpeg" alt="" fill className="object-cover" sizes="28px" />
               </span>
             </span>
