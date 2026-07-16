@@ -19,57 +19,35 @@ import LoadingScreen from './components/LoadingScreen'
 import { shopConfig } from './shops/honeys-fresh-n-frozen/config'
 
 export default function Home() {
-  const [showPreviewGate, setShowPreviewGate] = useState(true)
+  const [showLoading, setShowLoading] = useState(true)
 
   useEffect(() => {
-    // The client sees the preview gate once per tab. Returning from an inner
-    // page keeps them inside the demo instead of interrupting the journey.
-    if (typeof window !== 'undefined') {
-      const fromGallery = sessionStorage.getItem('fromGallery')
-      const fromMenu = sessionStorage.getItem('fromMenu')
-      const fromReviews = sessionStorage.getItem('fromReviews')
-      const hasEnteredPreview = sessionStorage.getItem('burgerBazaarPreviewEntered') === 'true'
-
-      if (hasEnteredPreview || fromGallery === 'true' || fromMenu === 'true' || fromReviews === 'true') {
-        sessionStorage.setItem('burgerBazaarPreviewEntered', 'true')
-        setShowPreviewGate(false)
-        sessionStorage.removeItem('fromGallery')
-        sessionStorage.removeItem('fromMenu')
-        sessionStorage.removeItem('fromReviews')
-
-        setTimeout(() => {
-          if (window.location.hash) {
-            window.history.replaceState(null, '', window.location.pathname)
-          }
-          window.scrollTo(0, 0)
-        }, 50)
-      }
-    }
+    const returningFromInnerPage = ['fromGallery', 'fromMenu', 'fromReviews'].some((key) => sessionStorage.getItem(key) === 'true')
+    const timer = window.setTimeout(() => setShowLoading(false), returningFromInnerPage ? 120 : 2700)
+    sessionStorage.removeItem('fromGallery')
+    sessionStorage.removeItem('fromMenu')
+    sessionStorage.removeItem('fromReviews')
+    return () => window.clearTimeout(timer)
   }, [])
-
-  const handleEnterPreview = () => {
-    sessionStorage.setItem('burgerBazaarPreviewEntered', 'true')
-    setShowPreviewGate(false)
-  }
 
   // Handle hash navigation after entering the preview.
   useEffect(() => {
-    if (!showPreviewGate && typeof window !== 'undefined') {
+    if (!showLoading && typeof window !== 'undefined') {
       if (window.location.hash === '#gallery' || window.location.hash === '#menu' || window.location.hash === '#reviews') {
         window.history.replaceState(null, '', window.location.pathname)
         window.scrollTo(0, 0)
       }
     }
-  }, [showPreviewGate])
+  }, [showLoading])
 
   return (
     <>
       <AnimatePresence>
-        {showPreviewGate && (
-          <LoadingScreen key="preview-gate" onEnter={handleEnterPreview} />
+        {showLoading && (
+          <LoadingScreen key="brand-loader" />
         )}
       </AnimatePresence>
-      {!showPreviewGate && (
+      {!showLoading && (
         <>
           {/* Keep the original Sonnet depth behind the Burger Bazaar sections. */}
           <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">

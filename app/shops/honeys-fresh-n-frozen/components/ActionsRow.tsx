@@ -230,24 +230,8 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           </Link>
         </div>
 
-        {/* Row 3: Swiggy + Zomato */}
+        {/* Row 3: Zomato + Swiggy */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Link
-            href={shopConfig.social.swiggy}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 rounded-2xl transition-all flex items-center justify-center active:scale-[0.97] touch-manipulation hover:bg-[#FFF7F0]"
-            style={{
-              background: '#FFFFFF',
-              border: '2px solid #FC8019',
-              boxShadow: '0 8px 18px rgba(252,128,25,0.16), 0 3px 8px rgba(21,21,21,0.08)',
-              borderRadius: '16px',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-          >
-            <Image src="/swiggy-logo.png" alt="Swiggy" width={112} height={35} className="h-[28px] w-auto object-contain" />
-          </Link>
           {shopConfig.social?.zomato && (
             <Link
               href={shopConfig.social.zomato}
@@ -270,9 +254,25 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               />
             </Link>
           )}
+          <Link
+            href={shopConfig.social.swiggy}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 rounded-2xl transition-all flex items-center justify-center active:scale-[0.97] touch-manipulation hover:bg-[#FFF7F0]"
+            style={{
+              background: '#FFFFFF',
+              border: '2px solid #FC8019',
+              boxShadow: '0 8px 18px rgba(252,128,25,0.16), 0 3px 8px rgba(21,21,21,0.08)',
+              borderRadius: '16px',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <Image src="/swiggy-logo.png" alt="Swiggy" width={112} height={35} className="h-[28px] w-auto object-contain" />
+          </Link>
         </div>
 
-        {/* Row 4: Payment + Instagram */}
+        {/* Row 4: Payment + Location */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           {onOpenPayments && (
             <Button
@@ -288,24 +288,6 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               <span className="text-sm font-bold">{t('openPayment')}</span>
             </Button>
           )}
-          <a
-            data-instagram-button
-            href={shopConfig.social.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border border-[#E8D7D2]"
-            style={{ boxShadow: '0 8px 16px rgba(225,48,108,0.15), 0 4px 8px rgba(21,21,21,0.08)' }}
-          >
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-white p-1.5">
-              <Image src="/instagram-official.png" alt="Instagram" width={24} height={24} className="h-6 w-6 object-contain" />
-            </span>
-            <span className="text-sm font-bold text-[#151515]">Instagram</span>
-          </a>
-        </div>
-
-        {/* Row 5: Location + Gallery */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
           <Button
             onClick={handleDirections}
             className="w-full min-w-0 h-11 bg-white hover:bg-[#FFF7F7] rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border"
@@ -316,6 +298,24 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
             </span>
             <span className="text-sm font-bold text-[#151515]">Location</span>
           </Button>
+        </div>
+
+        {/* Row 5: Instagram + Gallery */}
+        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+          <a
+            data-instagram-button
+            href={shopConfig.social.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 h-11 bg-white hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border border-[#E8D7D2]"
+            style={{ boxShadow: '0 8px 16px rgba(225,48,108,0.15), 0 4px 8px rgba(21,21,21,0.08)' }}
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
+              <Image src="/instagram-official.png" alt="Instagram" width={24} height={24} className="block h-6 w-6 object-contain" />
+            </span>
+            <span className="text-sm font-bold leading-none text-[#151515]">Instagram</span>
+          </a>
           <Link
             href="/gallery"
             onClick={(e) => e.stopPropagation()}

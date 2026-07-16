@@ -296,18 +296,14 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.22, duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
               >
-                <h1 className="mb-1 text-[30px] font-black leading-none tracking-[-0.045em] text-[#151515]">
+                <h1 className="mb-1 text-[25px] font-extrabold leading-none tracking-[-0.035em] text-[#151515]">
                   {shopConfig.name}
                 </h1>
                 <p className="font-semibold text-[15px] mb-3 text-[#D12325]">
                   {shopConfig.tagline}
                 </p>
                 {'keywordBadges' in shopConfig && Array.isArray(shopConfig.keywordBadges) && (
-                  <div className="relative mb-5 flex flex-wrap gap-1.5 overflow-hidden rounded-2xl py-1">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 w-[72%] opacity-[0.075]" aria-hidden>
-                      <Image src="/burger-bazaar-wordmark-wide.png" alt="" fill className="object-cover object-left mix-blend-multiply blur-[0.5px]" sizes="300px" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-white" />
-                    </div>
+                  <div className="relative mb-5 flex flex-wrap gap-1.5 rounded-2xl py-1 pr-20">
                     {shopConfig.keywordBadges.map((badge: string) => (
                       <span
                         key={badge}
@@ -318,6 +314,10 @@ export default function Hero() {
                     ))}
                   </div>
                 )}
+                <div className="pointer-events-none absolute -bottom-2 right-0 h-16 w-28 overflow-hidden opacity-[0.105]" aria-hidden>
+                  <Image src="/burger-bazaar-wordmark-wide.png" alt="" fill className="object-contain object-right mix-blend-multiply" sizes="112px" />
+                  <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/15 to-white" />
+                </div>
               </motion.div>
 
               {/* Actions - smooth appear after card */}

@@ -28,7 +28,7 @@ export default function ContactCard() {
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className="w-full max-w-md mx-auto py-6"
     >
-      <div className="bg-gradient-to-br from-mango-green to-mango-greenSoft backdrop-blur-md rounded-3xl p-6 shadow-lg border border-mango-green/30">
+      <div className="bg-gradient-to-br from-mango-green to-mango-greenSoft backdrop-blur-md rounded-[30px] p-6 shadow-lg border border-mango-green/30">
         <div className="section-title-accent mb-5">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white text-left tracking-tight">
             Get in Touch
@@ -42,7 +42,7 @@ export default function ContactCard() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ delay: 0.05, duration: 0.3, ease: 'easeOut' }}
-          className="rounded-2xl p-4 hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+          className="rounded-[22px] p-4 hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
           style={{
             willChange: 'opacity',
             background: 'linear-gradient(135deg, #FBE9E9 0%, #FFF9F4 35%, #ffffff 70%, #FFF9F4 100%)',
@@ -58,8 +58,8 @@ export default function ContactCard() {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-slate-800 mb-1 text-base">Order Helpline</h3>
-              <p className="mb-2 text-xs text-slate-600">Call Burger Bazaar for order-related assistance.</p>
+              <h3 className="font-semibold text-slate-800 mb-1 text-base">Call & Order</h3>
+              <p className="mb-2 text-xs text-slate-600">Speak directly with Burger Bazaar to place or discuss your order.</p>
               <div className="space-y-2">
                 {shopConfig.contactPersons.map((person) => (
                   <div key={person.label} className="flex items-center justify-between">
@@ -86,7 +86,7 @@ export default function ContactCard() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ delay: 0.08, duration: 0.3, ease: 'easeOut' }}
-          className="rounded-2xl p-4 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+          className="rounded-[22px] p-4 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
           style={{
             background: 'linear-gradient(135deg, #FBE9E9 0%, #FFF9F4 42%, #ffffff 100%)',
             border: '1px solid rgba(209,35,37,0.28)',
@@ -117,7 +117,7 @@ export default function ContactCard() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: 0.1, duration: 0.3, ease: 'easeOut' }}
-            className="rounded-2xl p-4 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+            className="rounded-[22px] p-4 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
             style={{
               willChange: 'opacity',
               background: 'linear-gradient(135deg, #FBE9E9 0%, #FFF9F4 35%, #ffffff 70%, #FFF9F4 100%)',
@@ -155,7 +155,7 @@ export default function ContactCard() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ delay: 0.15, duration: 0.3, ease: 'easeOut' }}
-          className="rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 relative"
+          className="rounded-[22px] overflow-hidden hover:shadow-xl transition-all duration-300 relative"
           style={{
             willChange: 'opacity',
             background: 'linear-gradient(135deg, #FBE9E9 0%, #FFF9F4 35%, #ffffff 70%, #FFF9F4 100%)',

@@ -17,21 +17,21 @@ const services = [
     icon: Sandwich,
     title: 'Housemade Buns',
     description: 'Soft housemade buns made to hold every loaded bite together.',
-    image: '/burger-bazaar-brand-1.jpg',
+    image: '/burger-bazaar-menu-smash.jpeg',
   },
   {
     id: 'service-3',
     icon: PackageCheck,
     title: 'Packed to Travel',
     description: 'Every order is packed carefully for delivery and takeaway.',
-    image: '/burger-bazaar-header-food.jpg',
+    image: '/burger-bazaar-menu-fries.jpeg',
   },
   {
     id: 'service-4',
     icon: Salad,
     title: 'Veg & Non-Veg',
     description: 'Strong options for both vegetarian and non-vegetarian cravings.',
-    image: '/burger-bazaar-menu-fries.jpeg',
+    image: '/burger-bazaar-menu-dessert.jpeg',
   },
 ]
 
@@ -77,11 +77,11 @@ export default function Services() {
                   src={service.image}
                   alt=""
                   fill
-                  className="scale-110 object-cover object-center opacity-[0.20] blur-[2px] saturate-[0.85]"
+                  className="scale-110 object-cover object-center opacity-[0.34] blur-[1.5px] saturate-[0.9]"
                   sizes="280px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-white/65 to-[#FFF9F4]" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-transparent to-white/45" />
+                <div className="absolute inset-0 bg-gradient-to-r from-white/15 via-white/52 to-[#FFF9F4]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-white/34" />
               </div>
               <div className="absolute inset-x-0 top-0 h-20 opacity-65 pointer-events-none bg-gradient-to-b from-white/85 to-transparent" />
               <div className="absolute right-4 top-4 rounded-full border border-[#D12325]/15 bg-white/80 px-2 py-1 text-[9px] font-black tracking-[0.18em] text-[#D12325] shadow-sm">
