@@ -23,7 +23,7 @@ export default function Home() {
 
   useEffect(() => {
     const returningFromInnerPage = ['fromGallery', 'fromMenu', 'fromReviews'].some((key) => sessionStorage.getItem(key) === 'true')
-    const timer = window.setTimeout(() => setShowLoading(false), returningFromInnerPage ? 120 : 2700)
+    const timer = window.setTimeout(() => setShowLoading(false), returningFromInnerPage ? 120 : 3900)
     sessionStorage.removeItem('fromGallery')
     sessionStorage.removeItem('fromMenu')
     sessionStorage.removeItem('fromReviews')

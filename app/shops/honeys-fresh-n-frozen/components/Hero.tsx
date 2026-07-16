@@ -314,8 +314,8 @@ export default function Hero() {
                     ))}
                   </div>
                 )}
-                <div className="pointer-events-none absolute -bottom-2 right-0 h-16 w-28 overflow-hidden opacity-[0.105]" aria-hidden>
-                  <Image src="/burger-bazaar-wordmark-wide.png" alt="" fill className="object-contain object-right mix-blend-multiply" sizes="112px" />
+                <div className="pointer-events-none absolute -bottom-1 -right-1 h-[72px] w-40 overflow-hidden opacity-[0.06]" aria-hidden>
+                  <Image src="/burger-bazaar-wordmark-wide.png" alt="" fill className="object-contain object-right mix-blend-multiply" sizes="160px" />
                   <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/15 to-white" />
                 </div>
               </motion.div>

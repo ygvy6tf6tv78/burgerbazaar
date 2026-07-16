@@ -16,42 +16,42 @@ export default function LoadingScreen() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,rgba(255,255,255,0.055),transparent_48%)]" />
       </div>
 
-      <div className="relative flex h-[430px] w-full max-w-[390px] items-center justify-center">
+      <div className="relative flex h-[390px] w-full max-w-[390px] items-center justify-center">
         <motion.div
-          initial={{ opacity: 0, x: '-50%', y: -44, scale: 0.84 }}
-          animate={{ opacity: [0, 1, 1, 0], x: '-50%', y: [-44, -10, -10, -22], scale: [0.84, 1, 1, 0.96] }}
-          transition={{ duration: 1.72, times: [0, 0.28, 0.70, 1], ease: [0.22, 0.61, 0.36, 1] }}
-          className="absolute left-1/2 top-[42px] h-[190px] w-[260px] -translate-x-1/2"
+          initial={{ opacity: 0, x: '-50%', y: 0, scale: 0.9 }}
+          animate={{ opacity: [0, 1, 1, 1, 0], x: '-50%', y: [0, 0, 0, -68, -92], scale: [0.9, 1, 1, 0.98, 0.94] }}
+          transition={{ duration: 3.22, times: [0, 0.15, 0.40, 0.72, 1], ease: [0.22, 0.61, 0.36, 1] }}
+          className="absolute left-1/2 top-[34px] h-[190px] w-[270px]"
         >
-          <Image src="/burger-loader-top.png" alt="" fill priority className="object-contain" sizes="260px" />
+          <Image src="/burger-loader-top.png" alt="" fill priority className="object-contain" sizes="270px" />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: '-50%', y: 44, scale: 0.84 }}
-          animate={{ opacity: [0, 1, 1, 0], x: '-50%', y: [44, 10, 10, 22], scale: [0.84, 1, 1, 0.96] }}
-          transition={{ delay: 0.14, duration: 1.58, times: [0, 0.28, 0.68, 1], ease: [0.22, 0.61, 0.36, 1] }}
-          className="absolute bottom-[96px] left-1/2 h-[150px] w-[270px] -translate-x-1/2"
+          initial={{ opacity: 0, x: '-50%', y: 0, scale: 0.9 }}
+          animate={{ opacity: [0, 1, 1, 1, 0], x: '-50%', y: [0, 0, 0, 68, 92], scale: [0.9, 1, 1, 0.98, 0.94] }}
+          transition={{ delay: 0.08, duration: 3.14, times: [0, 0.15, 0.39, 0.71, 1], ease: [0.22, 0.61, 0.36, 1] }}
+          className="absolute left-1/2 top-[120px] h-[150px] w-[278px]"
         >
-          <Image src="/burger-loader-bottom.png" alt="" fill priority className="object-contain" sizes="270px" />
+          <Image src="/burger-loader-bottom.png" alt="" fill priority className="object-contain" sizes="278px" />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.64, rotate: -4 }}
-          animate={{ opacity: [0, 0, 1, 1, 1], scale: [0.64, 0.72, 1, 1.18, 1.08], rotate: [-4, -4, 0, 2.5, 0] }}
-          transition={{ duration: 2.35, times: [0, 0.27, 0.48, 0.76, 1], ease: [0.22, 0.61, 0.36, 1] }}
-          className="relative z-10 h-[170px] w-[310px] drop-shadow-[0_22px_42px_rgba(0,0,0,0.55)]"
+          initial={{ opacity: 0, scale: 0.58, rotate: -3 }}
+          animate={{ opacity: [0, 0, 0, 1, 1, 1], scale: [0.58, 0.58, 0.7, 1, 1.13, 1.08], rotate: [-3, -3, -3, 0, 1.5, 0] }}
+          transition={{ duration: 3.62, times: [0, 0.35, 0.48, 0.64, 0.84, 1], ease: [0.22, 0.61, 0.36, 1] }}
+          className="relative z-10 h-[180px] w-[320px] drop-shadow-[0_22px_42px_rgba(0,0,0,0.55)]"
         >
-          <Image src="/burger-loader-wordmark.png" alt="Burger Bazaar" fill priority className="object-contain" sizes="310px" />
+          <Image src="/burger-loader-wordmark.png" alt="Burger Bazaar" fill priority className="object-contain" sizes="320px" />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: [0, 0, 1, 1], y: [8, 8, 0, 0] }}
-          transition={{ duration: 2.35, times: [0, 0.45, 0.64, 1] }}
+          transition={{ duration: 3.62, times: [0, 0.60, 0.74, 1] }}
           className="absolute bottom-1 left-0 right-0 text-center"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-white/45">Welcoming you to</p>
-          <p className="mt-1 text-[14px] font-extrabold tracking-[0.08em] text-white">Burger Bazaar</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-white/70">Loading the chaos</p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">Powered by OneLink</p>
           <div className="mt-4 flex items-center justify-center gap-1.5" aria-label="Loading">
             {[0, 1, 2].map((dot) => (
               <motion.span
