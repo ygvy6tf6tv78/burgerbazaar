@@ -21,9 +21,9 @@ export const shopConfig = {
   contact: {
     phones: ["9266855210"],
     email: "",
-    address: "CHC, Door 10040, 1st Floor, Street 101, Ward 50, Sector 4, Zone 3, Channi Himmat, Jammu",
+    address: "Sector 4, Rajma, opposite Peerah Walle, Channi Himmat, Jammu, Jammu and Kashmir 180015",
     locationLine: "Delivery kitchen in Channi Himmat, Jammu, serving smash burgers, fried chicken burgers, loaded fries and desserts.",
-    mapQuery: "Burger Bazaar Channi Himmat Jammu",
+    mapQuery: "Burger Bazaar, Sector 4, Rajma, opposite Peerah Walle, Channi Himmat, Jammu, Jammu and Kashmir 180015",
     storeHours: "Delivery-only outlet in Channi Himmat, Jammu.",
     storeHoursStatus: "Delivery only",
     officePhone: "9266855210",
@@ -52,7 +52,7 @@ export const shopConfig = {
     twitter: "",
     linkedin: "",
     swiggy: "https://www.swiggy.com/search?query=Burger%20Bazaar",
-    zomato: "https://www.zomato.com/jammu/burger-bazaar-channi-himmat/order",
+    zomato: "https://link.zomato.com/xqzv/rshare?id=143279158ccab9d31",
   },
 
   instagramFeed: {
@@ -139,8 +139,8 @@ export const shopConfig = {
 
   google: {
     placeId: "",
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Burger%20Bazaar%20Channi%20Himmat%20Jammu",
-    reviewsUrl: "https://www.zomato.com/jammu/burger-bazaar-channi-himmat/order",
+    mapsUrl: "https://share.google/QEt26ANZfyz8KgjC2",
+    reviewsUrl: "https://link.zomato.com/xqzv/rshare?id=143279158ccab9d31",
     fallbackRating: 0,
     fallbackReviewCount: 0,
   },

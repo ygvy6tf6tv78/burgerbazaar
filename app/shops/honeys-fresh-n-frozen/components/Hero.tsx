@@ -451,7 +451,7 @@ export default function Hero() {
                 <div className="w-full flex flex-col items-center mt-2 pt-2" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
                   <motion.a
                     data-no-info-flip
-                    href={`https://www.google.com/maps?q=${encodeURIComponent(shopConfig.contact.mapQuery)}`}
+                    href={shopConfig.google.mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.02 }}
@@ -460,11 +460,7 @@ export default function Hero() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      window.open(
-                        `https://www.google.com/maps?q=${encodeURIComponent(shopConfig.contact.mapQuery)}`,
-                        '_blank',
-                        'noopener,noreferrer'
-                      )
+                      window.open(shopConfig.google.mapsUrl, '_blank', 'noopener,noreferrer')
                     }}
                     style={{ fontSize: 'clamp(13px, 3.5vw, 15px)', WebkitTapHighlightColor: 'transparent' }}
                   >

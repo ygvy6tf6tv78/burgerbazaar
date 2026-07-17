@@ -12,7 +12,7 @@ export default function ContactCard() {
   const sectionRef = useRef<HTMLElement | null>(null)
 
   const openMap = () => {
-    window.open(`https://www.google.com/maps?q=${encodeURIComponent(shopConfig.contact.mapQuery)}`, '_blank')
+    window.open(shopConfig.google.mapsUrl, '_blank')
   }
 
   const openOnlineOrder = () => {

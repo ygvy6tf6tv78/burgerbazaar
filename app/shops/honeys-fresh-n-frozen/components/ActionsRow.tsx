@@ -81,8 +81,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
   }
 
   const handleDirections = () => {
-    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shopConfig.contact.mapQuery)}`
-    window.open(mapUrl, '_blank')
+    window.open(shopConfig.google.mapsUrl, '_blank')
   }
 
   const handleSaveContact = () => {
