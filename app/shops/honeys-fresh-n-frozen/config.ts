@@ -122,8 +122,9 @@ export const shopConfig = {
   },
 
   payment: {
-    upiId: "",
+    upiId: "Q832805737@ybl",
     upiName: "Burger Bazaar",
+    merchantId: "M232JNT1PH0HZ",
     upiQrImageUrl: "",
     scannerImage: "",
     bank: {

@@ -29,6 +29,7 @@ function buildUpiLink(upiId: string, upiName: string, amount?: number): string {
   const params = new URLSearchParams({
     pa: upiId, // Payee Address (UPI ID) - @ symbol will be encoded as %40
     pn: upiName, // Payee Name
+    tn: `Payment to ${upiName}`,
     cu: 'INR', // Currency
   })
   if (amount && amount > 0) {
@@ -168,6 +169,16 @@ export default function PaymentFace({
       const encoded = encodeURIComponent(shareText)
       window.open(`https://wa.me/?text=${encoded}`, '_blank')
     }
+  }
+
+  const handleOpenUpiApp = () => {
+    setPaymentModalOpen(false)
+    window.location.href = upiLink
+
+    // If no UPI app handles the intent, bring back the copy/manual-pay option.
+    window.setTimeout(() => {
+      if (document.visibilityState === 'visible') setPaymentModalOpen(true)
+    }, 1600)
   }
 
   // Build Paytm app deep link with UPI ID - Secure and optimized
@@ -391,7 +402,7 @@ export default function PaymentFace({
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                setPaymentModalOpen(true)
+                handleOpenUpiApp()
               }}
               className="w-full text-white font-bold py-3.5 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-3 cursor-pointer relative z-30 touch-manipulation"
               style={{ 
@@ -571,7 +582,26 @@ export default function PaymentFace({
                     <p className="text-white font-bold text-xl text-center break-all select-all" style={{ wordBreak: 'break-all', lineHeight: '1.5' }}>
                       {upiId}
                     </p>
+                    <p className="mt-1.5 text-center text-[10px] font-semibold uppercase tracking-[0.12em] text-white/55">
+                      PhonePe Business · MID {shopConfig.payment.merchantId}
+                    </p>
                   </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleOpenUpiApp()
+                    }}
+                    className="mb-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-extrabold text-[#5F259F] shadow-lg transition-all"
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                    aria-label="Open UPI app"
+                  >
+                    <Image src="/logos/icons8-phone-pe-48.png" alt="" width={22} height={22} className="h-[22px] w-[22px] object-contain" aria-hidden />
+                    <span>Open UPI App</span>
+                  </motion.button>
                   
                   {/* Copy Button - Full Width */}
                   <motion.button
@@ -681,7 +711,7 @@ export default function PaymentFace({
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 mb-3">
                 <div className="flex justify-center mb-2">
                   <Image
-                    src={scannerImage || shopConfig.payment.scannerImage}
+                    src={displayedQRImageUrl}
                     alt="Payment Scanner"
                     width={250}
                     height={250}
@@ -742,4 +772,3 @@ export default function PaymentFace({
     </div>
   )
 }
-
