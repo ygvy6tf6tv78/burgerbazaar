@@ -43,12 +43,10 @@ function digitsOnly(s: string) {
   return s.replace(/\D/g, '')
 }
 
-function locationAddressText(address: string | undefined, mapUrl: string | undefined) {
+function locationAddressText(address: string | undefined, latitude: number, longitude: number) {
   const cleanAddress = address?.trim()
-  const cleanMapUrl = mapUrl?.trim()
   if (cleanAddress) return cleanAddress
-  if (cleanMapUrl) return 'Pinned location from phone GPS. Please add house, area and landmark details.'
-  return 'Pinned location from phone GPS. Please add house, area and landmark details.'
+  return `GPS location: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
 }
 
 function mapsUrlForCoords(latitude: number, longitude: number) {
@@ -304,7 +302,7 @@ Please confirm my order.`
       // and must never make a valid phone location look like a failure.
       setUserLat(latitude)
       setUserLng(longitude)
-      setMappedAddress(locationAddressText(undefined, mapUrl))
+      setMappedAddress(locationAddressText(undefined, latitude, longitude))
       setMappedMapUrl(mapUrl)
       setLocationStatus(
         km <= shopConfig.delivery.radiusKm
@@ -614,6 +612,17 @@ Please confirm my order.`
 
             {locationStatus && (
               <p className="mt-2.5 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs leading-relaxed text-slate-600">{locationStatus}</p>
+            )}
+            {mappedMapUrl && userLat != null && userLng != null && (
+              <a
+                href={mappedMapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2.5 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#D12325]/25 bg-[#FFF9F5] px-3 text-[12px] font-extrabold text-[#D12325] active:bg-[#FBE8E8]"
+              >
+                <MapPin className="h-4 w-4" />
+                Open detected location in Google Maps
+              </a>
             )}
           </section>
           ) : (

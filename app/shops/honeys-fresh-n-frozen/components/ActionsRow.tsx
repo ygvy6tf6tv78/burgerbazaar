@@ -80,10 +80,6 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
     setWhatsappSelectorOpen(false)
   }
 
-  const handleDirections = () => {
-    window.open(shopConfig.google.mapsUrl, '_blank')
-  }
-
   const handleSaveContact = () => {
     const vCard = generateVCard({
       name: shopConfig.name,
@@ -287,8 +283,10 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               <span className="text-sm font-bold">{t('openPayment')}</span>
             </Button>
           )}
-          <Button
-            onClick={handleDirections}
+          <a
+            href={shopConfig.google.mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="w-full min-w-0 h-11 bg-white hover:bg-[#FFF7F7] rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] touch-manipulation border"
             style={{ borderColor: 'rgba(209,35,37,0.34)', boxShadow: '0 10px 20px rgba(209,35,37,0.14), 0 4px 9px rgba(21,21,21,0.10), inset 0 1px 0 #fff' }}
           >
@@ -296,7 +294,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               <MapPin className="h-[18px] w-[18px] text-[#D12325]" strokeWidth={2.5} />
             </span>
             <span className="text-sm font-bold text-[#151515]">Location</span>
-          </Button>
+          </a>
         </div>
 
         {/* Row 5: Instagram + Gallery */}

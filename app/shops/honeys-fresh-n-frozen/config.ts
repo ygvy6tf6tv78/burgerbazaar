@@ -139,7 +139,7 @@ export const shopConfig = {
 
   google: {
     placeId: "",
-    mapsUrl: "https://share.google/QEt26ANZfyz8KgjC2",
+    mapsUrl: "https://www.google.com/maps?um=1&ie=UTF-8&fb=1&gl=in&sa=X&geocode=Kd-4NdndnR45MeSWjVCRNIEH&daddr=Sector+4,+rajma,+opposite+peerah+walle,+Channi+Himat,+Jammu,+Jammu+and+Kashmir+180015",
     reviewsUrl: "https://link.zomato.com/xqzv/rshare?id=143279158ccab9d31",
     fallbackRating: 0,
     fallbackReviewCount: 0,

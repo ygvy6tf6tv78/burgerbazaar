@@ -11,10 +11,6 @@ import { getTelLink } from '../../../lib/phone'
 export default function ContactCard() {
   const sectionRef = useRef<HTMLElement | null>(null)
 
-  const openMap = () => {
-    window.open(shopConfig.google.mapsUrl, '_blank')
-  }
-
   const openOnlineOrder = () => {
     window.location.href = '/menu?mode=order&type=online'
   }
@@ -179,13 +175,15 @@ export default function ContactCard() {
                 </p>
               </div>
             </div>
-            <Button
-              onClick={openMap}
-              className="w-full h-10 bg-mango-green hover:bg-mango-greenSoft text-white font-semibold rounded-xl border-0 shadow-md"
+            <a
+              href={shopConfig.google.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 w-full items-center justify-center rounded-xl border-0 bg-mango-green font-semibold text-white shadow-md hover:bg-mango-greenSoft"
             >
               <MapPin className="w-4 h-4 mr-2 text-white" />
               Open in Maps
-            </Button>
+            </a>
           </div>
 
           {/* Embedded Map */}

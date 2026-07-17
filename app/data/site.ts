@@ -75,7 +75,7 @@ export const siteConfig = {
 
   google: {
     placeId: "",
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Burger%20Bazaar%20Channi%20Himmat%20Jammu",
+    mapsUrl: "https://www.google.com/maps?um=1&ie=UTF-8&fb=1&gl=in&sa=X&geocode=Kd-4NdndnR45MeSWjVCRNIEH&daddr=Sector+4,+rajma,+opposite+peerah+walle,+Channi+Himat,+Jammu,+Jammu+and+Kashmir+180015",
     reviewsUrl: "https://www.zomato.com/jammu/burger-bazaar-channi-himmat",
   },
 }
