@@ -975,23 +975,22 @@ function MenuPageInner() {
                   onClick={goToCheckout}
                   animate={cartBarPulse ? { scale: [1, 1.02, 1] } : { scale: 1 }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="pointer-events-auto flex h-[64px] w-full max-w-[430px] items-center justify-between rounded-full border border-[#D12325]/20 bg-white px-3 text-[#151515] shadow-[0_16px_36px_rgba(15,23,42,0.18)]"
+                  className="pointer-events-auto flex h-[60px] w-full max-w-[430px] items-center justify-between rounded-full border border-white/20 bg-[#D12325] px-4 text-white shadow-[0_14px_28px_rgba(209,35,37,0.32)] active:bg-[#B91C1C]"
                 >
 	                  <span className="flex min-w-0 items-center gap-2.5">
-	                    <span className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#FBE8E8] px-3 text-[13px] font-extrabold text-[#D12325]">
-	                      <ShoppingBag className="h-4 w-4" />
-	                      {getTotalItems()}
+	                    <span className="flex shrink-0 -space-x-2">
+	                      <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
+	                        <Image src="/burger-bazaar-menu-smash.jpeg" alt="" width={28} height={28} className="h-full w-full object-cover" />
+	                      </span>
+	                      <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
+	                        <Image src="/burger-bazaar-menu-fries.jpeg" alt="" width={28} height={28} className="h-full w-full object-cover" />
+	                      </span>
 	                    </span>
-	                    <span className="min-w-0 text-left">
-	                      <span className="block truncate text-[15px] font-extrabold">
-	                        {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'} added
-	                      </span>
-	                      <span className="block text-[12px] font-semibold text-slate-500">
-	                        Menu total ₹{getTotalPrice()}
-	                      </span>
+	                    <span className="truncate text-[16px] font-semibold">
+	                      {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'} added
 	                    </span>
 	                  </span>
-	                  <span className="shrink-0 rounded-full bg-[#D12325] px-4 py-2.5 text-[14px] font-extrabold text-white shadow-[0_8px_18px_rgba(209,35,37,0.25)]">Checkout →</span>
+	                  <span className="shrink-0 text-[16px] font-semibold">Checkout &gt;</span>
 	                </motion.button>
               </motion.div>
             )}

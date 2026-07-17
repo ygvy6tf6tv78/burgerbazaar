@@ -53,6 +53,12 @@ function mapsUrlForCoords(latitude: number, longitude: number) {
   return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
 }
 
+function getBrowserPosition(options: PositionOptions) {
+  return new Promise<GeolocationPosition>((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, options)
+  })
+}
+
 /** 16px on inputs stops iOS zoom-on-focus; keep compact h-11 like original layout */
 const fieldText = 'text-[16px] leading-snug'
 
@@ -258,7 +264,7 @@ Please confirm my order.`
     setCart([])
   }
 
-  const useCurrentLocation = () => {
+  const useCurrentLocation = async () => {
     if (typeof window === 'undefined') return
 
     if (!window.isSecureContext) {
@@ -274,63 +280,64 @@ Please confirm my order.`
     }
 
     setIsLocating(true)
-    setLocationStatus('Getting location…')
+    setLocationStatus('Finding your GPS pin…')
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords
-          setUserLat(latitude)
-          setUserLng(longitude)
-          const km = distanceKm(latitude, longitude, shopConfig.delivery.restaurantLat, shopConfig.delivery.restaurantLng)
-          const response = await fetch(`/api/current-location?lat=${latitude}&lng=${longitude}`)
-          if (!response.ok) {
-            throw new Error('Could not fetch address')
-          }
+    try {
+      let position: GeolocationPosition
+      try {
+        position = await getBrowserPosition({ enableHighAccuracy: false, timeout: 9000, maximumAge: 300000 })
+      } catch (firstError) {
+        const error = firstError as GeolocationPositionError
+        if (error.code === error.PERMISSION_DENIED) throw error
+        setLocationStatus('Getting a more accurate GPS fix…')
+        position = await getBrowserPosition({ enableHighAccuracy: true, timeout: 16000, maximumAge: 0 })
+      }
+
+      const { latitude, longitude, accuracy } = position.coords
+      const mapUrl = mapsUrlForCoords(latitude, longitude)
+      const km = distanceKm(latitude, longitude, shopConfig.delivery.restaurantLat, shopConfig.delivery.restaurantLng)
+
+      // Save the GPS pin immediately. Reverse geocoding is an optional enhancement
+      // and must never make a valid phone location look like a failure.
+      setUserLat(latitude)
+      setUserLng(longitude)
+      setMappedAddress(locationAddressText(undefined, mapUrl))
+      setMappedMapUrl(mapUrl)
+      setLocationStatus(
+        km <= shopConfig.delivery.radiusKm
+          ? `Location saved — ${km.toFixed(1)} km away, within our delivery radius${Number.isFinite(accuracy) ? ` (GPS accuracy ~${Math.round(accuracy)} m)` : ''}.`
+          : `Location saved — ${km.toFixed(1)} km away, outside our ${shopConfig.delivery.radiusKm} km delivery radius.`
+      )
+
+      try {
+        const controller = new AbortController()
+        const timeout = window.setTimeout(() => controller.abort(), 7000)
+        const response = await fetch(`/api/current-location?lat=${latitude}&lng=${longitude}`, {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+        window.clearTimeout(timeout)
+        if (response.ok) {
           const data = await response.json()
-          if (data?.address || data?.mapUrl) {
-            setMappedAddress(locationAddressText(data?.address, data?.mapUrl))
-            setMappedMapUrl(typeof data?.mapUrl === 'string' ? data.mapUrl : mapsUrlForCoords(latitude, longitude))
-            setLocationStatus(
-              km <= shopConfig.delivery.radiusKm
-                ? `Location saved — within the ${shopConfig.delivery.radiusKm} km delivery radius.`
-                : `This location is ${km.toFixed(1)} km away and outside our ${shopConfig.delivery.radiusKm} km delivery radius.`
-            )
-          } else {
-            setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
-            setMappedMapUrl(mapsUrlForCoords(latitude, longitude))
-            setLocationStatus('Location saved. Add your complete address below.')
-          }
-        } catch {
-          setLocationStatus('Could not load full address — GPS pin is still saved.')
-          const { latitude, longitude } = position.coords
-          setMappedAddress(locationAddressText(undefined, mapsUrlForCoords(latitude, longitude)))
-          setMappedMapUrl(mapsUrlForCoords(latitude, longitude))
-        } finally {
-          setIsLocating(false)
+          if (typeof data?.address === 'string' && data.address.trim()) setMappedAddress(data.address.trim())
+          if (typeof data?.mapUrl === 'string' && data.mapUrl.trim()) setMappedMapUrl(data.mapUrl.trim())
         }
-      },
-      (err: GeolocationPositionError) => {
-        setIsLocating(false)
-        if (err.code === err.PERMISSION_DENIED) {
-          setLocationStatus(
-            'Location permission is off. Open browser settings, allow location for this site, then tap “Use current location” again.'
-          )
-          setToast(
-            'Location is blocked. Allow location in browser or phone settings, then tap the button again.'
-          )
-        } else if (err.code === err.TIMEOUT) {
-          setLocationStatus(
-            'Location timed out. Please check that GPS is on and tap the button again.'
-          )
-        } else {
-          setLocationStatus(
-            'Location could not be detected. Please turn on location services and try again.'
-          )
-        }
-      },
-      { enableHighAccuracy: true, timeout: 22000, maximumAge: 120000 }
-    )
+      } catch {
+        // GPS coordinates and map link are already saved above.
+      }
+    } catch (positionError) {
+      const error = positionError as GeolocationPositionError
+      if (error.code === error.PERMISSION_DENIED) {
+        setLocationStatus('Location permission is blocked. Allow location for this site in browser settings, then try again.')
+        setToast('Allow location access in browser or phone settings, then tap “Use current location” again.')
+      } else if (error.code === error.TIMEOUT) {
+        setLocationStatus('GPS timed out. Turn on phone Location, move near a window, and try again.')
+      } else {
+        setLocationStatus('GPS is unavailable right now. Turn on phone Location and try again, or enter your address manually.')
+      }
+    } finally {
+      setIsLocating(false)
+    }
   }
 
   const canPlaceOrder =
@@ -777,20 +784,20 @@ Please confirm my order.`
             <span className="flex shrink-0 -space-x-2">
               <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
                 <Image
-                  src="/burger-bazaar-sticker.png"
+                  src="/burger-bazaar-menu-smash.jpeg"
                   alt=""
                   width={28}
                   height={28}
-                  className="h-full w-full object-contain p-0.5"
+                  className="h-full w-full object-cover"
                 />
               </span>
               <span className="h-7 w-7 overflow-hidden rounded-full border border-white/80 bg-white">
                 <Image
-                  src="/burger-bazaar-sticker.png"
+                  src="/burger-bazaar-menu-fries.jpeg"
                   alt=""
                   width={28}
                   height={28}
-                  className="h-full w-full object-contain p-0.5"
+                  className="h-full w-full object-cover"
                 />
               </span>
             </span>
