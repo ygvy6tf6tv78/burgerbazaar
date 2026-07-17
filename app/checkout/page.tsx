@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, ChevronDown, MapPin, Minus, Plus, CheckCircle2, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowLeft, ChevronDown, MapPin, Minus, Plus, CheckCircle2, PackageCheck, ShoppingBag, X } from 'lucide-react'
 import { type CartItem, generateWhatsAppCartMessage } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -12,6 +13,7 @@ import {
   MANGO_HANDOFF_TO_CHECKOUT,
   MANGO_CHECKOUT_SESSION,
   readOrderType,
+  writeOrderType,
   clearCheckoutSession,
   writeHandoffToMenuFromCheckout,
   type MangoOrderType,
@@ -86,6 +88,7 @@ export default function CheckoutPage() {
   const [isLocating, setIsLocating] = useState(false)
   const [locationStatus, setLocationStatus] = useState('')
   const [toast, setToast] = useState<string | null>(null)
+  const [showOrderTypeMenu, setShowOrderTypeMenu] = useState(false)
   const [orderWindow, setOrderWindow] = useState<OrderWindowState>(() => getOrderWindowState())
 
   const locationBlockRef = useRef<HTMLDivElement>(null)
@@ -392,6 +395,13 @@ Please confirm my order.`
     el.scrollIntoView({ block: 'center', behavior: 'smooth' })
   }
 
+  const changeOrderType = (nextOrderType: 'online' | 'takeaway') => {
+    setOrderType(nextOrderType)
+    writeOrderType(nextOrderType)
+    setShowOrderTypeMenu(false)
+    setToast(null)
+  }
+
   return (
     <div className="relative mx-auto min-h-screen w-full max-w-[430px] overflow-x-hidden bg-[#151515]">
       {toast && (
@@ -492,7 +502,12 @@ Please confirm my order.`
           <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-[15px] font-bold text-slate-900">Delivery</h2>
-              <span className="rounded-full bg-[#FBE8E8] px-2.5 py-0.5 text-[11px] font-semibold text-[#991B1E]">5 km delivery radius</span>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <span className="rounded-full bg-[#FBE8E8] px-2.5 py-0.5 text-[11px] font-semibold text-[#991B1E]">5 km delivery radius</span>
+                <button type="button" onClick={() => setShowOrderTypeMenu(true)} className="text-[12px] font-semibold text-[#D12325]">
+                  Change Order Type
+                </button>
+              </div>
             </div>
 
             <div ref={locationBlockRef} className="mt-2.5 rounded-2xl border border-slate-200 bg-slate-50/50 p-2.5">
@@ -602,18 +617,18 @@ Please confirm my order.`
             )}
           </section>
           ) : (
-          <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-[15px] font-bold text-slate-900">
+          <section className="mt-3 w-full min-w-0 max-w-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-3 sm:p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
+            <div className="flex min-w-0 items-start justify-between gap-2">
+              <h2 className="min-w-0 text-[15px] font-bold text-slate-900">
                 {isDineInOrder ? 'Dine In Details' : 'Takeaway Details'}
               </h2>
-              <Link href="/order" className="text-[12px] font-semibold text-[#D12325]">
+              <button type="button" onClick={() => setShowOrderTypeMenu(true)} className="shrink-0 text-right text-[12px] font-semibold leading-tight text-[#D12325]">
                 Change Order Type
-              </Link>
+              </button>
             </div>
 
-            <div className="mt-3 grid gap-3">
-              <div>
+            <div className="mt-3 grid w-full min-w-0 max-w-full gap-3">
+              <div className="min-w-0 max-w-full">
                 <label htmlFor="customer-name" className="mb-1 block text-[12px] font-semibold text-slate-800">
                   Name
                 </label>
@@ -627,11 +642,11 @@ Please confirm my order.`
                 />
               </div>
 
-              <div ref={mobileBlockRef}>
+              <div ref={mobileBlockRef} className="min-w-0 max-w-full">
                 <label htmlFor="checkout-mobile" className="mb-1 block text-[12px] font-semibold text-slate-800">
                   Phone
                 </label>
-                <div className="flex h-11 min-w-0 items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-300/80">
+                <div className="flex h-11 w-full min-w-0 max-w-full items-stretch overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-300/80">
                   <span
                     className="flex shrink-0 items-center gap-1.5 border-r border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100/90 px-2 sm:px-2.5"
                     aria-label="India, country code +91"
@@ -657,11 +672,11 @@ Please confirm my order.`
 
               {isDineInOrder ? (
                 <>
-                  <div>
+                  <div className="min-w-0 max-w-full">
                     <label htmlFor="arrival-time" className="mb-1 block text-[12px] font-semibold text-slate-800">
                       Arrival Time
                     </label>
-                    <div className="relative">
+                    <div className="relative w-full min-w-0 max-w-full">
                       <select
                         id="arrival-time"
                         value={arrivalTime}
@@ -694,11 +709,11 @@ Please confirm my order.`
                 </>
               ) : (
                 <>
-                  <div>
+                  <div className="min-w-0 max-w-full">
                     <label htmlFor="pickup-time" className="mb-1 block text-[12px] font-semibold text-slate-800">
                       Pickup Time
                     </label>
-                    <div className="relative">
+                    <div className="relative w-full min-w-0 max-w-full">
                       <select
                         id="pickup-time"
                         value={pickupTime}
@@ -730,7 +745,7 @@ Please confirm my order.`
                 onFocus={(e) => focusScroll(e.target)}
                 placeholder="Notes (optional)"
                 rows={3}
-                className={`w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
+                className={`w-full min-w-0 max-w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300/80 ${fieldText}`}
               />
             </div>
           </section>
@@ -765,6 +780,64 @@ Please confirm my order.`
           </section>
         </div>
       </main>
+
+      <AnimatePresence>
+        {showOrderTypeMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10020] flex items-end justify-center bg-black/55 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-[2px]"
+            onClick={() => setShowOrderTypeMenu(false)}
+          >
+            <motion.div
+              initial={{ y: 48, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 48, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 430, damping: 34 }}
+              className="w-full max-w-[406px] rounded-[28px] border border-[#E8D7D2] bg-[#FFF9F5] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.34)]"
+              onClick={(event) => event.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="checkout-order-type-title"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p id="checkout-order-type-title" className="text-[18px] font-black tracking-tight text-[#151515]">Change Order Type</p>
+                  <p className="mt-0.5 text-[12px] font-medium text-slate-500">How would you like your Burger Bazaar order?</p>
+                </div>
+                <button type="button" onClick={() => setShowOrderTypeMenu(false)} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E8D7D2] bg-white text-[#D12325]" aria-label="Close order type menu">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => changeOrderType('online')}
+                  className={`flex min-h-[104px] min-w-0 flex-col items-start justify-between rounded-2xl border p-3.5 text-left transition active:scale-[0.98] ${isOnlineOrder ? 'border-[#D12325] bg-[#D12325] text-white shadow-[0_12px_26px_rgba(209,35,37,0.24)]' : 'border-[#E8D7D2] bg-white text-[#151515]'}`}
+                >
+                  <ShoppingBag className="h-6 w-6" />
+                  <span>
+                    <span className="block text-[14px] font-extrabold">Order Online</span>
+                    <span className={`mt-0.5 block text-[10px] font-semibold ${isOnlineOrder ? 'text-white/80' : 'text-slate-500'}`}>Delivered to you</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => changeOrderType('takeaway')}
+                  className={`flex min-h-[104px] min-w-0 flex-col items-start justify-between rounded-2xl border p-3.5 text-left transition active:scale-[0.98] ${isTakeawayOrder ? 'border-[#D12325] bg-[#D12325] text-white shadow-[0_12px_26px_rgba(209,35,37,0.24)]' : 'border-[#E8D7D2] bg-white text-[#151515]'}`}
+                >
+                  <PackageCheck className="h-6 w-6" />
+                  <span>
+                    <span className="block text-[14px] font-extrabold">Takeaway</span>
+                    <span className={`mt-0.5 block text-[10px] font-semibold ${isTakeawayOrder ? 'text-white/80' : 'text-slate-500'}`}>Collect from us</span>
+                  </span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div
         className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[9999] flex justify-center"
