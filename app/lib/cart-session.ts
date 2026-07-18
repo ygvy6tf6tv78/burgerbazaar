@@ -1,4 +1,4 @@
-/** Cart handoffs (menu ↔ checkout) + active checkout session (survives refresh on /checkout only). */
+/** Cart handoffs (menu ↔ checkout) + persisted cart state. */
 
 export const MANGO_CART_KEY = 'mango_checkout_cart'
 export const MANGO_HANDOFF_TO_CHECKOUT = 'mango_handoff_to_checkout'
@@ -21,14 +21,14 @@ export function readOrderType(): MangoOrderType {
 
 export function writeHandoffToCheckout(cart: unknown[], orderType: MangoOrderType = 'online') {
   if (typeof window === 'undefined') return
-  window.sessionStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
+  window.localStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
   window.sessionStorage.setItem(MANGO_HANDOFF_TO_CHECKOUT, '1')
   window.sessionStorage.setItem(MANGO_ORDER_TYPE_KEY, orderType)
 }
 
 export function writeHandoffToMenuFromCheckout(cart: unknown[], orderType?: MangoOrderType) {
   if (typeof window === 'undefined') return
-  window.sessionStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
+  window.localStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
   window.sessionStorage.setItem(MANGO_HANDOFF_TO_MENU, '1')
   if (orderType) window.sessionStorage.setItem(MANGO_ORDER_TYPE_KEY, orderType)
 }
@@ -37,6 +37,6 @@ export function writeHandoffToMenuFromCheckout(cart: unknown[], orderType?: Mang
 export function clearCheckoutSession() {
   if (typeof window === 'undefined') return
   window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
-  window.sessionStorage.removeItem(MANGO_CART_KEY)
+  window.localStorage.removeItem(MANGO_CART_KEY)
   window.sessionStorage.removeItem(MANGO_ORDER_TYPE_KEY)
 }

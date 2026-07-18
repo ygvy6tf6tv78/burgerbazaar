@@ -112,7 +112,7 @@ export default function CheckoutPage() {
     const handoff = window.sessionStorage.getItem(MANGO_HANDOFF_TO_CHECKOUT) === '1'
     window.sessionStorage.removeItem(MANGO_HANDOFF_TO_CHECKOUT)
     const sessionActive = window.sessionStorage.getItem(MANGO_CHECKOUT_SESSION) === '1'
-    const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
+    const raw = window.localStorage.getItem(MANGO_CART_KEY)
     setOrderType(readOrderType())
 
     let next: CartItem[] = []
@@ -127,7 +127,7 @@ export default function CheckoutPage() {
       }
       window.sessionStorage.setItem(MANGO_CHECKOUT_SESSION, '1')
     } else {
-      window.sessionStorage.removeItem(MANGO_CART_KEY)
+      window.localStorage.removeItem(MANGO_CART_KEY)
       window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
     }
     setCart(next)
@@ -142,7 +142,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined' || !checkoutStorageReady) return
-    window.sessionStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
+    window.localStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
     window.sessionStorage.setItem(MANGO_CHECKOUT_SESSION, '1')
   }, [cart, checkoutStorageReady])
 
@@ -432,7 +432,7 @@ Please confirm my order.`
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
               href={menuOrderHref}
-              onClick={() => clearCheckoutSession()}
+              onClick={() => writeHandoffToMenuFromCheckout(cart, orderType)}
               className="-ml-1 inline-flex min-h-[48px] min-w-[48px] touch-manipulation items-center gap-2 rounded-xl px-2 py-2 text-[15px] font-semibold text-slate-800 hover:bg-slate-50 active:bg-slate-100"
             >
               <ArrowLeft className="h-5 w-5 shrink-0" strokeWidth={2.25} aria-hidden />

@@ -24,7 +24,7 @@ export default function GoogleReviews() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="relative min-h-[350px] overflow-hidden rounded-[28px] border border-white/15 shadow-[0_24px_54px_rgba(0,0,0,0.38)]"
+        className="relative min-h-[330px] overflow-hidden rounded-[28px] border border-white/15 shadow-[0_24px_54px_rgba(0,0,0,0.38)]"
       >
         <Image
           src="/burger-bazaar-brand-2.jpg"
@@ -33,16 +33,16 @@ export default function GoogleReviews() {
           className="object-cover"
           sizes="(max-width: 448px) 100vw, 448px"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.24)_0%,rgba(5,5,5,0.56)_42%,rgba(5,5,5,0.98)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.20)_0%,rgba(5,5,5,0.58)_38%,rgba(5,5,5,0.98)_100%)]" />
         <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/12 blur-3xl" />
         <div className="absolute inset-[1px] rounded-[27px] border border-white/10" />
 
-        <div className="relative z-10 flex min-h-[350px] flex-col justify-end p-5 sm:p-6">
-          <span className="mb-3 w-fit rounded-full border border-white/20 bg-black/25 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.15em] text-white backdrop-blur-md">
+        <div className="relative z-10 flex min-h-[330px] flex-col justify-end p-5 sm:p-6">
+          <span className="mb-2 w-fit rounded-full border border-white/25 bg-black/35 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.15em] text-white shadow-sm backdrop-blur-md">
             Burger Bazaar Direct
           </span>
           <h3 className="text-[26px] font-black tracking-[-0.03em] text-white">Direct Order</h3>
-          <p className="mt-1.5 max-w-[350px] text-[14px] font-semibold leading-relaxed text-white/90">
+          <p className="mt-1 max-w-[350px] text-[14px] font-semibold leading-relaxed text-white/90">
             View the menu and place your order directly with Burger Bazaar.
           </p>
           <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/80 bg-white/[0.94] px-3.5 py-3 text-xs font-semibold text-[#151515] shadow-[0_12px_26px_rgba(0,0,0,0.20)] backdrop-blur-md">

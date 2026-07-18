@@ -100,7 +100,7 @@ function MenuPageInner() {
       return
     }
     window.sessionStorage.removeItem(MANGO_HANDOFF_TO_MENU)
-    const raw = window.sessionStorage.getItem(MANGO_CART_KEY)
+    const raw = window.localStorage.getItem(MANGO_CART_KEY)
     if (!raw) {
       setCart([])
       window.sessionStorage.removeItem(MANGO_CHECKOUT_SESSION)
@@ -120,10 +120,10 @@ function MenuPageInner() {
   useEffect(() => {
     if (!isOrderMode || typeof window === 'undefined' || !cartStorageReady) return
     if (cart.length === 0) {
-      window.sessionStorage.removeItem(MANGO_CART_KEY)
+      window.localStorage.removeItem(MANGO_CART_KEY)
       return
     }
-    window.sessionStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
+    window.localStorage.setItem(MANGO_CART_KEY, JSON.stringify(cart))
   }, [cart, cartStorageReady, isOrderMode])
 
   useEffect(() => {
