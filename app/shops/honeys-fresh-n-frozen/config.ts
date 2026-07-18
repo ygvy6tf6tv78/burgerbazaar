@@ -125,8 +125,8 @@ export const shopConfig = {
     upiId: "Q832805737@ybl",
     upiName: "Burger Bazaar",
     merchantId: "M232JNT1PH0HZ",
-    upiQrImageUrl: "",
-    scannerImage: "",
+    upiQrImageUrl: "/burger-bazaar-upi-qr.png",
+    scannerImage: "/burger-bazaar-upi-qr.png",
     bank: {
       bankName: "",
       accountNumberMasked: "",

@@ -17,6 +17,7 @@ export function generateVCard(data: VCardData): string {
   const lines: string[] = [
     'BEGIN:VCARD',
     'VERSION:3.0',
+    `N:;${escapeVCardValue(data.name)};;;`,
     `FN:${escapeVCardValue(data.name)}`,
     `ORG:${escapeVCardValue(data.organization)}`,
   ]
@@ -57,4 +58,3 @@ export function downloadVCard(vcard: string, filename: string): void {
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 }
-

@@ -26,13 +26,14 @@ function item(
   price: number,
   category: MenuCategoryKey,
   description: string,
-  kind: MenuItem['kind']
+  kind: MenuItem['kind'],
+  quantity = '1 portion'
 ): MenuItem {
   return {
     id,
     name,
     description,
-    quantity: '1 portion',
+    quantity,
     price: `₹${price}`,
     category,
     kind,
@@ -123,11 +124,13 @@ export const menuCategories: Record<MenuCategoryKey, MenuCategoryConfig> = {
   },
   drinks: {
     name: 'Drinks',
-    shortDescription: 'Chilled canned soda.',
+    shortDescription: 'Chilled soft drinks.',
     icon: '🥤',
     image: '/burger-bazaar-sticker.png',
     items: [
-      item('drink-1', 'Canned Soda', 25, 'drinks', 'Coca-Cola, Sprite and Limca.', 'Veg'),
+      item('drink-1', 'Diet Coke', 55, 'drinks', 'Chilled Diet Coke.', 'Veg', '1 can'),
+      item('drink-2', 'Fanta', 25, 'drinks', 'Chilled Fanta.', 'Veg', '250 ml'),
+      item('drink-3', 'Limca', 25, 'drinks', 'Chilled Limca.', 'Veg', '250 ml'),
     ],
   },
 }

@@ -77,8 +77,8 @@ export default function MenuPreview() {
                   <CategoryIcon className="h-6 w-6 text-white" strokeWidth={2.25} aria-hidden />
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-3.5 sm:p-4 z-10">
-                  <h3 className="whitespace-nowrap text-white font-bold text-[15px] sm:text-[17px] mb-0.5 leading-tight" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.85)' }}>
-                    {category.name}
+                  <h3 className="text-white font-bold text-[15px] sm:text-[17px] mb-0.5 leading-tight" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.85)' }}>
+                    {key === 'friedChickenBurgers' ? <><span className="whitespace-nowrap">Fried Chicken</span><br />Burger</> : category.name}
                   </h3>
                   <p className="mb-2.5 overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-semibold leading-tight text-slate-200 sm:text-[11px]" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>
                     {category.shortDescription}
