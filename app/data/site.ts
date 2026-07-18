@@ -65,7 +65,7 @@ export const siteConfig = {
     title: "Burger Bazaar Jammu | Smash Burgers & Delivery",
     description: "Burger Bazaar OneLink for smash burgers, fried chicken burgers, loaded fries, desserts and delivery in Channi Himmat, Jammu.",
     keywords: "Burger Bazaar, Burger Bazaar Jammu, Burger Bazaar Channi Himmat, smash burgers Jammu, loaded fries Jammu",
-    shareImage: "/burger-bazaar-header.jpg",
+    shareImage: "/burger-bazaar-og.png",
   },
 
   credits: {

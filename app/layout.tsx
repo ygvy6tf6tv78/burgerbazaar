@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: 'shareImage' in siteConfig.seo ? siteConfig.seo.shareImage : '/components/fff.png',
-        width: 1200,
-        height: 630,
-        alt: `${siteConfig.name} - Scan to pay`,
+        width: 1254,
+        height: 1254,
+        alt: `${siteConfig.name} — Big bites, bold flavours`,
         type: 'image/png',
       },
     ],
